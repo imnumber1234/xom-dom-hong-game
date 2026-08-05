@@ -1,5 +1,10 @@
 # Báo cáo Session B — MVP v0.1 "Xóm Đóm Hòng" (2026-08-05)
 
+> **QA (em-testing) 2026-08-05 18:41: ĐẠT 11/11 hạng mục** — link sống, não AI trả lời tiếng Việt đủ dấu,
+> luật nằm trong code, không lộ chìa khoá, mic + blip đúng chốt, đủ ảnh bằng chứng (game/shots/).
+> 2 ghi chú của QA đều đã nằm trong phần "Vấn đề mới" bên dưới: câu chào là kịch bản CÓ CHỦ ĐÍCH (miễn phí,
+> nhanh); não trả lời là DeepSeek thay vì Haiku vì vụ 403 châu Á — đúng thiết kế xếp hàng 3 não.
+
 ## ✅ Đã xong — chơi được ngay
 
 **Link xem thử: https://xom-dom-hong.pages.dev** (mở bằng Chrome, cho phép micro)
