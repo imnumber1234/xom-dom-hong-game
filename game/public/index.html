@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Xóm Đóm Hòng</title>
+<style>
+  :root{
+    --panel:#1a1626; --panel2:#241e35; --line:#4a3f6b; --ink:#f2ecff;
+    --accent:#ffb547; --danger:#ff5d73; --ok:#5dffa4; --dim:#9b8fc0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%; background:#0d0a14; color:var(--ink);
+    font-family:"Segoe UI",system-ui,sans-serif; overflow:hidden;}
+  #game-root{position:fixed; inset:0;}
+  #game-root canvas{image-rendering:pixelated;}
+
+  .overlay{position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+    background:rgba(8,5,15,.82); z-index:30; padding:12px;}
+  .overlay.show{display:flex;}
+  .panel{background:var(--panel); border:2px solid var(--line); border-radius:12px;
+    max-width:560px; width:100%; padding:20px; box-shadow:0 12px 40px rgba(0,0,0,.6);}
+  .panel h2{color:var(--accent); font-size:20px; margin-bottom:10px;}
+  .panel p{color:var(--dim); font-size:14px; line-height:1.5; margin-bottom:12px;}
+  button{font-family:inherit; border:0; border-radius:8px; cursor:pointer; font-weight:600;}
+  .btn{background:var(--accent); color:#22160a; padding:10px 18px; font-size:15px;}
+  .btn.ghost{background:var(--panel2); color:var(--ink); border:1px solid var(--line);}
+  .btn:disabled{opacity:.45; cursor:default;}
+
+  /* HUD */
+  #hud{position:fixed; top:10px; left:10px; right:10px; z-index:10; display:flex;
+    gap:8px; align-items:center; pointer-events:none; flex-wrap:wrap;}
+  .hud-chip{background:rgba(20,15,35,.85); border:1px solid var(--line); border-radius:8px;
+    padding:6px 10px; font-size:13px;}
+  #hud .spacer{flex:1;}
+  #btn-wardrobe{pointer-events:auto;}
+
+  /* Conversation */
+  #convo{position:fixed; inset:0; z-index:20; display:none; background:rgba(10,6,18,.93);
+    flex-direction:column; align-items:center; justify-content:flex-end; padding:14px;}
+  #convo.show{display:flex;}
+  #convo-card{width:100%; max-width:680px; background:var(--panel); border:2px solid var(--line);
+    border-radius:14px; overflow:hidden; display:flex; flex-direction:column; max-height:96vh;}
+  #convo-head{display:flex; gap:12px; padding:12px 14px; background:var(--panel2); align-items:center;}
+  #npc-portrait{width:96px; height:96px; border-radius:10px; border:2px solid var(--line);
+    image-rendering:pixelated; flex:0 0 auto; background:#000;}
+  #npc-name{font-weight:700; color:var(--accent); font-size:16px;}
+  #meters{display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;}
+  .meter{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--dim);}
+  .meter .bar{flex:1; height:8px; background:#0e0a1a; border-radius:4px; overflow:hidden;}
+  .meter .fill{height:100%; width:0%; transition:width .5s;}
+  #m-trust .fill{background:var(--ok);} #m-susp .fill{background:var(--danger);}
+  #m-pat .fill{background:var(--accent);}
+  #convo-timer{margin-left:auto; font-size:13px; color:var(--dim); align-self:flex-start;}
+
+  #dialogue{padding:16px; min-height:110px; max-height:34vh; overflow-y:auto; font-size:16px; line-height:1.55;}
+  #dialogue .npc-line{white-space:pre-wrap;}
+  #dialogue .player-echo{color:var(--dim); font-size:14px; margin-bottom:8px; font-style:italic;}
+
+  #convo-input{padding:12px 14px; border-top:1px solid var(--line); display:flex; flex-direction:column; gap:8px;}
+  #transcript-live{min-height:22px; font-size:14px; color:var(--accent); font-style:italic;}
+  #input-row{display:flex; gap:8px;}
+  #btn-mic{width:64px; height:52px; font-size:24px; background:var(--danger); color:#fff; flex:0 0 auto;}
+  #btn-mic.listening{animation:pulse 1s infinite; background:#ff2247;}
+  @keyframes pulse{50%{transform:scale(1.08);}}
+  #text-in{flex:1; background:#0e0a1a; border:1px solid var(--line); border-radius:8px;
+    color:var(--ink); padding:10px 12px; font-size:15px; font-family:inherit;}
+  #btn-send{padding:0 16px; background:var(--ok); color:#0a2416;}
+  #btn-leave{align-self:flex-end; font-size:12px; padding:6px 10px;}
+  #stt-hint{font-size:11px; color:var(--dim);}
+
+  /* Wardrobe */
+  .ward-group{margin-bottom:12px;}
+  .ward-group h3{font-size:13px; color:var(--dim); margin-bottom:6px; text-transform:uppercase;}
+  .ward-opts{display:flex; gap:8px; flex-wrap:wrap;}
+  .ward-opt{background:var(--panel2); border:2px solid var(--line); border-radius:8px;
+    padding:8px 12px; font-size:14px; cursor:pointer; color:var(--ink);}
+  .ward-opt.sel{border-color:var(--accent); color:var(--accent);}
+
+  /* Score */
+  #score-body table{width:100%; border-collapse:collapse; font-size:14px; margin-bottom:12px;}
+  #score-body td{padding:6px 4px; border-bottom:1px solid var(--line);}
+  #score-body td:first-child{color:var(--dim);}
+  .big-result{font-size:26px; font-weight:800; margin-bottom:8px;}
+  .win{color:var(--ok);} .lose{color:var(--danger);}
+
+  /* Toast */
+  #toast{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:40;
+    background:var(--panel2); border:1px solid var(--line); color:var(--ink); padding:10px 16px;
+    border-radius:10px; font-size:14px; display:none; max-width:90vw; text-align:center;}
+
+  /* Touch controls */
+  #touchpad{position:fixed; bottom:14px; left:14px; z-index:9; display:none;
+    grid-template-columns:repeat(3,54px); grid-template-rows:repeat(2,54px); gap:6px;}
+  #touchpad button{background:rgba(30,22,50,.8); color:var(--ink); border:1px solid var(--line);
+    font-size:20px; border-radius:10px;}
+  @media (pointer:coarse){ #touchpad{display:grid;} }
+</style>
+</head>
+<body>
+<div id="game-root"></div>
+
+<div id="hud">
+  <div class="hud-chip">🌕 <span id="hud-title">Xóm Đóm Hòng</span></div>
+  <div class="hud-chip">🏠 Nhà đã vào: <b id="hud-houses">0/3</b></div>
+  <div class="hud-chip" id="hud-outfit">👕 Đồ thường</div>
+  <div class="spacer"></div>
+  <button class="btn ghost hud-chip" id="btn-wardrobe" style="pointer-events:auto">🎽 Tủ đồ</button>
+</div>
+
+<div id="touchpad">
+  <span></span><button data-dir="up">▲</button><span></span>
+  <button data-dir="left">◀</button><button data-dir="down">▼</button><button data-dir="right">▶</button>
+</div>
+
+<!-- Intro / password -->
+<div class="overlay show" id="ov-intro">
+  <div class="panel">
+    <h2>🌕 Xóm Đóm Hòng</h2>
+    <p><b>Bạn là một con ma sói lịch sự.</b> Trăng tròn rồi, nhưng khổ nỗi… luật xóm này là
+    <b>phải được MỜI thì mới vào nhà được</b>. Hoá trang, gõ cửa, và <b>NÓI</b> (tiếng Việt!)
+    để dụ hàng xóm mời bạn vào. Vào được cả 3 nhà trước khi bị lộ là thắng.</p>
+    <p>🎙️ Cho phép micro khi trình duyệt hỏi. Nói xong thả nút mic — chữ hiện lên rồi gửi cho hàng xóm.
+    Không có mic? Gõ chữ cũng được.</p>
+    <input id="pass-in" type="password" placeholder="Mật khẩu xóm (nếu có)" style="width:100%;background:#0e0a1a;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:10px 12px;font-size:15px;margin-bottom:12px;">
+    <button class="btn" id="btn-start">Bắt đầu đêm trăng tròn 🌕</button>
+  </div>
+</div>
+
+<!-- Wardrobe -->
+<div class="overlay" id="ov-wardrobe">
+  <div class="panel">
+    <h2>🎽 Tủ đồ hoá trang</h2>
+    <p>Chọn 1 áo + 1 nón + 1 đồ cầm tay. Bị nghi rồi thì đổi đồ mới được quay lại gõ cửa nhà đó.</p>
+    <div class="ward-group"><h3>Áo</h3><div class="ward-opts" id="w-shirt"></div></div>
+    <div class="ward-group"><h3>Nón</h3><div class="ward-opts" id="w-hat"></div></div>
+    <div class="ward-group"><h3>Cầm tay</h3><div class="ward-opts" id="w-item"></div></div>
+    <button class="btn" id="btn-ward-done">Xong, đi thôi</button>
+  </div>
+</div>
+
+<!-- Conversation -->
+<div id="convo">
+  <div id="convo-card">
+    <div id="convo-head">
+      <canvas id="npc-portrait" width="32" height="32"></canvas>
+      <div style="flex:1">
+        <div id="npc-name">…</div>
+        <div id="meters">
+          <div class="meter" id="m-trust"><span>Tin</span><div class="bar"><div class="fill"></div></div></div>
+          <div class="meter" id="m-susp"><span>Nghi</span><div class="bar"><div class="fill"></div></div></div>
+          <div class="meter" id="m-pat"><span>Kiên nhẫn</span><div class="bar"><div class="fill"></div></div></div>
+        </div>
+      </div>
+      <div id="convo-timer">3:00</div>
+    </div>
+    <div id="dialogue"></div>
+    <div id="convo-input">
+      <div id="transcript-live"></div>
+      <div id="input-row">
+        <button id="btn-mic" title="Giữ để nói">🎙️</button>
+        <input id="text-in" placeholder="…hoặc gõ lời nói dối của bạn rồi Enter" autocomplete="off">
+        <button class="btn" id="btn-send">Gửi</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="stt-hint"></span>
+        <span style="flex:1"></span>
+        <button class="btn ghost" id="btn-leave">🚪 Rút lui</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Score -->
+<div class="overlay" id="ov-score">
+  <div class="panel">
+    <div class="big-result" id="score-title"></div>
+    <div id="score-body"></div>
+    <button class="btn" id="btn-again">Chơi đêm nữa 🌕</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="vendor/phaser.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/blips.js"></script>
+<script src="js/portraits.js"></script>
+<script src="js/speech.js"></script>
+<script src="js/convo.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
