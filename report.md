@@ -1,6 +1,8 @@
 # Báo cáo Session B — v0.2 "Xóm Đóm Hòng" (2026-08-08)
 
-> QA (em-testing): đang chạy — kết quả điền bên dưới khi xong.
+> **QA (em-testing) 2026-08-08 ~23:45: 7/8 ĐẠT** (link sống 0 lỗi console, 8 file JS đủ, VN+EN, verdict/thought/convo_state đúng schema, não haiku, câu hỏi chốt chuẩn, gợi ý quân sư chuẩn, STT nhận ?lang, giấu số + bong bóng + Bà Năm chạy đúng, độ khó 65/75/85 đúng).
+> **1 mục rớt → đã xử lý một phần cùng đêm:** Ly chấm gắt câu "em là shipper" và có lúc TỰ BỊA lý do để trừ điểm (bật nhầm cờ mâu thuẫn đồ dù đồ khớp). Đã vá: luật CẤM BỊA CHỨNG CỨ + "trời khuya không phải lý do" vào prompt + giảm độ ngẫu hứng máy chấm (temperature 0.7) — deploy live. Sau vá: đường thắng đúng bài của Ly (pitch content) ăn **danh_trung ổn định 4/4**, ván thật thắng ở câu 5; câu shipper CỤ THỂ được hop_ly ~1/3, còn lại kha_nghi + thỉnh thoảng vẫn oan cờ mâu thuẫn (thiệt hại nhỏ: −3 tin +6 nghi, 1 lần/bộ đồ). Đánh giá: KHÔNG chặn friend test (Ly vốn là người "không quan tâm logic, chỉ quan tâm vui" — shipper là bài yếu với cô ấy theo đúng persona); mục cân chỉnh còn lại đã bàn giao vào pending.md.
+> **Lưu ý điều phối:** ngay sau QA, một phiên khác bắt đầu build v0.3 "Kẹt Tiền" TRÊN CÙNG thư mục game (config/ui/convo/game/index + server). Phiên này dừng sửa code từ thời điểm đó để tránh giẫm chân; bản live hiện tại = v0.2 đầy đủ + fix máy chấm (client v0.3 CHƯA lên live, chỉ file config trơ nằm im). Phiên v0.3 deploy tiếp theo sẽ tự mang code của họ lên.
 
 ## ✅ Đã xong — cả 8 phase của plan-v0.2.md §8, deploy LIVE từng phase + smoke test từng phase
 
