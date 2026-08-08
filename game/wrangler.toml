@@ -1,0 +1,7 @@
+name = "xom-dom-hong"
+compatibility_date = "2026-08-01"
+pages_build_output_dir = "public"
+
+# Workers AI binding — powers /api/stt (server-side Vietnamese speech-to-text).
+[ai]
+binding = "AI"

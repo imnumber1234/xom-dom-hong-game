@@ -1,47 +1,58 @@
-# Báo cáo Session B — MVP v0.1 "Xóm Đóm Hòng" (2026-08-05)
+# Báo cáo Session B — v0.2 "Xóm Đóm Hòng" (2026-08-08)
 
-> **QA (em-testing) 2026-08-05 18:41: ĐẠT 11/11 hạng mục** — link sống, não AI trả lời tiếng Việt đủ dấu,
-> luật nằm trong code, không lộ chìa khoá, mic + blip đúng chốt, đủ ảnh bằng chứng (game/shots/).
-> 2 ghi chú của QA đều đã nằm trong phần "Vấn đề mới" bên dưới: câu chào là kịch bản CÓ CHỦ ĐÍCH (miễn phí,
-> nhanh); não trả lời là DeepSeek thay vì Haiku vì vụ 403 châu Á — đúng thiết kế xếp hàng 3 não.
+> QA (em-testing): đang chạy — kết quả điền bên dưới khi xong.
 
-## ✅ Đã xong — chơi được ngay
+## ✅ Đã xong — cả 8 phase của plan-v0.2.md §8, deploy LIVE từng phase + smoke test từng phase
 
-**Link xem thử: https://xom-dom-hong.pages.dev** (mở bằng Chrome, cho phép micro)
+**Link: https://xom-dom-hong.pages.dev** (VN/EN, mở bằng Chrome; `?debug=1` xem số thật; `?pacing=1` chọn nhịp chữ)
 
 | Mảnh | Trạng thái |
 |---|---|
-| Xóm đêm trăng (Phaser 3): 3 nhà + tủ đồ + xe bánh mì, đi WASD / nút chạm điện thoại | ✅ chạy |
-| Mic → chữ hiện trên màn hình → gửi hàng xóm (Web Speech, tiếng Việt) + gõ phím dự phòng | ✅ chạy |
-| 3 hàng xóm: Cô Sáu (bỉm sữa) · Tí (mê bóng đá, CLB random mỗi đêm) · Ly (Gen Z TikTok) | ✅ chạy |
-| Não AI trả lời + chấm điểm tin/nghi/kiên nhẫn, đổi mặt theo cảm xúc (5 mặt pixel) | ✅ chạy |
-| Luật thắng/thua 100% trong code game (tin ≥75 & nghi <60 & AI muốn mời → mở cửa) | ✅ đúng plan |
-| Blip beep kiểu Undertale khi chữ chạy (mỗi người một tông giọng) — KHÔNG giọng nói | ✅ đúng ý Lucas |
-| Đổi đồ mới được gõ lại nhà đã bị nghi · 3 nhà thắng đêm · hết 3 phút = thua | ✅ chạy |
-| Màn điểm cuối đêm: số nhà, vào nhanh nhất, câu bị nghi nhất, bộ đồ đỉnh nhất | ✅ chạy |
+| **Máy chấm điểm công bằng (§1b)** — AI chỉ CHẤM (5 mức: lộ liễu → đánh trúng), CODE tính điểm, giống nhau cả 3 não. Chuyện hợp lý khớp đồ ĐƯỢC cộng thật (test sống: +12 nhà Dễ) | ✅ hết "tụt điểm ngẫu nhiên" |
+| **3 nhà 3 độ khó (§2b)** — Ly ⭐ Dễ (65) · Tí ⭐⭐ Vừa (75) · Cô Sáu ⭐⭐⭐ Khó (85), sao hiện trên bản đồ + đầu hội thoại | ✅ |
+| **Giấu hết số (§1)** — thay bằng: cửa mở 4 nấc theo lòng tin, bong bóng 💭 suy nghĩ NPC, icon trạng thái (👂🤔🤨😊🚪), mặt + hiệu ứng chân dung (rung khi giận, nghiêng khi thích, đổ mồ hôi khi nghi) | ✅ |
+| **Nhịp chữ Undertale** — tốc độ theo cảm xúc + nghỉ ở dấu câu; Lucas chọn Nhanh/Chuẩn/Chậm tại `?pacing=1` (lưu máy) | ✅ |
+| **Hết 3-4s chết lặng** — dấu "…" nhấp nháy + tư thế suy nghĩ ngay khi gửi | ✅ |
+| **Câu hỏi chốt (Ace Attorney)** — CHỈ nhà Khó: sắp mời thì hỏi vặn lại ("Ủa nãy em nói em tên gì?"), trả lời trượt = +nghi | ✅ test sống |
+| **Bầu trời = đồng hồ (§2)** — trăng trôi ngang 8 phút, gần sáng trời ửng cam, bình minh = hết đêm (không cắt ngang hội thoại) | ✅ |
+| **3 đêm** — đêm N cần vào N nhà, hàng xóm quên hết mỗi đêm, thắng đêm 3 = thắng run | ✅ |
+| **Tiền + tiệm (§2)** — mỗi nhà "mượn" 20-100k + 1 món đồ; quầy bánh mì bán 4 đồ nghề: 🧋 quà (+tin) · ⏳ +45s · 💡 quân sư mách 1 câu (Haiku) · 🎽 đổi đồ tại chỗ | ✅ |
+| **Xóm sống dậy (§6b)** — ĐOM ĐÓM bay, cột đèn, nhà Ly có neon, nhà Tí có bóng đá, nhà Cô Sáu dây phơi | ✅ |
+| **Nhà Bà Năm — hướng dẫn (§0 #6-7)** — bà điếc tấu hài, 3 bước kịch bản (shipper → quà sinh nhật người yêu cũ → CẮN), 0 đồng AI, bỏ qua được | ✅ |
+| **Gương hoá trang (§0 #8-9)** — preview sói sống + tab Mặt/Tóc/Da/Đồ + 🎲; mặt/tóc/da chỉ đẹp, ĐỒ mới ảnh hưởng AI; sói trên bản đồ đổi theo | ✅ |
+| **VN/EN (§0 #10)** — nút 🇻🇳/🇬🇧 màn đầu; NPC + suy nghĩ + mic + Bà Năm đều đổi theo | ✅ |
+| **Cảnh CẮN (§0 #4)** — cửa mở → nút CẮN → màn bóng đen rượt nhau dưới trăng (tự vẽ, không máu me) → cuộn len rơi → loot | ✅ |
+| **Mắt sau rèm (§2)** — thua là hàng xóm nhìn trộm qua cửa sổ 4s | ✅ |
+| **Độ bền (§4)** — Haiku 6s là nhường DeepSeek, ghi não từng lượt vào transcript, tự đặt con trỏ vào ô chữ sau mỗi câu | ✅ |
 
-Ví dụ thật từ bản live (test bằng máy): người chơi xưng "cháu cô Bảy" khi đang mặc đồ sinh viên cầm trà sữa → Cô Sáu: *"Cô nhớ cô Bảy sống một mình với mấy con mèo, đâu có thấy đứa cháu nào ra vô bao giờ đâu nè"* — bắt bài, cộng nghi, trừ tin. Đúng chất game.
+**Ván thật nhà Dễ (AI thật, chơi bằng máy):** mở màn xưng shipper → Ly nghi (−11: nửa đêm tự nhiên trùng đúng đơn trà sữa cô đang chờ — nghi là ĐÚNG persona); chuyển bài sang khen content + pitch ý tưởng video → 3 câu "đánh trúng" liên tiếp (+19/câu) → **tin 76 ≥ 65, cửa mở ở câu thứ 5**. Chỉ tiêu "≈4 câu tốt" đạt: đúng 4 câu tốt sau 1 câu mở màn hỏng.
 
-## ⚠️ VẤN ĐỀ MỚI phát sinh (không có trong plan) — Lucas cần biết
+## ⚠️ VẤN ĐỀ MỚI + QUYẾT ĐỊNH PHÁT SINH (không có trong plan) — cho Lucas
 
-1. **Claude Haiku bị chặn từ máy chủ Cloudflare châu Á.** Người chơi ở VN đi qua trạm Hong Kong của Cloudflare — Anthropic từ chối (lỗi 403). Chìa khoá API vẫn tốt (test từ máy nhà thì chạy).
-   → **Đã xử lý:** xếp hàng 3 não — Haiku (nếu qua được) → DeepSeek (chạy tốt từ châu Á, đang là não chính thực tế, tiếng Việt khá ổn) → kịch bản có sẵn (không bao giờ chết hẳn).
-   → **Lựa chọn cho Lucas sau này:** dựng "AI Gateway" của Cloudflare (~10 phút trên dashboard) để mở lại đường cho Haiku — chất lượng hài Haiku là thứ mình muốn giữ theo bài học Suck Up!. Chưa gấp: DeepSeek đang diễn ổn.
-2. **iPhone/Zalo in-app:** Web Speech trên Safari iPhone hoạt động một phần; webview Zalo có thể chặn mic. Game vẫn chơi được bằng gõ chữ. Khi gửi bạn bè: dặn "mở bằng Chrome/Safari".
-3. **Ảnh chân dung NPC** đang là pixel art vẽ bằng code (5 cảm xúc/người, nhìn ổn nhưng đơn giản). Nâng cấp bằng nano-banana đã xếp hàng ở pending.md — đổi được mà không đụng code game.
-4. **Thỉnh thoảng 1 câu rơi về kịch bản có sẵn** (khi cả 2 não AI chậm/lỗi cùng lúc) — người chơi khó nhận ra, nhưng có thật (gặp 1 lần trong test). Theo dõi thêm khi bạn bè chơi.
+1. **Cô Sáu (nhà Khó) chấm rất gắt** — đúng persona "thẩm phán", nhưng lúc probe có lần chấm "lộ liễu" cho câu chuyện tử tế và tự bịa chi tiết để gài bẫy. Đã siết luật (cờ "mâu thuẫn đồ" chỉ dành cho ĐỒ vs CHUYỆN, phạt 1 lần/bộ đồ). Cần Lucas chơi thật nhà Khó vài lần xem có "thắng được trong ~7 câu" như chỉ tiêu không — nếu gắt quá thì chỉnh BẢNG ĐIỂM (không đụng prompt).
+2. **Đồ rơi từ nhà (loot quần áo) hiện chỉ là hàng trang trí** — tủ đồ đã mở sẵn 100% từ đầu (quyết định cũ v0.1), nên "rơi 1 món đồ" chưa mở khoá gì mới. Muốn có cảm giác sưu tầm thật → v0.3 khoá bớt tủ đồ + đồ mới chỉ có từ loot.
+3. **Bình minh có "ân xá"** — đang nói chuyện dở thì trời không sáng (cho nói hết câu chuyện). Tự quyết vậy để đỡ ức chế; Lucas thấy dễ quá thì bỏ ân xá.
+4. **Tiếng Anh của NPC thỉnh thoảng lai Việt** trong phần suy nghĩ 💭 (Haiku) — nghe cũng có duyên kiểu bà con Việt kiều, nhưng chưa "chuẩn EN 100%". Theo dõi ở friend test, chưa đáng sửa.
+5. **Giá tiệm tự đặt** (40/60/50/30k, loot 20-100k) — cân cho "1 nhà ≈ 1 món đồ". Lucas chơi thấy giàu/nghèo quá thì đổi 1 dòng config.
+
+## 🎯 Việc Lucas làm tiếp (đúng pass number §0 #15)
+1. **Tự chơi hết tutorial + đêm 1 không cần trợ giúp** — đạt thì qua bước 2. Nhớ thử `?pacing=1` chọn nhịp chữ luôn.
+2. **Gửi link cho ≥10 bạn** (outbound — chờ Lucas gật): ≥7/10 chơi xong tutorial + nói "chơi nữa" = ĐẠT.
+3. Nhà Khó: chơi 2-3 lần, báo lại "thắng nổi không" → chỉnh bảng điểm nếu cần.
 
 ## 💰 Chi phí
-- DeepSeek: ~1.500 token vào + ~200 ra mỗi lượt nói ≈ **dưới 30đ/lượt** — cả đợt test bạn bè vẫn xa mức $5.
-- Haiku chỉ tính tiền khi gọi thành công (hiện bị 403 nên gần như $0).
-
-## 🎯 Việc Lucas quyết (không gấp, game vẫn chạy)
-1. **Chốt chính tả tên game:** "Xóm Đóm Hòng" — đúng như vầy chưa? (1 dòng chữ, đổi 10 giây)
-2. **Gửi link cho bạn bè chưa?** Plan nói: Lucas chơi thử OK trước → mới gửi. Số đạt: ≥10 bạn chơi đủ 3 nhà trong 2 tuần, ≥7/10 nói "chơi nữa".
-3. **Có dựng AI Gateway để lấy lại Haiku không?** (cần Lucas vào Cloudflare dashboard ~10 phút, hướng dẫn sẵn khi cần)
+- Haiku qua gateway ~600-3.500 token vào (có cache) + ~300 ra mỗi lượt — friend test vẫn dưới $5 như plan. Quân sư 💡 tốn thêm ~1 lượt Haiku mỗi lần dùng (có trả phí trong game bằng tiền ảo nên tự giới hạn).
 
 ## Kỹ thuật (đọc khi cần)
-- Code: `GitHub/Xom Nay Kho Lam/game/` — public/ (Phaser client) + functions/api/ (Cloudflare Pages Functions).
-- Chìa khoá API chỉ nằm ở secret server (đã kiểm tra bundle client sạch). `.dev.vars` không vào git.
-- Preview mở tự do (đúng luật "preview open access"), có ô mật khẩu nhưng đang để trống (chưa bật GAME_PASS).
-- Ảnh màn hình test: `game/shots/`. Commit: `c1fd56e` nhánh `nhac-khach-v2`.
+- Code: `GitHub/Xom Nay Kho Lam/game/` — client `public/js/` (config·convo·tutorial·ui·game·speech·blips·portraits) + server `functions/api/` (converse·stt·_personas).
+- Bảng điểm verdict + độ khó: `public/js/config.js` (XDH.VERDICTS, XDH.DIFFICULTY) — cân bằng chỉnh Ở ĐÂY, không đụng prompt.
+- Ảnh smoke test từng phase: `game/shots/p0_… → p5_…`. Deploy: `npx wrangler pages deploy public --project-name xom-dom-hong --branch main`.
+
+---
+
+# (Lưu) Báo cáo Session B — MVP v0.1 (2026-08-05)
+
+> QA (em-testing) 2026-08-05 18:41: ĐẠT 11/11 hạng mục. Chi tiết đầy đủ trong git history của file này.
+> Tóm tắt: MVP 3 nhà + mic tiếng Việt + 3 não AI (Haiku→DeepSeek→kịch bản) + luật trong code — LIVE.
+> Vấn đề v0.1 đã xử lý trong v0.2: Anthropic 403 (→ AI Gateway, xong 08-06), câu rơi kịch bản (→ log não + timeout 6s/30s).
+> Còn treo từ v0.1: chân dung nano-banana (pending), iPhone/Zalo webview mic (dặn mở Chrome/Safari), GAME_PASS đang tắt (preview mở tự do).
