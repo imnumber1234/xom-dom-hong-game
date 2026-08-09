@@ -44,6 +44,41 @@ XDH.POP_EVENT = {
   invite_nudge:  { vi: '🚪 Họ đang muốn mời',       en: '🚪 They want to invite you',  cls: 'good' }
 };
 
+// ====== v0.6.1 G1 — DÒ TRÌNH DUYỆT NHÚNG (Zalo · Facebook · Instagram · TikTok…) ======
+// Lucas gửi link qua Zalo → bạn bè bấm link là mở trong trình duyệt NHÚNG của Zalo → mic chết.
+// Dặn miệng "mở bằng Chrome" thì 10 người quên 8. Nên game phải TỰ nói.
+// Chỉ CẢNH BÁO, tuyệt đối không chặn cửa — gõ chữ luôn chơi được.
+XDH.IN_APP = (function () {
+  const ua = navigator.userAgent || '';
+  const hit = [
+    [/\bZalo\b/i,                         'Zalo'],
+    [/FBAN|FBAV|FB_IAB|FBIOS|FB4A/i,      'Facebook'],
+    [/Instagram/i,                        'Instagram'],
+    [/musical_ly|Bytedance|TikTok/i,      'TikTok'],
+    [/MicroMessenger/i,                   'WeChat'],
+    [/\bLine\//i,                         'LINE']
+  ].find(([re]) => re.test(ua));
+  return hit ? hit[1] : null;
+})();
+XDH.WEBVIEW_TXT = {
+  vi: {
+    warn: (app) => `⚠️ Bạn đang mở trong ${app} — <b>mic sẽ không nói được</b>.`,
+    how:  'Bấm <b>⋮</b> (hoặc <b>•••</b>) ở góc trên rồi chọn <b>“Mở trong trình duyệt”</b>. Vẫn <b>gõ chữ</b> chơi bình thường được nha.',
+    copy: '📋 Chép link',
+    copied: '✅ Đã chép link',
+    sttHint: '⌨️ Trình duyệt trong ứng dụng không dùng được mic — gõ chữ nhé, hoặc mở bằng Chrome.',
+    denied: '🔒 Mic đang bị chặn. Bấm ổ khoá 🔒 cạnh thanh địa chỉ → bật Micro → tải lại trang. Trong lúc đó gõ chữ vẫn chơi được.'
+  },
+  en: {
+    warn: (app) => `⚠️ You opened this inside ${app} — <b>the mic will not work</b>.`,
+    how:  'Tap <b>⋮</b> (or <b>•••</b>) at the top and choose <b>“Open in browser”</b>. You can still play by <b>typing</b>.',
+    copy: '📋 Copy link',
+    copied: '✅ Link copied',
+    sttHint: '⌨️ In-app browsers block the mic — just type, or open this in Chrome.',
+    denied: '🔒 Mic is blocked. Tap the 🔒 next to the address bar → allow Microphone → reload. Typing still works meanwhile.'
+  }
+};
+
 XDH.RULES = {
   SUSPICION_BLOCKS: 60,     // door never opens while suspicion >= 60
   SUSPICION_FAIL: 100,      // instant fail

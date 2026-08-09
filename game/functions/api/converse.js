@@ -187,6 +187,13 @@ export async function onRequestPost({ request, env }) {
     .replace('{OUTFIT}', String(body.outfit || 'không rõ').slice(0, 400));
   if (lang === 'en') {
     system += '\n\nQUAN TRỌNG — NGÔN NGỮ: Người lạ nói TIẾNG ANH. Viết dialogue và thought bằng TIẾNG ANH tự nhiên, giữ nguyên cá tính nhân vật (được phép chêm vài từ cảm thán tiếng Việt như "trời ơi", "nha" cho có màu).';
+  } else {
+    // v0.6.1 G2 — Lucas vấp chính chỗ này: "AI trộn tiếng Việt lẫn tiếng Anh, khó chịu".
+    // Chọn VI thì viết TIẾNG VIỆT. Chỉ Ly (Gen Z) được giữ vài tiếng lóng — đó là tính cách của cô.
+    system += '\n\nQUAN TRỌNG — NGÔN NGỮ: Người chơi chọn TIẾNG VIỆT. Viết dialogue và thought bằng tiếng Việt tự nhiên, CÓ ĐẦY ĐỦ DẤU. KHÔNG chêm từ tiếng Anh.'
+      + (body.npcId === 'gen_z'
+        ? ' NGOẠI LỆ DUY NHẤT: Ly là Gen Z làm content nên được giữ vài tiếng lóng đã quen tai (slay, vibe, drama, content, trend, flex, cringe) — tối đa 2 từ mỗi lượt, không nói nguyên câu tiếng Anh.'
+        : ' Nhân vật này TUYỆT ĐỐI không chêm tiếng Anh, kể cả một từ.');
   }
 
   const history = Array.isArray(body.history) ? body.history.slice(-16) : [];

@@ -65,6 +65,44 @@ XDH.UI = (function () {
     clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', ms);
   }
 
+  // ---- v0.6.1 G1: cảnh báo trình duyệt nhúng (Zalo/Facebook…) ----
+  function wvTxt() { return XDH.WEBVIEW_TXT[XDH.lang === 'en' ? 'en' : 'vi']; }
+  function applyWebviewWarn() {
+    if (!XDH.IN_APP) return;
+    const t = wvTxt();
+    $('wv-line1').innerHTML = t.warn(XDH.IN_APP);
+    $('wv-line2').innerHTML = t.how;
+    $('btn-copy-link').textContent = t.copy;
+    $('webview-warn').classList.add('show');
+    document.body.classList.add('has-webview-warn');
+  }
+  // Chép link để dán sang Chrome. Webview hay chặn clipboard API → có đường lùi cũ kỹ mà chắc ăn.
+  function copyLink() {
+    const url = location.href;
+    const done = () => { $('btn-copy-link').textContent = wvTxt().copied; };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done).catch(legacyCopy);
+    } else legacyCopy();
+    function legacyCopy() {
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); }
+      catch (_) { toast(url, 8000); }                 // cùng lắm thì hiện link ra cho chép tay
+      ta.remove();
+    }
+  }
+  // Câu nhắc mic ở khung nói chuyện — trong app thì nói thẳng là mic không chạy.
+  function sttHintText() {
+    if (XDH.IN_APP) return wvTxt().sttHint;
+    if (!XDH.Speech.supported) return XDH.lang === 'en'
+      ? 'This browser has no speech-to-text — just type.'
+      : 'Trình duyệt này không có mic-to-text — gõ chữ nhé.';
+    return XDH.lang === 'en'
+      ? 'Hold 🎙️ to speak, release to send.'
+      : 'Giữ nút 🎙️ để nói (tiếng Việt), thả ra để gửi.';
+  }
+
   // ---- avatar mirror (Q-J): live preview + tabs Mặt/Tóc/Da/Đồ + dice ----
   function buildWardrobe() {
     ['shirt', 'hat', 'item'].forEach(slot => {
@@ -279,9 +317,8 @@ XDH.UI = (function () {
     $('btn-tut-skip').style.display = 'none';
     $('btn-kill').style.display = 'none';
     $('convo').classList.add('show');
-    $('stt-hint').textContent = XDH.Speech.supported
-      ? 'Giữ nút 🎙️ để nói (tiếng Việt), thả ra để gửi.'
-      : 'Trình duyệt này không có mic-to-text — gõ chữ nhé.';
+    $('stt-hint').textContent = sttHintText();   // v0.6.1 G1: trong Zalo thì nói thẳng là mic không chạy
+    $('convo-lang').textContent = XDH.lang === 'en' ? '🇬🇧 EN' : '🇻🇳 VN';
     // Desktop: put the cursor straight into the chat box (mobile: no keyboard pop-up).
     if (window.matchMedia('(pointer: fine)').matches) setTimeout(() => $('text-in').focus(), 80);
   }
@@ -604,23 +641,58 @@ XDH.UI = (function () {
   // v0.3 B1 — chế độ chọn ở màn hình đầu. Cùng bộ não hội thoại, khác điều kiện thắng.
   let pickedMode = localStorage.getItem('xdh_mode') || 'ma_soi';
 
+  // v0.6.1 G3 — màn đầu: MỘT câu móc + BA gạch đầu dòng. Hết.
+  // Bỏ khỏi đây: hết giờ lúc nào · đêm 1 vào mấy nhà · luật xóm. Thanh trạng thái đã hiện rồi.
+  // Cấm nhắc: lòng tin · nghi ngờ · điểm · tính cách NPC · bí mật · chiến thuật quần áo.
+  const INTRO_COPY = {
+    ket_tien: {
+      vi: { hook: 'Bạn đang hết tiền.',
+            steps: ['Đi gõ cửa xin tiền.', 'Nói chuyện để thuyết phục họ.', 'Kiếm đủ tiền mua đồ ăn.'] },
+      en: { hook: "You're out of money.",
+            steps: ['Knock on doors and ask.', 'Talk them into helping you.', 'Get enough for a meal.'] }
+    },
+    ma_soi: {
+      vi: { hook: 'Bạn là ma sói, và ma sói không tự vào nhà được.',
+            steps: ['Hoá trang rồi đi gõ cửa.', 'Nói chuyện để họ MỜI bạn vào.', 'Vào đủ số nhà trước khi trời sáng.'] },
+      en: { hook: 'You are a werewolf, and a werewolf cannot walk in uninvited.',
+            steps: ['Dress up, then knock.', 'Talk until they INVITE you in.', 'Get inside enough houses before sunrise.'] }
+    }
+  };
+
   function applyModeIntro() {
     const en = XDH.lang === 'en';
     const kt = pickedMode === 'ket_tien';
     document.querySelectorAll('#mode-pick button').forEach(b => b.classList.toggle('sel', b.dataset.m === pickedMode));
-    $('intro-p1').innerHTML = kt
-      ? (en
-        ? "<b>You're a student stranded in a strange neighbourhood.</b> Wallet empty, phone dead, and you haven't eaten all day. Knock on doors and <b>TALK</b> your way to a meal — money, food, or a seat at someone's dinner table. Sunset ends the day."
-        : "<b>Bạn là sinh viên bị kẹt ở một xóm lạ.</b> Hết tiền, điện thoại hết pin, cả ngày chưa ăn gì. Gõ cửa và <b>NÓI</b> để xin đủ một bữa ăn — tiền, đồ ăn, hoặc được mời vào ăn cơm luôn. Mặt trời lặn là hết ngày.")
-      : (en
-        ? "<b>You are a very polite werewolf.</b> The moon is full, but this neighborhood has ONE rule: <b>you can only enter a house if you're INVITED in</b>. Dress up, knock, and <b>TALK</b> your way through the door. Night 1 = 1 house, night 2 = 2, night 3 = 3 — all before sunrise."
-        : "<b>Bạn là một con ma sói lịch sự.</b> Trăng tròn rồi, nhưng khổ nỗi… luật xóm này là <b>phải được MỜI thì mới vào nhà được</b>. Hoá trang, gõ cửa, và <b>NÓI</b> để dụ hàng xóm mời bạn vào. Đêm 1 vào 1 nhà, đêm 2 vào 2, đêm 3 vào 3 — trước khi trời sáng.");
-    $('btn-start').textContent = kt
-      ? (en ? 'Start day 1 ☀️' : 'Bắt đầu ngày 1 ☀️')
-      : (en ? 'Start the full-moon night 🌕' : 'Bắt đầu đêm trăng tròn 🌕');
+    const c = INTRO_COPY[kt ? 'ket_tien' : 'ma_soi'][en ? 'en' : 'vi'];
+    $('intro-p1').innerHTML =
+      `<span style="display:block;font-size:17px;color:var(--ink);font-style:italic;margin-bottom:10px">${c.hook}</span>` +
+      c.steps.map(s => `<span style="display:block;font-size:16px;color:var(--ink);margin:5px 0">· ${s}</span>`).join('');
+    $('btn-start').textContent = en ? 'START ▶' : 'BẮT ĐẦU ▶';
   }
 
   function wire() {
+    // v0.6.1 G1 — dải băng "đang mở trong Zalo" + nút chép link
+    applyWebviewWarn();
+    $('btn-copy-link').onclick = copyLink;
+
+    // v0.6.1 G2 — chọn ngôn ngữ là BƯỚC ĐẦU TIÊN. Đã chọn rồi thì lần sau không hỏi lại.
+    const pickLang = (l) => {
+      XDH.setLang(l);
+      localStorage.setItem('xdh_lang_picked', '1');
+      $('ov-lang').classList.remove('show');
+    };
+    $('pick-vi').onclick = () => pickLang('vi');
+    $('pick-en').onclick = () => pickLang('en');
+    if (!localStorage.getItem('xdh_lang_picked')) $('ov-lang').classList.add('show');
+
+    // Nút đổi ngôn ngữ trong lúc nói chuyện (cả 2 chế độ) — bấm là lật qua lại
+    $('convo-lang').onclick = () => {
+      XDH.setLang(XDH.lang === 'en' ? 'vi' : 'en');
+      $('stt-hint').textContent = sttHintText();
+      toast(XDH.lang === 'en' ? '🇬🇧 English — the neighbours will answer in English from now on.'
+                              : '🇻🇳 Tiếng Việt — hàng xóm sẽ trả lời bằng tiếng Việt từ giờ.');
+    };
+
     document.querySelectorAll('#mode-pick button').forEach(b => {
       b.onclick = () => {
         pickedMode = b.dataset.m;
@@ -657,9 +729,12 @@ XDH.UI = (function () {
       const en = XDH.lang === 'en';
       $('lang-vi').classList.toggle('sel', !en);
       $('lang-en').classList.toggle('sel', en);
+      // v0.6.1 G3: một dòng thôi — màn đầu không phải chỗ giảng bài
       $('intro-p2').textContent = en
-        ? '🎙️ Allow the microphone when the browser asks. Hold the mic button, speak, release to send. No mic? Typing works too.'
-        : '🎙️ Cho phép micro khi trình duyệt hỏi. Nói xong thả nút mic — chữ hiện lên rồi gửi cho hàng xóm. Không có mic? Gõ chữ cũng được.';
+        ? '🎙️ Hold the mic button to speak — or just type.'
+        : '🎙️ Giữ nút mic để nói — hoặc gõ chữ cũng được.';
+      $('convo-lang').textContent = en ? '🇬🇧 EN' : '🇻🇳 VN';   // G2: nút đổi ngôn ngữ trong hội thoại
+      applyWebviewWarn();                                        // G1: dải băng đổi theo ngôn ngữ
       document.querySelectorAll('#mode-pick button').forEach(b => {
         const m = XDH.MODES[b.dataset.m];
         b.innerHTML = `${m.emoji} <b>${en ? m.name_en : m.name}</b>`;
@@ -710,7 +785,13 @@ XDH.UI = (function () {
     const mic = $('btn-mic');
     const startMic = (e) => {
       e.preventDefault();
-      if (!XDH.Speech.supported) { toast('Trình duyệt này không hỗ trợ mic-to-text — dùng Chrome, hoặc gõ chữ.'); return; }
+      if (!XDH.Speech.supported) {
+        $('stt-hint').textContent = sttHintText();
+        toast(XDH.IN_APP ? wvTxt().sttHint
+          : (XDH.lang === 'en' ? 'This browser has no speech-to-text — use Chrome, or type.'
+                               : 'Trình duyệt này không hỗ trợ mic-to-text — dùng Chrome, hoặc gõ chữ.'), 6000);
+        return;
+      }
       if (XDH.Speech.isListening()) return;
       mic.classList.add('listening');
       $('transcript-live').textContent = '🎙️ đang nghe…';
@@ -725,11 +806,18 @@ XDH.UI = (function () {
         onError: err => {
           mic.classList.remove('listening');
           $('transcript-live').textContent = '';
-          toast(err === 'not-allowed'
-            ? 'Micro bị chặn — bấm 🔒 cạnh thanh địa chỉ để cho phép mic.'
-            : err === 'fallback'
-              ? 'Trình duyệt này không có mic Google — đã chuyển sang mic dự phòng. Giữ nút 🎙️ nói lại nhé!'
-              : 'Mic lỗi (' + err + ') — gõ chữ cũng chơi được.');
+          const en = XDH.lang === 'en';
+          if (err === 'not-allowed') {
+            // v0.6.1 G1 pass #2: KHÔNG im lặng — câu hướng dẫn ở LẠI trong khung, không tan như toast
+            $('stt-hint').textContent = wvTxt().denied;
+            toast(wvTxt().denied, 7000);
+          } else if (err === 'fallback') {
+            toast(en ? 'No Google speech here — switched to the backup mic. Hold 🎙️ and try again!'
+                     : 'Trình duyệt này không có mic Google — đã chuyển sang mic dự phòng. Giữ nút 🎙️ nói lại nhé!');
+          } else {
+            $('stt-hint').textContent = XDH.IN_APP ? wvTxt().sttHint : sttHintText();
+            toast((en ? 'Mic error (' : 'Mic lỗi (') + err + (en ? ') — typing works too.' : ') — gõ chữ cũng chơi được.'));
+          }
         }
       });
     };

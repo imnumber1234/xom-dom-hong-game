@@ -1,3 +1,95 @@
+# Báo cáo Session B — v0.6.1 SẴN SÀNG CHO BẠN BÈ (2026-08-09)
+
+**🔗 Link chơi thử: https://san-sang.xom-dom-hong.pages.dev** — nhánh preview riêng.
+Link chính `xom-dom-hong.pages.dev` **KHÔNG bị đụng** (đã kiểm: code v0.6.1 chưa có trên đó).
+
+**Trạng thái: 🟡 8/9 pass number ĐẠT bằng máy. Số 6 phải là NGƯỜI — chờ Lucas.**
+
+Đây là **việc SỬA, không phải xây**: không đụng máy chấm, không đụng luật thắng/thua,
+không đụng bảng điểm, không thêm tính năng nào ngoài 3 mục trong plan.
+
+---
+
+## 1. Ba việc — làm được gì
+
+### G1 — Mic chết trong Zalo/Facebook (nguy hiểm nhất)
+Trước: bạn bè bấm link trong Zalo → mic im lặng → tắt đi. Cách xử lý duy nhất là "dặn miệng".
+
+Giờ: game **tự dò** trình duyệt nhúng (Zalo · Facebook · Instagram · TikTok · WeChat · LINE) và
+hiện dải băng đỏ to ở đầu trang: *"⚠️ Bạn đang mở trong Zalo — mic sẽ không nói được. Bấm ⋮ rồi
+chọn Mở trong trình duyệt"* + nút **📋 Chép link** (có đường lùi khi webview chặn clipboard).
+**Chỉ cảnh báo, không chặn cửa** — gõ chữ vẫn chơi bình thường, đã kiểm.
+
+Thêm: từ chối quyền mic thì câu hướng dẫn *"bấm ổ khoá 🔒 cạnh thanh địa chỉ → bật Micro"*
+**ở lại trong khung nói chuyện**, không tan biến như toast cũ.
+
+### G2 — Rối tiếng Việt / tiếng Anh
+- **Chọn ngôn ngữ thành bước ĐẦU TIÊN**: hai nút cỡ lớn giữa màn hình, chặn nút Bắt đầu.
+  Chọn xong nhớ máy, lần sau không hỏi lại.
+- **Nút đổi ngôn ngữ luôn hiện trong lúc nói chuyện** (🇻🇳 VN / 🇬🇧 EN), cả hai chế độ, bấm là lật.
+- **Siết lời dặn AI**: chọn VI thì cấm chêm tiếng Anh. Ngoại lệ duy nhất là Ly (Gen Z) được giữ
+  tối đa 2 tiếng lóng quen tai mỗi lượt — đó là tính cách của cô, không phải lỗi.
+  Tí và Cô Sáu: tuyệt đối không một từ.
+
+### G3 — Ba mươi giây đầu
+Đã đối chiếu code trước: gợi ý "(E)" khi lại gần · chỗ xuất hiện có nhà · lời chào theo tính cách ·
+không tutorial ép buộc — **đều đang đúng, không làm lại**.
+
+Việc thật sự chỉ còn một: **đoạn văn dày ~40 chữ ở màn đầu → ba dòng ngắn.**
+
+| | Trước | Sau |
+|---|---|---|
+| Kẹt Tiền | 40 chữ, kể bối cảnh + giải thích luật + báo hết giờ lúc nào | *Bạn đang hết tiền.* · Đi gõ cửa xin tiền. · Nói chuyện để thuyết phục họ. · Kiếm đủ tiền mua đồ ăn. |
+| Ma Sói | 44 chữ, có cả "đêm 1 vào 1 nhà, đêm 2 vào 2…" | *Bạn là ma sói, và ma sói không tự vào nhà được.* · Hoá trang rồi đi gõ cửa. · Nói chuyện để họ MỜI bạn vào. · Vào đủ số nhà trước khi trời sáng. |
+
+Đếm thật: **21 chữ**, xuống từ ~40. Nút đổi thành **BẮT ĐẦU ▶**. Dòng mic rút còn một câu.
+**Không thêm** tutorial · popup hướng dẫn · mũi tên chỉ nút.
+
+---
+
+## 2. Bằng chứng — 8/9 pass number, đo bằng máy
+
+Chạy hai lượt (máy nhà + preview thật): **25/25 mục đạt ở cả hai**. Ảnh ở `game/shots/v061-*.png`.
+
+| Pass # | Đo | Bằng chứng |
+|---|---|---|
+| 1 | Trình duyệt nhúng Zalo | Giả chuỗi user-agent Zalo → dải băng hiện, bắt đúng tên "Zalo", có câu "Mở trong trình duyệt", nút chép link đổi thành "✅ Đã chép link", **gõ chữ vẫn gửi được 1 lượt**. Facebook (FBAN/FBIOS) cũng bắt được |
+| 2 | Từ chối quyền mic | Ép engine mic báo `not-allowed` → câu *"🔒 Mic đang bị chặn… bật Micro → tải lại trang"* nằm lại trong khung, không im lặng |
+| 3 | Cổng ngôn ngữ | Lần đầu: cổng hiện VÀ chặn nút Bắt đầu (kiểm bằng `elementFromPoint`). Chọn xong đóng. Tải lại: **không hỏi lại** |
+| 4 | Nút đổi ngôn ngữ trong hội thoại | Thấy được ở **cả Kẹt Tiền lẫn Ma Sói**; bấm một cái là `XDH.lang` đổi thật và nhãn đổi theo |
+| 5 | Chọn VI, AI không chêm tiếng Anh | **12 lượt API thật**, chia đều 3 nhân vật: **0 lượt lọt ở Tí và Cô Sáu**. Ly có 1 lượt dùng "trending" — đúng là tiếng lóng đã cho phép |
+| 6 | **Bài kiểm 30 giây** | ⏳ **CHƯA ĐO — cần người thật.** Máy không thay được. Xem mục 4 |
+| 7 | Màn đầu sạch chữ thừa | 0 chữ nhắc lòng tin · nghi ngờ · điểm · tính cách NPC · bí mật · chiến thuật. 0 mảnh của đoạn cũ ("Đêm 1 vào 1 nhà", "Mặt trời lặn là hết ngày"…). Đúng 3 gạch đầu dòng mỗi chế độ, cả VN lẫn EN |
+| 8 | Chỗ xuất hiện | Nhà thật cách **120px**, nhà Bà Năm cách **165px** → người mới đụng nhà THẬT trước. **Không cần đổi gì** |
+| 9 | Không phá gì | Ma sói trọn vòng (thắng → CẮN → loot) + Kẹt Tiền trọn vòng (cho 35k) · popup số bay v0.6 vẫn chạy (`ĐÁNH TRÚNG! +21 tin · −4 nghi`) · cảm xúc mới vẫn chạy (`fx-bounce`) · **0 lỗi console** |
+
+---
+
+## 3. Một chỗ tôi tự diễn giải — nói rõ để Lucas bác nếu không đồng ý
+
+Plan có hai câu hơi chọi nhau: khuôn chữ Ma Sói do plan đề xuất có *"Hoá trang rồi đi gõ cửa"*,
+trong khi pass number 7 cấm nhắc "quần áo". Tôi hiểu điều bị cấm là **chiến thuật quần áo**
+(giải thích mặc đồ nào ăn điểm gì) chứ không phải một động từ hành động — đúng như §G3 viết
+"chiến thuật quần áo". Nên giữ nguyên câu của plan. Không đồng ý thì bỏ một chữ là xong.
+
+---
+
+## 4. Còn treo — cần Lucas
+
+| # | Việc | Ghi chú |
+|---|---|---|
+| 1 | **Bài kiểm 30 giây (pass #6)** | Đưa link cho MỘT người chưa từng thấy game, **không giải thích một câu nào**, bấm giờ 30 giây rồi hỏi họ đang phải làm gì. Đạt = họ nói được "tôi hết tiền · tôi cần tiền · tôi phải đi gõ cửa". Không đạt thì **ghi lại họ kẹt ở đâu**, đừng thêm tutorial |
+| 2 | **Ảnh chụp lúc Lucas thấy rối ngôn ngữ (G2)** | Ba việc của G2 đã làm hết vì đều chắc chắn đúng. Có ảnh thì biết thêm nút nào còn khuất |
+| 3 | **Đẩy lên link chính** | Việc không lùi được — chờ gật |
+| 4 | **Ô "Mật khẩu xóm" vẫn nằm giữa màn đầu** | Đang tắt mật khẩu nên ô này chỉ là chỗ vướng mắt cho người mới. Ngoài phạm vi 3 mục nên tôi KHÔNG tự xoá. Muốn gọn thì ẩn đi, 1 dòng |
+
+## 5. Không đụng tới (đúng lệnh)
+Máy chấm · luật thắng/thua · bảng điểm · tính cách NPC · tutorial · link chính.
+Vòng lặp v0.5 "Ly có hồn" vẫn chưa khởi động (kiểm đầu phiên: chưa có `LY_DEEP`).
+v0.6.1 có sửa `converse.js` (thêm luật ngôn ngữ) → **phiên v0.5 phải `git pull` trước khi đụng.**
+
+---
+
 # Báo cáo Session B — v0.6 GÓI CẢM GIÁC (2026-08-09)
 
 **✅ ĐÃ LÊN LINK CHÍNH 2026-08-09: https://xom-dom-hong.pages.dev** (Lucas gật "live").
