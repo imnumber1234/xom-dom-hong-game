@@ -23,7 +23,7 @@ trực giác của Lucas. Đều hợp lý, đều chưa ai kiểm chứng bằn
 
 > **TRẠNG THÁI THI CÔNG (Terminal B, 2026-08-09):** G1 ✅ · G2 ✅ · G3 ✅.
 > **8/9 pass number ĐẠT bằng máy; số 6 (bài kiểm 30 giây) phải là NGƯỜI, chờ Lucas.**
-> Preview: https://san-sang.xom-dom-hong.pages.dev — link chính KHÔNG bị đụng.
+> **ĐÃ LÊN LINK CHÍNH https://xom-dom-hong.pages.dev** (Lucas gật "live" 2026-08-09, kiểm sống 39/39).
 > Bằng chứng đầy đủ ở `report.md`.
 
 

@@ -1,7 +1,8 @@
 # Báo cáo Session B — v0.6.1 SẴN SÀNG CHO BẠN BÈ (2026-08-09)
 
-**🔗 Link chơi thử: https://san-sang.xom-dom-hong.pages.dev** — nhánh preview riêng.
-Link chính `xom-dom-hong.pages.dev` **KHÔNG bị đụng** (đã kiểm: code v0.6.1 chưa có trên đó).
+**✅ ĐÃ LÊN LINK CHÍNH 2026-08-09: https://xom-dom-hong.pages.dev** (Lucas gật "live").
+Kiểm sống sau khi đẩy: **39/39 đạt** (25 mục bộ v0.6.1 + 14 mục NPC-tự-dẫn-dắt), 0 lỗi console.
+Bản preview vẫn còn ở https://san-sang.xom-dom-hong.pages.dev.
 
 **Trạng thái: 🟡 8/9 pass number ĐẠT bằng máy. Số 6 phải là NGƯỜI — chờ Lucas.**
 
