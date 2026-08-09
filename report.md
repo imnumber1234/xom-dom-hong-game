@@ -106,6 +106,33 @@ Chạy lại toàn bộ bộ kiểm v0.6.1: **25/25 vẫn đạt** — không ph
 **Chưa làm (chờ Lucas gật riêng):** #3 câu mở gợi ý cho ma sói (~30 phút) · #4 nhắc khi đang kẹt ·
 #5 nút "?". Đề xuất: chỉ làm nếu **bài kiểm 30 giây** rớt — nếu người ta tự hiểu thì tutorial là nợ.
 
+### 6b. Lucas chốt THÊM: hướng dẫn 4 BƯỚC bắt buộc (phương án A) — 2026-08-09
+
+Lucas yêu cầu "must have tutorial step by step". Chọn phương án A: **tận dụng nhà Bà Năm đã có**
+(kịch bản sẵn, 0 lần gọi AI, 0 đồng) thay vì dựng mũi tên chỉ nút trên bản đồ.
+
+**Bốn bước, mỗi bước là MỘT hành động thật, dạy đúng 4 thứ của game thật:**
+| Bước | Người chơi làm gì | Dạy điều gì |
+|---|---|---|
+| 1/4 | Chào bà + xưng vai (shipper / sinh viên kẹt tiền) | Cách nói chuyện: gõ chữ hoặc giữ mic |
+| 2/4 | Kể một chuyện KHỚP bộ đồ đang mặc | Đồ phải khớp lời khai |
+| 3/4 | Bà HỎI VẶN → trả lời một chi tiết CỤ THỂ | Hàng xóm thật cũng hỏi vặn, phải chịu trả lời |
+| 4/4 | Ma sói: bấm CẮN · Kẹt Tiền: nói cảm ơn rồi nhận 30k | Cách chốt, và cánh cửa = thước đo lòng tin |
+
+- **Tự bật cho người mới** ngay khi bấm BẮT ĐẦU — không bắt tự đi tìm nhà Bà Năm nữa.
+- **Bỏ qua được** bất cứ lúc nào bằng một nút; học xong thì không bao giờ ép lại.
+- **Có ở CẢ HAI chế độ.** Trước đây Kẹt Tiền bị ẩn hẳn vì bài học cũ kết bằng nút CẮN —
+  nay Kẹt Tiền có kịch bản riêng, kết bằng bà cho tiền.
+- **`?tut=0`** tắt ép buộc → gửi hai nhóm bạn hai bản mà so.
+
+**Kiểm: 27/27 đạt** (máy nhà + preview thật) — tự bật ở cả 2 chế độ · đếm bước 1/4→4/4 đúng ·
+bước 3 đúng là câu hỏi vặn · Kẹt Tiền +30k thật và KHÔNG có nút CẮN · nút bỏ qua thoát sạch ·
+học rồi không ép lại · `?tut=0` không ép · bản EN đủ · 0 lỗi console.
+Chạy lại hai bộ cũ: **v0.6.1 25/25 · NPC dẫn dắt 14/14** — không phá gì. Tổng **66/66**.
+
+**Nói thẳng một lần:** nghiên cứu cảnh báo tutorial ép buộc dễ làm người ta bỏ giữa chừng.
+Nên có nút bỏ qua + `?tut=0` để đo. Nếu bạn bè bỏ ngay ở bước 1-2 thì đó là tín hiệu phải cắt.
+
 **Nguồn tra cứu:** [Onboarding Methods — Nerdy Teachers](https://nerdyteachers.com/PICO-8/Game_Design/106) ·
 [Game Developer](https://www.gamedeveloper.com/design/how-onboarding-should-be-applied-to-tutorials) ·
 [Acagamic](https://acagamic.com/newsletter/2023/04/04/dont-spook-the-newbies-unveiling-5-proven-game-onboarding-techniques/) ·

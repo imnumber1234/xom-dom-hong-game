@@ -83,8 +83,9 @@
         { fontSize: '12px', color: '#ffb547', fontFamily: 'Segoe UI' }).setOrigin(0.5);
 
       // §0 #6: Bà Năm's tutorial hut — mid-bottom, free scripted practice house.
-      // Hướng dẫn này kết thúc bằng nút CẮN nên chỉ có ở mode ma sói.
-      this.hasTut = !kt;
+      // Lucas chốt phương án A (2026-08-09): hướng dẫn 4 bước có ở CẢ HAI chế độ.
+      // Kẹt Tiền dùng kịch bản riêng, kết bằng bà cho tiền (không có nút CẮN).
+      this.hasTut = true;
       if (this.hasTut) {
         this.add.image(480, 505, 'hut');
         this.add.text(480, 560, '👵 Nhà Bà Năm — học nghề', { fontSize: '13px', color: '#ffb547', fontFamily: 'Segoe UI' }).setOrigin(0.5);

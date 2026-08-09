@@ -708,12 +708,16 @@ XDH.UI = (function () {
       XDH.Blips.unlock();                       // user gesture unlocks WebAudio
       if (XDH.restartScene) XDH.restartScene();  // dựng lại xóm theo chế độ vừa chọn
       $('ov-intro').classList.remove('show');
+      // Lucas chốt phương án A (2026-08-09): người MỚI vào thẳng hướng dẫn 4 bước ở nhà Bà Năm,
+      // không phải tự đi tìm. Vẫn BỎ QUA ĐƯỢC bằng một nút, và ?tut=0 thì không ép.
+      if (XDH.TUT_LEAD && !localStorage.getItem('xdh_tut_done')) {
+        setTimeout(() => XDH.Tut.start(), 350);
+        return;
+      }
       if (XDH.isKetTien()) {
         toast(XDH.lang === 'en'
           ? `☀️ Day 1: you need ${XDH.KetTien.mealLabel()} — ${XDH.run.meal.price}k before sunset.`
           : `☀️ Ngày 1: hôm nay cần ${XDH.KetTien.mealLabel()} — ${XDH.run.meal.price}k, trước khi mặt trời lặn.`, 6500);
-      } else if (!localStorage.getItem('xdh_tut_done')) {
-        toast('👵 Mới vô nghề? Ghé nhà Bà Năm ngay giữa xóm học nghề trước nha (miễn phí, bỏ qua được)!', 6500);
       }
     };
 
