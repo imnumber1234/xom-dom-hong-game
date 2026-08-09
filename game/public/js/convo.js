@@ -278,6 +278,7 @@ XDH.Convo = (function () {
     XDH.UI.setBusy(true);
     if (!isGreeting && !finalAsk) {
       XDH.UI.echoPlayer(playerText);
+      XDH.markPlayed();          // đã nói được câu đầu tiên → hết là người mới, thôi dẫn dắt
       active.history.push({ role: 'player', text: playerText });
       XDH.UI.hideOpeners();
       if (XDH.isKetTien()) XDH.run.dayLines.push(playerText);   // B7: nguồn "lời nói dối buồn cười nhất"
@@ -293,6 +294,8 @@ XDH.Convo = (function () {
           seed: active.seed,
           lang: XDH.lang,
           greet: !!isGreeting,
+          // "NPC tự dẫn dắt": chỉ bật ở cuộc đầu tiên của người chưa từng chơi (?tut=0 để tắt)
+          ...(isGreeting && XDH.isFirstEver() ? { firstEver: true } : {}),
           returning: !!active.resumed,
           secondsLeft: active.secondsLeft,
           doorThreshold: diffOf(active.npc).threshold,

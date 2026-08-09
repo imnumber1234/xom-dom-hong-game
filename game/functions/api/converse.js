@@ -133,6 +133,14 @@ export async function onRequestPost({ request, env }) {
     let pool = kt
       ? ((lang === 'en' && persona.greetings_kt_en) ? persona.greetings_kt_en : persona.greetings_kt)
       : ((lang === 'en' && persona.greetings_en) ? persona.greetings_en : persona.greetings);
+    // "NPC tự dẫn dắt": cuộc nói chuyện ĐẦU TIÊN của người chưa từng chơi → câu chào có lời
+    // MỜI NÓI rõ ràng. Chỉ đổi lời chào, không đổi luật gì. Client tắt bằng ?tut=0.
+    if (body.firstEver) {
+      const lead = kt
+        ? ((lang === 'en' && persona.lead_greets_kt_en) ? persona.lead_greets_kt_en : persona.lead_greets_kt)
+        : ((lang === 'en' && persona.lead_greets_en) ? persona.lead_greets_en : persona.lead_greets);
+      if (lead && lead.length) pool = lead;
+    }
     // Quay lại trong cùng đêm → câu chào "nhớ mặt" thay vì chào như người lạ (Lucas 08-09)
     if (body.returning && persona.returns) {
       pool = (lang === 'en' && persona.returns_en) ? persona.returns_en : persona.returns;

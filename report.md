@@ -83,6 +83,35 @@ trong khi pass number 7 cấm nhắc "quần áo". Tôi hiểu điều bị cấ
 | 3 | **Đẩy lên link chính** | Việc không lùi được — chờ gật |
 | 4 | **Ô "Mật khẩu xóm" vẫn nằm giữa màn đầu** | Đang tắt mật khẩu nên ô này chỉ là chỗ vướng mắt cho người mới. Ngoài phạm vi 3 mục nên tôi KHÔNG tự xoá. Muốn gọn thì ẩn đi, 1 dòng |
 
+---
+
+## 6. BỔ SUNG cùng ngày — "NPC tự dẫn dắt" (cách dạy người mới, Lucas gật)
+
+Sau khi tra cách các game khác dạy người chơi, Lucas chọn phương án đề xuất. Nguyên tắc chung của
+mọi nguồn: **dạy đúng lúc cần, không dồn ở màn đầu** — chính Suck Up! cũng không có tutorial.
+
+**Đã làm (lựa chọn #2):** cuộc nói chuyện ĐẦU TIÊN của người chưa từng chơi → hàng xóm chào bằng
+câu hỏi thẳng kèm lời **mời nói** ("Nói cô nghe coi, cô đứng đây nghe đó" · "Kể lẹ đi, em đang nghe nè").
+Người mới hiểu ngay việc phải làm là TRẢ LỜI. Nói được câu đầu là thôi dẫn dắt.
+
+- **0 giao diện mới:** không tutorial, không popup, không mũi tên. Chỉ đổi lời chào.
+- **Tắt được:** `?tut=0` — để gửi hai nhóm bạn hai bản mà so (giống `?nonum=1`).
+- **Không đụng:** máy chấm · luật thắng/thua · bảng điểm · tính cách NPC.
+
+**Kiểm: 14/14 đạt** (máy nhà + preview thật) — có dẫn dắt ở đủ 3 nhà × 2 chế độ, bản EN không lẫn
+tiếng Việt, nhà thứ hai về lời chào thường, `?tut=0` tắt sạch, 0 lỗi console.
+Chạy lại toàn bộ bộ kiểm v0.6.1: **25/25 vẫn đạt** — không phá gì.
+
+**Chưa làm (chờ Lucas gật riêng):** #3 câu mở gợi ý cho ma sói (~30 phút) · #4 nhắc khi đang kẹt ·
+#5 nút "?". Đề xuất: chỉ làm nếu **bài kiểm 30 giây** rớt — nếu người ta tự hiểu thì tutorial là nợ.
+
+**Nguồn tra cứu:** [Onboarding Methods — Nerdy Teachers](https://nerdyteachers.com/PICO-8/Game_Design/106) ·
+[Game Developer](https://www.gamedeveloper.com/design/how-onboarding-should-be-applied-to-tutorials) ·
+[Acagamic](https://acagamic.com/newsletter/2023/04/04/dont-spook-the-newbies-unveiling-5-proven-game-onboarding-techniques/) ·
+[MDPI 2020](https://www.mdpi.com/2414-4088/4/3/41) · [Suck Up! trên Steam](https://store.steampowered.com/app/2726370/Suck_Up/)
+
+---
+
 ## 5. Không đụng tới (đúng lệnh)
 Máy chấm · luật thắng/thua · bảng điểm · tính cách NPC · tutorial · link chính.
 Vòng lặp v0.5 "Ly có hồn" vẫn chưa khởi động (kiểm đầu phiên: chưa có `LY_DEEP`).

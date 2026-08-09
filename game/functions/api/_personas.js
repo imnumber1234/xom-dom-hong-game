@@ -29,6 +29,21 @@ export const PERSONAS = {
       "Who is it? … Oh, who are you? Keep it down nha, baby Bin just went down for her nap.",
       "Something I can help with? You look… like you've been walking a long way. But I'm not buying anything, okay?"
     ],
+    // "NPC tự dẫn dắt" — CHỈ dùng cho cuộc nói chuyện ĐẦU TIÊN của người chưa từng chơi.
+    // Vẫn là câu chào bình thường, chỉ thêm một lời MỜI NÓI rõ ràng để người mới biết phải trả lời.
+    // Không nhắc bàn phím/nút bấm — giữ nguyên vai, phần chỉ dẫn mic/gõ chữ đã có dưới ô nhập.
+    lead_greets: [
+      'Ai đó?? Khuya khoắt rồi mà bấm chuông nhà người ta… Bé Bin mới ngủ được chút xíu đó nha. Chú em là ai, tới đây có việc gì? Nói cô nghe coi, cô đứng đây nghe đó.'
+    ],
+    lead_greets_en: [
+      "Who's there?? Ringing my bell this late at night… Baby Bin JUST fell asleep, you hear. Who are you, and what do you want? Go on — tell me, I'm listening."
+    ],
+    lead_greets_kt: [
+      'Ai đó? … Ủa cậu là ai vậy? Nhìn cậu như đi bộ xa lắm rồi á. Cậu cần gì thì nói thẳng đi, cô nghe đây.'
+    ],
+    lead_greets_kt_en: [
+      "Who is it? … Oh, who are you? You look like you've walked a long way. Just say what you need — I'm listening."
+    ],
     // v0.4 T4 — câu chào "nghe đồn": server điền {WHO} = người kể, {CRIME} = tội trong sổ.
     gossip_greets: [
       'Khoan khoan… {WHO} mới kể bên đó có người {CRIME} xong đó nha. Không phải chú em đó chớ?? Nói trước, cô nhớ dai lắm à.',
@@ -83,6 +98,18 @@ chuyện bé Bin, chuyện chợ búa. Hài kiểu bà tám.`
       "Uh, hello? I'm rewatching the {CLUB} match from last night… Do you need something?",
       "Um, yes? I just rent a room here, the landlord's out. Is something wrong?"
     ],
+    lead_greets: [
+      'Dạ ai đó ạ? Em đang coi {CLUB} đá hiệp hai… Mà anh/chị là ai, cần gì em ạ? Nói em nghe với, em đang đứng ngay cửa đây nè.'
+    ],
+    lead_greets_en: [
+      "Uh, who's there? I'm watching {CLUB} play the second half… So who are you, what do you need? Tell me — I'm right here at the door."
+    ],
+    lead_greets_kt: [
+      'Dạ ai đó ạ? Em ở trọ đây thôi… Anh/chị là ai, cần gì hông ạ? Nói em nghe thử coi.'
+    ],
+    lead_greets_kt_en: [
+      "Um, hello? I just rent a room here… Who are you, do you need something? Go ahead, tell me."
+    ],
     gossip_greets: [
       'Ơ khoan… dạ, hồi nãy {WHO} kể là có người {CRIME} á. Anh/chị… không phải người đó ha? Em sợ mấy vụ này lắm luôn 😅',
       'Dạ ai đó ạ? Khoan đã — {WHO} mới kể trong xóm có người {CRIME} đó. Hông phải anh/chị chứ ạ? Nói thiệt em nghe với 😅'
@@ -134,6 +161,18 @@ GIỌNG: teen, "dạ", "ạ", "vãi", "xịn", thi thoảng chêm tiếng Anh (g
     greetings_kt_en: [
       "Um… who's this? Wait, hold still — the light over there is actually gorgeous. Okay, what do you need?",
       "Hello? I'm mid-shoot… but go ahead, I'm listening. Make it quick though."
+    ],
+    lead_greets: [
+      'Ủa alo?? Ai bấm chuông giờ này dạ… Rồi, anh/chị là ai, muốn gì? Kể lẹ đi, em đang nghe nè — mà kể cho hay hay nha.'
+    ],
+    lead_greets_en: [
+      "Um hello?? Who rings a doorbell at THIS hour… Okay — who are you, what do you want? Spill it, I'm listening. Make it good though."
+    ],
+    lead_greets_kt: [
+      'Ơ… ai dạ? Rồi, anh/chị là ai, cần gì em? Nói đi em nghe, mà nói cho cuốn nha.'
+    ],
+    lead_greets_kt_en: [
+      "Um… who's this? Okay, who are you, what do you need? Go on, I'm listening — make it interesting though."
     ],
     gossip_greets: [
       'Ủa KHOAN — drama nè trời!! {WHO} vừa kể có người {CRIME} xong á. Hông lẽ… là anh/chị?? Nói thiệt đi, em đang hóng muốn xỉu 😌',

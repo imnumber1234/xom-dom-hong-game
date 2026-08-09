@@ -79,6 +79,16 @@ XDH.WEBVIEW_TXT = {
   }
 };
 
+// ====== "NPC TỰ DẪN DẮT" (lựa chọn #2, Lucas gật 2026-08-09) ======
+// Không thêm màn hướng dẫn, không popup, không mũi tên. Cách dạy duy nhất: LƯỢT ĐẦU TIÊN
+// của người chưa từng chơi, hàng xóm chào bằng một câu HỎI THẲNG + mời nói ("nói cô nghe coi").
+// Người mới hiểu ngay việc cần làm là TRẢ LỜI. Đúng phương pháp "NPC Dialog" của bảng
+// onboarding (nerdyteachers) và cách Suck Up! dạy — dạy trong lúc chơi, không dạy trước.
+// ?tut=0 tắt hẳn để so hai kiểu trên hai nhóm bạn (giống ?nonum=1).
+XDH.TUT_LEAD = !/[?&]tut=0/.test(location.search);
+XDH.isFirstEver = () => XDH.TUT_LEAD && !localStorage.getItem('xdh_played');
+XDH.markPlayed = () => { try { localStorage.setItem('xdh_played', '1'); } catch (_) {} };
+
 XDH.RULES = {
   SUSPICION_BLOCKS: 60,     // door never opens while suspicion >= 60
   SUSPICION_FAIL: 100,      // instant fail
