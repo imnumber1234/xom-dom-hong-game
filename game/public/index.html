@@ -48,6 +48,11 @@
   #portrait-wrap.fx-zoom{transform:scale(1.09);}
   #portrait-wrap.fx-think{transform:rotate(-3deg);}
   #portrait-wrap.fx-shake{animation:xdh-shake .45s linear infinite;}
+  /* v0.6 F4 — cảm xúc mới phải NHÌN thấy được, không chỉ đổi nhãn */
+  #portrait-wrap.fx-droop{transform:translateY(5px) scale(.96); filter:saturate(.55) brightness(.9);}
+  #portrait-wrap.fx-turn{transform:rotate(7deg) translateX(4px);}
+  #portrait-wrap.fx-bounce{animation:xdh-bounce .5s ease-in-out infinite;}
+  @keyframes xdh-bounce{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-6px) scale(1.06);}}
   @keyframes xdh-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-3px) rotate(-1deg);}75%{transform:translateX(3px) rotate(1deg);}}
   #fx-sweat{display:none; position:absolute; top:-4px; right:-6px; font-size:20px;
     animation:xdh-drip 1.3s ease-in infinite;}
@@ -80,6 +85,30 @@
     transform:translateY(4px); transition:opacity .4s, transform .4s;}
   #thought-bubble.show{opacity:1; transform:translateY(0);}
 
+  /* v0.6 F1 — popup số BAY LÊN RỒI TAN (không có thanh đo thường trực) */
+  #numpop{position:absolute; left:8px; bottom:6px; z-index:8; width:260px; max-width:60%;
+    display:flex; flex-direction:column-reverse; gap:3px; pointer-events:none;}
+  .np{align-self:flex-start; font-size:14px; font-weight:800; padding:3px 9px; border-radius:9px;
+    background:rgba(8,5,15,.9); border:1px solid var(--line); white-space:nowrap;
+    text-shadow:0 2px 0 rgba(0,0,0,.55); animation:np-rise 1.2s ease-out forwards;}
+  .np.hit{color:var(--ok); border-color:var(--ok); font-size:17px;}
+  .np.good{color:var(--ok);}
+  .np.meh{color:var(--dim);}
+  .np.warn{color:var(--accent); border-color:var(--accent);}
+  .np.bad{color:var(--danger); border-color:var(--danger); animation:np-rise-bad 1.2s ease-out forwards;}
+  @keyframes np-rise{0%{opacity:0; transform:translateY(10px) scale(.9);}
+    14%{opacity:1; transform:translateY(0) scale(1.06);}
+    30%{transform:translateY(0) scale(1);}
+    72%{opacity:1;}
+    100%{opacity:0; transform:translateY(-26px);}}
+  @keyframes np-rise-bad{0%{opacity:0; transform:translate(0,10px) scale(.9);}
+    12%{opacity:1; transform:translate(-3px,0) scale(1.07);}
+    20%{transform:translate(3px,0) scale(1.07);}
+    28%{transform:translate(-2px,0) scale(1);}
+    36%{transform:translate(0,0) scale(1);}
+    72%{opacity:1;}
+    100%{opacity:0; transform:translate(0,-26px);}}
+
   /* §6b — thinking dots while waiting for the AI */
   #dialogue .thinking{color:var(--dim); animation:xdh-pulse 1s ease-in-out infinite; font-size:22px; line-height:1;}
   @keyframes xdh-pulse{50%{opacity:.25;}}
@@ -96,6 +125,11 @@
   #debug-log{display:none; max-height:110px; overflow-y:auto; padding:6px 14px; font:11px/1.6 Consolas,monospace;
     color:#8fe08f; background:#0a0714; border-top:1px dashed var(--line); white-space:pre-wrap;}
   #dialogue .npc-line{white-space:pre-wrap;}
+  /* v0.6 F2 — meme phản ứng: CODE chọn, hiện cạnh thoại rồi ở lại trong khung chat */
+  #dialogue .meme{display:block; margin:6px 0 2px; border:2px solid var(--line); border-radius:10px;
+    max-width:132px; height:auto; animation:np-rise-in .45s ease-out;}
+  @keyframes np-rise-in{0%{opacity:0; transform:translateY(8px) scale(.85);}
+    60%{opacity:1; transform:translateY(0) scale(1.04);} 100%{transform:scale(1);}}
   #dialogue .player-echo{color:var(--dim); font-size:14px; margin-bottom:8px; font-style:italic;}
 
   #convo-input{padding:12px 14px; border-top:1px solid var(--line); display:flex; flex-direction:column; gap:8px;}
@@ -117,6 +151,18 @@
   .ward-opt{background:var(--panel2); border:2px solid var(--line); border-radius:8px;
     padding:8px 12px; font-size:14px; cursor:pointer; color:var(--ink);}
   .ward-opt.sel{border-color:var(--accent); color:var(--accent);}
+  /* v0.6 F3.1 — món chưa loot ra thì còn khoá, nhìn thấy nhưng bấm không được */
+  .ward-opt.locked{opacity:.4; cursor:not-allowed; border-style:dashed; color:var(--dim);}
+
+  /* v0.3 Kẹt Tiền: 3 câu mở gợi ý (Q-B4) — mờ, bấm là gửi, tắt sau 2 nhà đầu ngày 1 */
+  #openers{display:none; flex-direction:column; gap:5px; margin-bottom:4px;}
+  #openers.show{display:flex;}
+  #openers .op{background:transparent; border:1px dashed var(--line); color:var(--dim);
+    border-radius:8px; padding:7px 10px; font-size:13px; text-align:left; font-style:italic;}
+  #openers .op:hover{border-color:var(--accent); color:var(--accent);}
+  #openers .op-title{font-size:11px; color:var(--dim); text-transform:uppercase;}
+  #mode-pick .ward-opt{flex:1; padding:10px 12px; font-size:15px;}
+  #board-card{max-width:100%; border:1px solid var(--line); border-radius:8px; margin-top:12px;}
 
   /* Tutorial (Bà Năm) */
   #tut-hint{display:none; margin:0 14px 6px; padding:8px 12px; background:rgba(255,181,71,.12);
@@ -160,6 +206,13 @@
     100%{opacity:0; transform:translate(-50%,-50%) scale(1);}}
   #k-drop{position:absolute; left:50%; top:-80px; font-size:52px; transition:top 1s cubic-bezier(.3,.7,.4,1.4);}
 
+  /* v0.6 F5.2 — dòng tiếc nuối: hiện chung lúc "mắt sau rèm", tan sau ~5 giây */
+  #regret{position:fixed; bottom:96px; left:50%; transform:translate(-50%,8px); z-index:41;
+    background:rgba(14,10,26,.94); border:1px solid var(--line); border-radius:14px;
+    padding:11px 18px; font-size:14px; font-style:italic; color:var(--dim); max-width:88vw;
+    text-align:center; opacity:0; pointer-events:none; transition:opacity .5s, transform .5s;}
+  #regret.show{opacity:1; transform:translate(-50%,0);}
+
   /* Toast */
   #toast{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:40;
     background:var(--panel2); border:1px solid var(--line); color:var(--ink); padding:10px 16px;
@@ -180,6 +233,7 @@
   <div class="hud-chip">🌕 <span id="hud-title">Xóm Đóm Hòng</span></div>
   <div class="hud-chip" id="hud-night">🌙 Đêm 1/3 · vào 0/1 nhà</div>
   <div class="hud-chip" id="hud-money">💰 0k</div>
+  <div class="hud-chip" id="hud-meal" style="display:none">🎯 —</div>
   <div class="hud-chip" id="hud-outfit">👕 Đồ thường</div>
   <div class="spacer"></div>
   <button class="btn ghost hud-chip" id="btn-wardrobe" style="pointer-events:auto">🎽 Tủ đồ</button>
@@ -198,6 +252,11 @@
       <button class="ward-opt" id="lang-en" style="padding:5px 10px;font-size:13px">🇬🇧 EN</button>
     </div>
     <h2>🌕 Xóm Đóm Hòng</h2>
+    <!-- B1 (v0.3): chọn chế độ — cùng một bộ não hội thoại, khác ĐIỀU KIỆN THẮNG -->
+    <div class="ward-opts" id="mode-pick" style="margin-bottom:12px">
+      <button class="ward-opt sel" data-m="ma_soi">🐺 <b>Ma Sói</b></button>
+      <button class="ward-opt" data-m="ket_tien">🙇 <b>Kẹt Tiền</b></button>
+    </div>
     <p id="intro-p1"><b>Bạn là một con ma sói lịch sự.</b> Trăng tròn rồi, nhưng khổ nỗi… luật xóm này là
     <b>phải được MỜI thì mới vào nhà được</b>. Hoá trang, gõ cửa, và <b>NÓI</b>
     để dụ hàng xóm mời bạn vào. Đêm 1 vào 1 nhà, đêm 2 vào 2, đêm 3 vào 3 — trước khi trời sáng.</p>
@@ -259,12 +318,14 @@
       </div>
       <div id="convo-timer">3:00</div>
       <div id="thought-bubble"></div>
+      <div id="numpop"></div>
     </div>
     <div id="dialogue"></div>
     <button id="btn-kill">🐺 CẮN</button>
     <div id="tut-hint"></div>
     <div id="debug-log"></div>
     <div id="convo-input">
+      <div id="openers"></div>
       <div id="transcript-live"></div>
       <div id="input-row">
         <button id="btn-mic" title="Giữ để nói">🎙️</button>
@@ -298,6 +359,30 @@
     <h2>🌕 VÀO ĐƯỢC RỒI!</h2>
     <div id="loot-body"></div>
     <button class="btn" id="btn-loot-done">Nhặt xong, chuồn êm 🐺</button>
+  </div>
+</div>
+
+<!-- v0.3 Kẹt Tiền: bạn xin được gì ở nhà này -->
+<div class="overlay" id="ov-give">
+  <div class="panel">
+    <h2 id="give-title">…</h2>
+    <div id="give-body"></div>
+    <button class="btn" id="btn-give-done" style="margin-top:12px">Đi tiếp 🚶</button>
+  </div>
+</div>
+
+<!-- v0.3 B7: bảng tổng kết ngày — chụp màn hình / tải ảnh khoe được -->
+<div class="overlay" id="ov-board">
+  <div class="panel" style="max-width:620px">
+    <div class="big-result" id="board-title"></div>
+    <div id="board-body"></div>
+    <p id="board-note" style="display:none;margin-top:10px"></p>
+    <canvas id="board-card" width="760" height="620" style="display:none"></canvas>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn" id="btn-board-next">Ngày sau ☀️</button>
+      <button class="btn ghost" id="btn-board-save">📸 Tải ảnh khoe bạn</button>
+      <button class="btn ghost" id="btn-board-quit">🏠 Về màn hình đầu</button>
+    </div>
   </div>
 </div>
 
@@ -346,15 +431,20 @@
   </div>
 </div>
 
+<!-- v0.6 F5.2 — một dòng TIẾC NUỐI sau khi thua, lấy từ điểm yếu có sẵn trong thẻ nhân vật -->
+<div id="regret"></div>
+
 <div id="toast"></div>
 
 <script src="vendor/phaser.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/blips.js"></script>
 <script src="js/portraits.js"></script>
+<script src="js/memes.js"></script>
 <script src="js/speech.js"></script>
 <script src="js/convo.js"></script>
 <script src="js/tutorial.js"></script>
+<script src="js/mode-ket-tien.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/game.js"></script>
 </body>

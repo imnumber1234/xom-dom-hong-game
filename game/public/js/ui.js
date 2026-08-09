@@ -3,36 +3,59 @@ XDH.UI = (function () {
   const $ = (id) => document.getElementById(id);
 
   // ---- run state ----
-  function newRun() {
+  function newRun(mode) {
     // §2b: fixed difficulty ladder left→right — Ly ⭐ Dễ · Tí ⭐⭐ Vừa · Cô Sáu ⭐⭐⭐ Khó.
     const idx = [2, 1, 0];
     XDH.run = {
+      mode: mode || (XDH.run && XDH.run.mode) || 'ma_soi',      // v0.3 B1: 🐺 ma sói · 🙇 kẹt tiền
       pass: XDH.run && XDH.run.pass || '',
       outfit: { shirt: 'none', hat: 'none', item: 'none' },
+      // v0.6 F3.1: tủ đồ KHOÁ — chỉ có đồ thường lúc mở màn, còn lại mở dần từ loot.
+      unlocked: { shirt: [], hat: [], item: [] },
       houses: idx.map(i => ({ npcIdx: i, won: false, failedOutfits: [] })),
-      night: 1, enteredTonight: 0, dawnHandled: false,          // §0 #2: 3-night run
+      night: 1, enteredTonight: 0, dawnHandled: false, policeCaught: false,          // §0 #2: 3-night run
       money: 0, inv: { gift: 0, hourglass: 0, hint: 0, wardrobe: 0 },
       score: { entered: 0, fastest: Infinity, bestOutfit: '—', maxSuspDelta: -1, maxSuspQuote: '—', maxSuspNpc: '' },
       transcripts: [],
       nightStart: Date.now(),
       runStart: Date.now()
     };
+    // v0.6 F3.1 Q4 = A: tặng sẵn 1 món ngẫu nhiên ngay đêm/ngày 1 — không ai bắt đầu tay trắng.
+    for (let i = 0; i < XDH.WARDROBE_LOCK.NIGHT1_FREE; i++) XDH.unlockRandomPiece();
+    if (XDH.isKetTien()) XDH.KetTien.startDay(1);               // bốc món ăn hôm nay + reset ngày
     refreshHud();
   }
 
-  // Next night: same houses, memories wiped, bigger quota (night N = N houses).
+  // Next night: same houses, conversations wiped but the ledger persists (v0.4), night N = N houses.
   function newNight(n) {
     const r = XDH.run;
+    // v0.4 T5: TRƯỚC khi xoá, nén sổ tai tiếng thành trí nhớ từng nhà (hội thoại vẫn xoá tươi).
+    if (XDH.Convo && XDH.Convo.compressNightMemory) XDH.Convo.compressNightMemory();
     r.night = n; r.enteredTonight = 0; r.dawnHandled = false;
-    r.houses.forEach(h => { h.won = false; h.failedOutfits = []; });
+    r.houses.forEach(h => { h.won = false; h.failedOutfits = []; h.saved = null; });   // đêm mới = hội thoại quên, SỔ thì nhớ
     r.nightStart = Date.now();
     refreshHud();
   }
 
   function refreshHud() {
     const r = XDH.run;
-    $('hud-night').textContent = `🌙 Đêm ${r.night}/${XDH.RULES.NIGHTS} · vào ${r.enteredTonight}/${r.night} nhà`;
-    $('hud-money').textContent = `💰 ${r.money}k`;
+    const en = XDH.lang === 'en';
+    if (XDH.isKetTien()) {
+      // B4: mục tiêu bữa ăn + ví tiền thay cho hạn ngạch đêm
+      $('hud-night').textContent = en
+        ? `☀️ Day ${r.night} · ${r.knocked} doors knocked`
+        : `☀️ Ngày ${r.night} · đã gõ ${r.knocked} nhà`;
+      $('hud-money').textContent = `💰 ${r.money}k` + (r.food ? ` + 🍙 ${r.food}k` : '');
+      const left = XDH.KetTien.needLeft();
+      $('hud-meal').style.display = 'block';
+      $('hud-meal').textContent = left > 0
+        ? `🎯 ${XDH.KetTien.mealLabel()} ${r.meal.price}k · ${en ? 'short' : 'thiếu'} ${left}k`
+        : `🎯 ${XDH.KetTien.mealLabel()} · ${en ? 'ENOUGH — go eat!' : 'ĐỦ RỒI — ra xe bánh mì ăn!'}`;
+    } else {
+      $('hud-night').textContent = `🌙 Đêm ${r.night}/${XDH.RULES.NIGHTS} · vào ${r.enteredTonight}/${r.night} nhà`;
+      $('hud-money').textContent = `💰 ${r.money}k`;
+      $('hud-meal').style.display = 'none';
+    }
     $('hud-outfit').textContent = '👕 ' + XDH.outfitLabel(XDH.run.outfit);
   }
 
@@ -49,8 +72,16 @@ XDH.UI = (function () {
       box.innerHTML = '';
       XDH.WARDROBE[slot].forEach(opt => {
         const b = document.createElement('button');
-        b.className = 'ward-opt'; b.textContent = opt.label; b.dataset.id = opt.id;
+        const open = XDH.isUnlocked(slot, opt.id);          // v0.6 F3.1: chưa loot ra thì còn khoá
+        b.className = 'ward-opt' + (open ? '' : ' locked');
+        b.textContent = open ? opt.label : '🔒 ' + opt.label;
+        b.dataset.id = opt.id;
+        b.disabled = !open;
+        if (!open) b.title = XDH.lang === 'en'
+          ? 'Locked — loot it from a house first.'
+          : 'Chưa mở — vào được một nhà thì mới lượm được món này.';
         b.onclick = () => {
+          if (!open) return;
           XDH.run.outfit[slot] = opt.id;
           [...box.children].forEach(c => c.classList.toggle('sel', c === b));
           refreshHud();
@@ -110,6 +141,10 @@ XDH.UI = (function () {
     else if (o.hat === 'nonla') { P(3, 5, 10, 1, '#d9c07a'); P(5, 4, 6, 1, '#d9c07a'); P(7, 3, 2, 1, '#d9c07a'); }
     if (o.item === 'trasua') { P(13, 12, 2, 3, '#c98f5f'); P(13, 11, 2, 1, '#ffffff'); }
     else if (o.item === 'bo_rau') { P(13, 12, 2, 3, '#2fae5a'); }
+    // v0.6 F3.3 — ba món "giấy tờ": thẻ nhựa xanh · tờ đơn trắng · tờ in ảnh tin nhắn
+    else if (o.item === 'thesv') { P(13, 12, 3, 2, '#3f6fe0'); P(14, 12, 1, 1, '#ffffff'); }
+    else if (o.item === 'donhang') { P(13, 11, 3, 4, '#f2ecff'); P(14, 12, 1, 2, '#8a8fa8'); }
+    else if (o.item === 'tinnhan') { P(13, 11, 3, 4, '#ffffff'); P(13, 12, 3, 1, '#5dffa4'); }
   }
 
   function openWardrobe() { buildAvatarMenu(); $('ov-wardrobe').classList.add('show'); }
@@ -117,9 +152,33 @@ XDH.UI = (function () {
   // ---- §2 economy: shop at the bánh mì cart · kill loot · night flow ----
   function openShop() {
     const r = XDH.run;
-    $('shop-money').textContent = `💰 Bạn có ${r.money}k`;
+    const en = XDH.lang === 'en';
+    $('shop-money').textContent = en ? `💰 You have ${r.money}k` : `💰 Bạn có ${r.money}k`;
     const box = $('shop-items');
     box.innerHTML = '';
+
+    // v0.3 B4 — trong mode Kẹt Tiền, xe bánh mì CHÍNH LÀ quán ăn: mua bữa = thắng ngày.
+    if (XDH.isKetTien()) {
+      const pay = XDH.KetTien.priceLeft();
+      const m = document.createElement('button');
+      m.className = 'shop-item';
+      m.style.borderColor = XDH.KetTien.canEat() ? 'var(--ok)' : 'var(--line)';
+      m.innerHTML = `<b>${XDH.KetTien.mealLabel()}</b> <span class="price">${pay}k</span>` +
+        `<span class="desc">${r.food ? (en ? `Food you begged covers ${r.food}k. ` : `Đồ ăn xin được đỡ ${r.food}k. `) : ''}` +
+        (XDH.KetTien.canEat()
+          ? (en ? 'Eat now → you win the day 🎉' : 'Ăn ngay → thắng ngày hôm nay 🎉')
+          : (en ? `You are ${XDH.KetTien.needLeft()}k short — go knock on more doors.` : `Còn thiếu ${XDH.KetTien.needLeft()}k — đi gõ thêm cửa đi.`)) + '</span>';
+      m.disabled = !XDH.KetTien.canEat();
+      m.onclick = () => {
+        if (!XDH.KetTien.eat()) return;
+        XDH.Blips.jingle('win');
+        $('ov-shop').classList.remove('show');
+        refreshHud();
+        XDH.KetTien.showBoard(true);
+      };
+      box.appendChild(m);
+    }
+
     XDH.SHOP.forEach(item => {
       const owned = r.inv[item.id] || 0;
       const b = document.createElement('button');
@@ -137,6 +196,9 @@ XDH.UI = (function () {
       };
       box.appendChild(b);
     });
+    $('ov-shop').querySelector('h2').textContent = XDH.isKetTien()
+      ? (en ? '🍞 Night bánh mì cart — food + gear' : '🍞 Xe bánh mì đêm — quán ăn + đồ nghề')
+      : (en ? '🍞 Night bánh mì cart — werewolf gear' : '🍞 Bánh mì đêm — đồ nghề ma sói');
     $('ov-shop').classList.add('show');
   }
 
@@ -144,18 +206,22 @@ XDH.UI = (function () {
   function afterHouseWon() {
     const r = XDH.run;
     const L = XDH.LOOT;
-    const moneyK = 5 * Math.round((L.MIN_K + Math.random() * (L.MAX_K - L.MIN_K)) / 5);
-    const slots = ['shirt', 'hat', 'item'];
-    const slot = slots[Math.floor(Math.random() * slots.length)];
-    const opts = XDH.WARDROBE[slot].filter(o => o.id !== 'none');
-    const piece = opts[Math.floor(Math.random() * opts.length)];
+    let moneyK = 5 * Math.round((L.MIN_K + Math.random() * (L.MAX_K - L.MIN_K)) / 5);
+    // v0.6 F3.1 — loot giờ MỞ THẬT một món chưa có (không còn là chữ suông).
+    // Mở hết đồ rồi thì đền bằng tiền, không bao giờ tặng trùng món đã có.
+    const got = XDH.unlockRandomPiece();
+    if (!got) moneyK += XDH.WARDROBE_LOCK.LOOT_MONEY_IF_FULL_K;
     r.money += moneyK;
     r.enteredTonight++;
     refreshHud();
+    const en = XDH.lang === 'en';
     $('loot-body').innerHTML =
-      `<p style="font-size:15px">Trong nhà bạn "mượn" được:</p>` +
-      `<p style="font-size:22px;margin:10px 0">💵 <b>${moneyK}k</b> &nbsp;+&nbsp; 🎽 <b>${piece.label}</b></p>` +
-      `<p style="color:var(--dim);font-size:13px">Ghé quầy bánh mì đêm để sắm đồ nghề nha.</p>`;
+      `<p style="font-size:15px">${en ? 'Inside the house you "borrowed":' : 'Trong nhà bạn "mượn" được:'}</p>` +
+      `<p style="font-size:22px;margin:10px 0">💵 <b>${moneyK}k</b>` +
+      (got ? ` &nbsp;+&nbsp; 🎽 <b>${got.opt.label}</b> <span style="color:var(--ok);font-size:14px">${en ? '— NEW, unlocked in your wardrobe!' : '— MỚI, mở khoá trong tủ đồ!'}</span>` : '') +
+      `</p>` +
+      (got ? `<p style="color:var(--dim);font-size:13px">${en ? 'Try it on: ' : 'Mặc thử coi: '}<i>${got.opt.desc}</i></p>` : '') +
+      `<p style="color:var(--dim);font-size:13px">${en ? 'Hit the bánh mì cart for gear.' : 'Ghé quầy bánh mì đêm để sắm đồ nghề nha.'}</p>`;
     $('ov-loot').classList.add('show');
     $('btn-loot-done').onclick = () => {
       $('ov-loot').classList.remove('show');
@@ -168,10 +234,14 @@ XDH.UI = (function () {
 
   function showNightDone() {
     const r = XDH.run;
-    $('night-title').textContent = `🌅 Đêm ${r.night} trọn vẹn!`;
-    $('night-body').innerHTML =
-      `<p>Đủ ${r.night}/${r.night} nhà trước bình minh. Về hang ngủ một giấc…</p>` +
-      `<p><b>Đêm ${r.night + 1}</b> cần vào <b>${r.night + 1} nhà</b> — hàng xóm không nhớ gì đâu, nhưng trời chỉ chờ ${XDH.RULES.NIGHT_MINUTES} phút thôi đó.</p>`;
+    const en = XDH.lang === 'en';
+    $('night-title').textContent = en ? `🌅 Night ${r.night} complete!` : `🌅 Đêm ${r.night} trọn vẹn!`;
+    // v0.4 T7: xóm bây giờ NHỚ qua đêm — hết thời "quên sạch", đổi lời cho khớp luật mới
+    $('night-body').innerHTML = en
+      ? `<p>All ${r.night}/${r.night} houses before dawn. Back to the den for a nap…</p>` +
+        `<p><b>Night ${r.night + 1}</b> needs <b>${r.night + 1} houses</b> — and careful: the neighbourhood REMEMBERS you now. Old houses recall your story, bad rumours carry over, and the sky only waits ${XDH.RULES.NIGHT_MINUTES} minutes.</p>`
+      : `<p>Đủ ${r.night}/${r.night} nhà trước bình minh. Về hang ngủ một giấc…</p>` +
+        `<p><b>Đêm ${r.night + 1}</b> cần vào <b>${r.night + 1} nhà</b> — mà coi chừng: xóm NHỚ đó nha. Nhà cũ nhớ chuyện bạn kể, chuyện xấu còn bị đồn tiếp, trời thì chỉ chờ ${XDH.RULES.NIGHT_MINUTES} phút thôi.</p>`;
     $('ov-night').classList.add('show');
     $('btn-night-next').onclick = () => {
       $('ov-night').classList.remove('show');
@@ -181,6 +251,7 @@ XDH.UI = (function () {
 
   function dawnFail() {
     XDH.Blips.jingle('lose');
+    if (XDH.isKetTien()) { XDH.KetTien.showBoard(false); return; }   // hoàng hôn = hết ngày, chưa được ăn
     showScore(false);
   }
 
@@ -200,8 +271,10 @@ XDH.UI = (function () {
     setDoorStage(0);
     setConvoState('listening');
     $('thought-bubble').classList.remove('show');
+    clearNums();                                    // v0.6 F1: cuộc mới, popup cũ không được sót lại
     setTimer(XDH.RULES.CONVO_SECONDS);
     renderConvoItems();
+    renderOpeners();
     $('tut-hint').style.display = 'none';
     $('btn-tut-skip').style.display = 'none';
     $('btn-kill').style.display = 'none';
@@ -234,7 +307,9 @@ XDH.UI = (function () {
   }
 
   // ---- Undertale-style pacing (§1): emotion speed + punctuation "breathing" ----
-  const EMO_SPEED = { angry: 18, interested: 26, amused: 26, neutral: 30, suspicious: 36 };
+  const EMO_SPEED = { angry: 18, interested: 26, amused: 26, neutral: 30, suspicious: 36,
+    // v0.6 F4 — nhịp gõ chữ theo cảm xúc mới: chán thì lê thê, phấn khích thì bắn liên thanh
+    chan: 44, nguong: 34, cam_dong: 34, phan_khich: 17, buc_minh: 20 };
   const NPC_SPEED = { gen_z: 0.85, sinh_vien: 1.0, me_bim_sua: 1.1 };   // Ly fast, Cô Sáu rambling
   const PUNCT_PAUSE = { ',': 250, ';': 300, '.': 450, '!': 450, '?': 450, '…': 700 };
   XDH.PACING_PRESETS = { nhanh: 0.7, chuan: 1.0, cham: 1.4 };
@@ -249,9 +324,13 @@ XDH.UI = (function () {
     const wrap = $('portrait-wrap');
     wrap.className = '';
     $('fx-sweat').style.display = 'none';
-    if (emotion === 'angry') wrap.className = 'fx-shake';
-    else if (emotion === 'interested' || emotion === 'amused') wrap.className = 'fx-zoom';
+    if (emotion === 'angry' || emotion === 'buc_minh') wrap.className = 'fx-shake';
+    else if (emotion === 'interested' || emotion === 'amused' || emotion === 'cam_dong') wrap.className = 'fx-zoom';
+    else if (emotion === 'phan_khich') wrap.className = 'fx-bounce';      // v0.6 F4
+    else if (emotion === 'chan') wrap.className = 'fx-droop';             // v0.6 F4 — người rũ xuống
+    else if (emotion === 'nguong') wrap.className = 'fx-turn';            // v0.6 F4 — quay mặt đi
     else if (emotion === 'suspicious') $('fx-sweat').style.display = 'block';
+    if (emotion === 'nguong') $('fx-sweat').style.display = 'block';
   }
 
   // Core typer — writes into any element so the ?pacing=1 demo reuses it.
@@ -301,6 +380,48 @@ XDH.UI = (function () {
     el.textContent = s[0]; el.title = s[1];
   }
 
+  // ---- v0.6 F1: popup số BAY (§1). CODE gọi hàm này với ĐÚNG con số vừa cộng thật ----
+  // Không tính lại gì ở đây — chỉ vẽ. Sai một chữ số là mất lòng tin ngay (rủi ro §3).
+  function floatNums(items) {
+    if (XDH.NONUM) return;                      // ?nonum=1 → tắt sạch, game chạy y nguyên
+    const box = $('numpop');
+    if (!box || !items || !items.length) return;
+    items.filter(Boolean).slice(0, XDH.POP.MAX_STACK).forEach((it, k) => {
+      setTimeout(() => {
+        const d = document.createElement('div');
+        d.className = 'np ' + (it.cls || 'good');
+        d.textContent = it.text;
+        box.appendChild(d);
+        setTimeout(() => d.remove(), XDH.POP.LIFE_MS + 500);
+      }, k * XDH.POP.STAGGER_MS);
+    });
+  }
+  function clearNums() { const b = $('numpop'); if (b) b.innerHTML = ''; }
+
+  // v0.6 F2 — vẽ meme mà CODE đã chọn. Hàm này KHÔNG chọn gì cả, chỉ hiện.
+  function showMeme(meme) {
+    if (!meme) return;
+    const img = document.createElement('img');
+    img.className = 'meme';
+    img.src = XDH.MEME_CFG.DIR + meme.file;
+    img.alt = meme.meaning;
+    img.title = meme.meaning;
+    img.loading = 'lazy';
+    $('dialogue').appendChild(img);
+    $('dialogue').scrollTop = 1e9;
+  }
+
+  // "+16 tin · −4 nghi" — dựng chuỗi từ CON SỐ THẬT truyền vào, song ngữ.
+  function popDeltas(d) {
+    const en = XDH.lang === 'en';
+    const S = XDH.POP_STAT;
+    const bit = (v, key) => v ? ((v > 0 ? '+' : '−') + Math.abs(v) + ' ' + (en ? S[key].en : S[key].vi)) : '';
+    // Theo bảng §1: tin/nghi là dòng chính; hai chỉ số phụ chỉ hiện khi cả tin lẫn nghi đều 0.
+    let parts = [bit(d.trust, 'trust'), bit(d.suspicion, 'suspicion')].filter(Boolean);
+    if (!parts.length) parts = [bit(d.interest, 'interest'), bit(d.patience, 'patience')].filter(Boolean);
+    return parts.join(' · ');
+  }
+
   let thoughtTimer;
   function setThought(text) {
     const b = $('thought-bubble');
@@ -308,6 +429,18 @@ XDH.UI = (function () {
     b.classList.add('show');
     clearTimeout(thoughtTimer);
     thoughtTimer = setTimeout(() => b.classList.remove('show'), 4000);
+  }
+
+  // v0.6 F5.2 — dòng tiếc nuối sau khi thua. CODE đưa câu vào; câu này lấy từ điểm yếu
+  // ĐÃ ĐỊNH SẴN trong thẻ nhân vật (XDH.REGRET) — không có chỗ nào cho AI bịa.
+  let regretTimer;
+  function showRegret(text) {
+    if (!text) return;
+    const r = $('regret');
+    r.textContent = '💭 ' + text;
+    r.classList.add('show');
+    clearTimeout(regretTimer);
+    regretTimer = setTimeout(() => r.classList.remove('show'), XDH.FEEL.REGRET_MS);
   }
 
   // Powerup buttons inside the convo (only items you own show up)
@@ -329,6 +462,27 @@ XDH.UI = (function () {
 
   function showHint(text) {
     $('transcript-live').textContent = '💡 Quân sư: ' + text;
+  }
+
+  // Q-B4 — 3 câu mở gợi ý: ô chữ trắng tinh là chỗ người mới bỏ cuộc nhiều nhất.
+  // Chỉ mode Kẹt Tiền, chỉ ngày 1, chỉ 2 nhà đầu — sau đó tắt hẳn.
+  function renderOpeners() {
+    const box = $('openers');
+    box.innerHTML = '';
+    box.classList.remove('show');
+    if (!XDH.isKetTien() || !XDH.KetTien.showOpeners()) return;
+    const en = XDH.lang === 'en';
+    const title = document.createElement('div');
+    title.className = 'op-title';
+    title.textContent = en ? 'Not sure what to say? Try one:' : 'Chưa biết nói gì? Bấm thử một câu:';
+    box.appendChild(title);
+    (XDH.OPENERS[en ? 'en' : 'vi']).forEach(line => {
+      const b = document.createElement('button');
+      b.className = 'op'; b.textContent = '“' + line + '”';
+      b.onclick = () => { box.classList.remove('show'); XDH.Convo.playerSays(line); };
+      box.appendChild(b);
+    });
+    box.classList.add('show');
   }
 
   // §0 #4 — comedic silhouette kill scene: chase passes + comic bursts + a yarn drop.
@@ -397,7 +551,9 @@ XDH.UI = (function () {
     const s = info.state;
     const row = document.createElement('div');
     row.textContent = `[${info.brain}] ${info.verdict || '—'}${info.contradiction ? ' ⚡mâu-thuẫn' : ''}` +
+      `${info.corroboration ? ' 🧾chống-lưng' : ''}` +
       ` → tin ${sign(info.dT)} nghi ${sign(info.dS)} hứng ${sign(info.dI)} kiên ${sign(info.dP)}` +
+      (info.extra ? ` [${info.extra}]` : '') +
       ` | tin=${s.trust} nghi=${s.suspicion} hứng=${s.interest} kiên=${s.patience}`;
     el.appendChild(row);
     el.scrollTop = 1e9;
@@ -425,7 +581,9 @@ XDH.UI = (function () {
     const s = r.score;
     $('score-title').textContent = won
       ? '🌕 THẮNG CẢ 3 ĐÊM! Ma sói lịch sự nhất xóm!'
-      : `🌅 Trời sáng — đêm ${r.night} cần ${r.night} nhà, mới vào được ${r.enteredTonight}…`;
+      : r.policeCaught
+        ? '🚔 BỊ CÔNG AN TÓM giữa xóm — đêm nay coi như xong…'
+        : `🌅 Trời sáng — đêm ${r.night} cần ${r.night} nhà, mới vào được ${r.enteredTonight}…`;
     $('score-title').className = 'big-result ' + (won ? 'win' : 'lose');
     const mins = Math.round((Date.now() - r.runStart) / 60000);
     $('score-body').innerHTML =
@@ -443,14 +601,55 @@ XDH.UI = (function () {
   }
 
   // ---- wiring ----
+  // v0.3 B1 — chế độ chọn ở màn hình đầu. Cùng bộ não hội thoại, khác điều kiện thắng.
+  let pickedMode = localStorage.getItem('xdh_mode') || 'ma_soi';
+
+  function applyModeIntro() {
+    const en = XDH.lang === 'en';
+    const kt = pickedMode === 'ket_tien';
+    document.querySelectorAll('#mode-pick button').forEach(b => b.classList.toggle('sel', b.dataset.m === pickedMode));
+    $('intro-p1').innerHTML = kt
+      ? (en
+        ? "<b>You're a student stranded in a strange neighbourhood.</b> Wallet empty, phone dead, and you haven't eaten all day. Knock on doors and <b>TALK</b> your way to a meal — money, food, or a seat at someone's dinner table. Sunset ends the day."
+        : "<b>Bạn là sinh viên bị kẹt ở một xóm lạ.</b> Hết tiền, điện thoại hết pin, cả ngày chưa ăn gì. Gõ cửa và <b>NÓI</b> để xin đủ một bữa ăn — tiền, đồ ăn, hoặc được mời vào ăn cơm luôn. Mặt trời lặn là hết ngày.")
+      : (en
+        ? "<b>You are a very polite werewolf.</b> The moon is full, but this neighborhood has ONE rule: <b>you can only enter a house if you're INVITED in</b>. Dress up, knock, and <b>TALK</b> your way through the door. Night 1 = 1 house, night 2 = 2, night 3 = 3 — all before sunrise."
+        : "<b>Bạn là một con ma sói lịch sự.</b> Trăng tròn rồi, nhưng khổ nỗi… luật xóm này là <b>phải được MỜI thì mới vào nhà được</b>. Hoá trang, gõ cửa, và <b>NÓI</b> để dụ hàng xóm mời bạn vào. Đêm 1 vào 1 nhà, đêm 2 vào 2, đêm 3 vào 3 — trước khi trời sáng.");
+    $('btn-start').textContent = kt
+      ? (en ? 'Start day 1 ☀️' : 'Bắt đầu ngày 1 ☀️')
+      : (en ? 'Start the full-moon night 🌕' : 'Bắt đầu đêm trăng tròn 🌕');
+  }
+
   function wire() {
+    document.querySelectorAll('#mode-pick button').forEach(b => {
+      b.onclick = () => {
+        pickedMode = b.dataset.m;
+        localStorage.setItem('xdh_mode', pickedMode);
+        applyModeIntro();
+      };
+    });
+
     $('btn-start').onclick = () => {
-      XDH.run.pass = $('pass-in').value.trim();
+      const pass = $('pass-in').value.trim();
+      newRun(pickedMode);                       // chốt chế độ + bốc bữa ăn nếu là Kẹt Tiền
+      XDH.run.pass = pass;
       XDH.Blips.unlock();                       // user gesture unlocks WebAudio
+      if (XDH.restartScene) XDH.restartScene();  // dựng lại xóm theo chế độ vừa chọn
       $('ov-intro').classList.remove('show');
-      if (!localStorage.getItem('xdh_tut_done')) {
+      if (XDH.isKetTien()) {
+        toast(XDH.lang === 'en'
+          ? `☀️ Day 1: you need ${XDH.KetTien.mealLabel()} — ${XDH.run.meal.price}k before sunset.`
+          : `☀️ Ngày 1: hôm nay cần ${XDH.KetTien.mealLabel()} — ${XDH.run.meal.price}k, trước khi mặt trời lặn.`, 6500);
+      } else if (!localStorage.getItem('xdh_tut_done')) {
         toast('👵 Mới vô nghề? Ghé nhà Bà Năm ngay giữa xóm học nghề trước nha (miễn phí, bỏ qua được)!', 6500);
       }
+    };
+
+    $('btn-board-save').onclick = () => XDH.KetTien.saveCard();
+    $('btn-board-quit').onclick = () => {
+      $('ov-board').classList.remove('show');
+      newRun(pickedMode);
+      $('ov-intro').classList.add('show');
     };
 
     // §0 #10 — language toggle: NPC + thought + STT follow; core UI strings swap too.
@@ -458,15 +657,17 @@ XDH.UI = (function () {
       const en = XDH.lang === 'en';
       $('lang-vi').classList.toggle('sel', !en);
       $('lang-en').classList.toggle('sel', en);
-      $('intro-p1').innerHTML = en
-        ? "<b>You are a very polite werewolf.</b> The moon is full, but this neighborhood has ONE rule: <b>you can only enter a house if you're INVITED in</b>. Dress up, knock, and <b>TALK</b> your way through the door. Night 1 = 1 house, night 2 = 2, night 3 = 3 — all before sunrise."
-        : "<b>Bạn là một con ma sói lịch sự.</b> Trăng tròn rồi, nhưng khổ nỗi… luật xóm này là <b>phải được MỜI thì mới vào nhà được</b>. Hoá trang, gõ cửa, và <b>NÓI</b> để dụ hàng xóm mời bạn vào. Đêm 1 vào 1 nhà, đêm 2 vào 2, đêm 3 vào 3 — trước khi trời sáng.";
       $('intro-p2').textContent = en
         ? '🎙️ Allow the microphone when the browser asks. Hold the mic button, speak, release to send. No mic? Typing works too.'
         : '🎙️ Cho phép micro khi trình duyệt hỏi. Nói xong thả nút mic — chữ hiện lên rồi gửi cho hàng xóm. Không có mic? Gõ chữ cũng được.';
-      $('btn-start').textContent = en ? 'Start the full-moon night 🌕' : 'Bắt đầu đêm trăng tròn 🌕';
+      document.querySelectorAll('#mode-pick button').forEach(b => {
+        const m = XDH.MODES[b.dataset.m];
+        b.innerHTML = `${m.emoji} <b>${en ? m.name_en : m.name}</b>`;
+      });
       $('text-in').placeholder = en ? '…or type your lie and press Enter' : '…hoặc gõ lời nói dối của bạn rồi Enter';
       $('btn-leave').textContent = en ? '🚪 Walk away' : '🚪 Rút lui';
+      applyModeIntro();        // v0.3: đoạn giới thiệu + nút bắt đầu đổi theo chế độ đang chọn
+      refreshHud();
     };
     $('lang-vi').onclick = () => XDH.setLang('vi');
     $('lang-en').onclick = () => XDH.setLang('en');
@@ -481,9 +682,10 @@ XDH.UI = (function () {
       XDH.avatar.face = rnd(XDH.AVATAR.face);
       XDH.avatar.hair = rnd(XDH.AVATAR.hair);
       XDH.avatar.skin = rnd(XDH.AVATAR.skin);
-      XDH.run.outfit.shirt = rnd(XDH.WARDROBE.shirt);
-      XDH.run.outfit.hat = rnd(XDH.WARDROBE.hat);
-      XDH.run.outfit.item = rnd(XDH.WARDROBE.item);
+      // v0.6 F3.1: xúc xắc chỉ được bốc trong những món ĐÃ MỞ
+      XDH.SLOTS.forEach(slot => {
+        XDH.run.outfit[slot] = rnd(XDH.WARDROBE[slot].filter(o => XDH.isUnlocked(slot, o.id)));
+      });
       XDH.saveAvatar();
       refreshHud();
       buildAvatarMenu();
@@ -572,6 +774,10 @@ XDH.UI = (function () {
     afterHouseWon, showNightDone, dawnFail, renderConvoItems, showHint, playKillScene,
     openConvo, closeConvo, setMeters, setTimer, echoPlayer,
     typeNpcLine, setBusy, endConvo, showScore, debugTurn,
-    setDoorStage, setConvoState, setThought, showThinking, hideThinking
+    floatNums, clearNums, popDeltas,                       // v0.6 F1
+    showMeme,                                              // v0.6 F2
+    showRegret,                                            // v0.6 F5.2
+    setDoorStage, setConvoState, setThought, showThinking, hideThinking,
+    renderOpeners, hideOpeners: () => $('openers').classList.remove('show')
   };
 })();

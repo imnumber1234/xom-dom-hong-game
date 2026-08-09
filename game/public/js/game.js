@@ -6,7 +6,8 @@
     constructor() { super('xom'); }
 
     create() {
-      this.makeTextures();
+      this.player = null;      // scene.restart(): quên con sói của lượt dựng trước, nếu không
+      this.makeTextures();     // drawWolfTex sẽ gọi setTexture lên một sprite đã bị huỷ
 
       // ground
       for (let x = 0; x < W; x += 32)
@@ -16,11 +17,15 @@
       for (let x = 0; x < W; x += 32) this.add.image(x + 16, H / 2 + 16, 'road');
 
       // §2 sky clock: the moon IS the night timer — it arcs across, sky brightens, dawn ends the night.
+      // v0.3: mode Kẹt Tiền dùng ĐÚNG đồng hồ đó, chỉ đổi mặt trăng → MẶT TRỜI, bình minh → hoàng hôn.
+      const kt = XDH.isKetTien();
       this.moon = this.add.container(80, 100, [
-        this.add.circle(0, 0, 34, 0xfff3c4).setAlpha(0.95),
-        this.add.circle(-12, -8, 30, 0x0d0a14).setAlpha(0.25)
+        this.add.circle(0, 0, kt ? 56 : 34, kt ? 0xffd24a : 0xfff3c4).setAlpha(kt ? 0.14 : 0.95),
+        this.add.circle(0, 0, 34, kt ? 0xffd24a : 0xfff3c4).setAlpha(0.95),
+        this.add.circle(-12, -8, 30, 0x0d0a14).setAlpha(kt ? 0 : 0.25)
       ]).setDepth(51);
-      this.nightShade = this.add.rectangle(W / 2, H / 2, W, H, 0x060312).setAlpha(0).setDepth(50);
+      // ma sói: bóng tối đậm nhất giữa đêm · kẹt tiền: nắng sáng nhất giữa trưa
+      this.nightShade = this.add.rectangle(W / 2, H / 2, W, H, kt ? 0xffe9a8 : 0x060312).setAlpha(0).setDepth(50);
       this.dawnGlow = this.add.rectangle(W / 2, H / 2, W, H, 0xff9a3d).setAlpha(0).setDepth(50);
 
       // §6b map dressing: lamp posts along the road + fireflies (the game is NAMED after them!)
@@ -52,7 +57,14 @@
         const diff = XDH.DIFFICULTY[npc.id];
         const label = (diff ? diff.stars + ' ' : '') + 'Nhà ' + npc.name.split(' (')[0] + (diff ? ' · ' + diff.level : '');
         this.add.text(x, 258, label, { fontSize: '14px', color: '#f2ecff', fontFamily: 'Segoe UI' }).setOrigin(0.5);
-        this.houseSprites.push({ x, y: 220, id: i, sprite: s });
+        // Done marker (Lucas 08-09): finished house = lights OUT + ✅ tag, readable from anywhere.
+        const wd1 = this.add.rectangle(x - 36, 183, 28, 26, 0x241e35).setAlpha(0.94).setVisible(false);
+        const wd2 = this.add.rectangle(x + 36, 183, 28, 26, 0x241e35).setAlpha(0.94).setVisible(false);
+        const tag = this.add.text(x, 88, '✅ XONG', {
+          fontSize: '13px', color: '#5dffa4', fontFamily: 'Segoe UI', fontStyle: 'bold',
+          backgroundColor: 'rgba(10,6,18,0.75)', padding: { x: 6, y: 3 }
+        }).setOrigin(0.5).setVisible(false).setDepth(52);
+        this.houseSprites.push({ x, y: 220, id: i, sprite: s, doneFx: [wd1, wd2, tag] });
       });
       // §6b: identical houses → per-resident dressing (Ly neon · Tí bóng đá · Cô Sáu phơi đồ)
       this.add.rectangle(hx[0] - 62, 168, 10, 34, 0xff5dd2).setAlpha(0.9);        // Ly: neon strip
@@ -67,17 +79,28 @@
       this.add.image(120, 500, 'shed');
       this.add.text(120, 552, '🎽 Tủ đồ', { fontSize: '14px', color: '#ffb547', fontFamily: 'Segoe UI' }).setOrigin(0.5);
       this.add.image(820, 500, 'cart');
-      this.add.text(820, 556, '🍞 Bánh mì đêm — MỞ CỬA', { fontSize: '12px', color: '#ffb547', fontFamily: 'Segoe UI' }).setOrigin(0.5);
+      this.add.text(820, 556, kt ? '🍜 Quán bánh mì — ĂN Ở ĐÂY' : '🍞 Bánh mì đêm — MỞ CỬA',
+        { fontSize: '12px', color: '#ffb547', fontFamily: 'Segoe UI' }).setOrigin(0.5);
 
-      // §0 #6: Bà Năm's tutorial hut — mid-bottom, free scripted practice house
-      this.add.image(480, 505, 'hut');
-      this.add.text(480, 560, '👵 Nhà Bà Năm — học nghề', { fontSize: '13px', color: '#ffb547', fontFamily: 'Segoe UI' }).setOrigin(0.5);
+      // §0 #6: Bà Năm's tutorial hut — mid-bottom, free scripted practice house.
+      // Hướng dẫn này kết thúc bằng nút CẮN nên chỉ có ở mode ma sói.
+      this.hasTut = !kt;
+      if (this.hasTut) {
+        this.add.image(480, 505, 'hut');
+        this.add.text(480, 560, '👵 Nhà Bà Năm — học nghề', { fontSize: '13px', color: '#ffb547', fontFamily: 'Segoe UI' }).setOrigin(0.5);
+        this.tutDoneTag = this.add.text(480, 452, '✔ đã học nghề', {
+          fontSize: '12px', color: '#5dffa4', fontFamily: 'Segoe UI',
+          backgroundColor: 'rgba(10,6,18,0.75)', padding: { x: 5, y: 2 }
+        }).setOrigin(0.5).setDepth(52).setVisible(!!localStorage.getItem('xdh_tut_done'));
+      }
 
       // player wolf
       this.player = this.physics.add.sprite(W / 2, H / 2 + 20, 'wolf');
       this.player.setCollideWorldBounds(true).setScale(2);
       this.physics.world.setBounds(0, 0, W, H);
       XDH.applyAvatar = () => this.drawWolfTex();
+      // v0.3 B1: chọn chế độ xong thì dựng lại bản đồ (mặt trời/mặt trăng, nhà Bà Năm, biển quán).
+      XDH.restartScene = () => this.scene.restart();
 
       // §2 fail visual: after a failed door, the resident peeks at you through the curtain.
       XDH.curtainPeek = (houseId) => {
@@ -94,6 +117,21 @@
           targets: eyes, y: wy + 14, alpha: 0, duration: 450, delay: 3600,
           ease: 'Sine.easeIn', onComplete: () => eyes.destroy()
         });
+      };
+
+      // 🚓 Cảnh sát rượt 10 giây (Lucas 08-09, đáp án B: bị tóm = thua cả đêm).
+      XDH.startPoliceChase = (houseId) => {
+        if (this.police) return;
+        const h = this.houseSprites[houseId];
+        this.police = this.physics.add.sprite(h ? h.x : W / 2, h ? h.y + 40 : 60, 'police')
+          .setScale(2).setDepth(54);
+        this.chaseUntil = Date.now() + 10000;
+        this.chaseText = this.add.text(W / 2, 40, '🚨 CHẠY!! 10s', {
+          fontSize: '22px', color: '#ff5d73', fontFamily: 'Segoe UI', fontStyle: 'bold',
+          backgroundColor: 'rgba(10,6,18,0.8)', padding: { x: 12, y: 6 }
+        }).setOrigin(0.5).setDepth(60);
+        XDH.UI.toast('🚨 GỌI CÔNG AN RỒI — CHẠY ĐI!!', 3000);
+        XDH.Blips.jingle('lose');
       };
 
       // enableCapture=false: Phaser must NOT preventDefault these keys globally,
@@ -119,7 +157,11 @@
 
     makeTextures() {
       const g = this.make.graphics({ add: false });
-      const tex = (key, w, h, fn) => { g.clear(); fn(g); g.generateTexture(key, w, h); };
+      // scene.restart() (đổi chế độ ở màn hình đầu) chạy lại hàm này → phải xoá key cũ trước.
+      const tex = (key, w, h, fn) => {
+        if (this.textures.exists(key)) this.textures.remove(key);
+        g.clear(); fn(g); g.generateTexture(key, w, h);
+      };
 
       tex('grass', 32, 32, gg => { gg.fillStyle(0x14331f); gg.fillRect(0, 0, 32, 32); gg.fillStyle(0x1a4028); gg.fillRect(6, 8, 2, 2); gg.fillRect(22, 20, 2, 2); });
       tex('grass2', 32, 32, gg => { gg.fillStyle(0x123020); gg.fillRect(0, 0, 32, 32); gg.fillStyle(0x1a4028); gg.fillRect(14, 14, 2, 2); });
@@ -151,6 +193,13 @@
       tex('lamp', 18, 64, gg => {
         gg.fillStyle(0x3a3150); gg.fillRect(7, 12, 4, 52);
         gg.fillStyle(0xffdf8a); gg.fillRect(3, 2, 12, 12);
+      });
+      tex('police', 16, 16, gg => {
+        gg.fillStyle(0x1d3a8f); gg.fillRect(3, 2, 10, 3);          // mũ kê pi
+        gg.fillStyle(0xeab98a); gg.fillRect(5, 5, 6, 5);           // mặt
+        gg.fillStyle(0x221a12); gg.fillRect(6, 7, 1, 1); gg.fillRect(9, 7, 1, 1);
+        gg.fillStyle(0x2b4fd9); gg.fillRect(4, 10, 8, 5);          // áo xanh
+        gg.fillStyle(0xffdf3a); gg.fillRect(7, 11, 2, 2);          // phù hiệu
       });
 
       tex('hut', 110, 90, gg => {
@@ -185,8 +234,22 @@
       if (this.player) this.player.setTexture('wolf');
     }
 
+    // Chase resolution: escaped → free but shaken · caught → the whole night is lost (B).
+    endChase(escaped) {
+      if (!this.police) return;
+      this.police.destroy(); this.police = null;
+      this.chaseText.destroy(); this.chaseText = null;
+      if (escaped) {
+        XDH.UI.toast('😮‍💨 Thoát rồi! Công an bỏ cuộc… đêm nay đừng bén mảng lại nhà đó nữa.');
+      } else {
+        XDH.run.policeCaught = true;
+        XDH.Blips.jingle('lose');
+        XDH.UI.showScore(false);
+      }
+    }
+
     activateNearby() {
-      if (!this.nearTarget || XDH.Convo.isActive() || XDH.Tut.isActive()) return;
+      if (!this.nearTarget || XDH.Convo.isActive() || XDH.Tut.isActive() || this.police) return;
       if (this.nearTarget === 'wardrobe') XDH.UI.openWardrobe();
       else if (this.nearTarget === 'shop') XDH.UI.openShop();
       else if (this.nearTarget === 'tutorial') XDH.Tut.start();
@@ -197,10 +260,11 @@
     updateSky() {
       const r = XDH.run;
       if (!r) return;
-      const prog = Math.min(1, (Date.now() - r.nightStart) / (XDH.RULES.NIGHT_MINUTES * 60000));
+      const mins = XDH.isKetTien() ? XDH.RULES.DAY_MINUTES : XDH.RULES.NIGHT_MINUTES;
+      const prog = Math.min(1, (Date.now() - r.nightStart) / (mins * 60000));
       this.moon.x = 80 + prog * (W - 160);
       this.moon.y = 100 - Math.sin(prog * Math.PI) * 45;
-      this.nightShade.setAlpha(0.22 * Math.sin(prog * Math.PI));
+      this.nightShade.setAlpha((XDH.isKetTien() ? 0.16 : 0.22) * Math.sin(prog * Math.PI));
       this.dawnGlow.setAlpha(prog > 0.72 ? ((prog - 0.72) / 0.28) * 0.32 : 0);
       // Dawn fail — but never mid-conversation or under a menu: finish your door first.
       if (prog >= 1 && !r.dawnHandled && !XDH.Convo.isActive() && !document.querySelector('.overlay.show')) {
@@ -211,6 +275,12 @@
 
     update() {
       this.updateSky();
+      // Done markers reflect tonight's state (auto reset when a new night begins)
+      for (const h of this.houseSprites) {
+        const st = XDH.run.houses[h.id];
+        h.doneFx.forEach(o => o.setVisible(!!(st.won || st.done)));   // v0.3: mode Kẹt Tiền dùng cờ done
+      }
+      if (this.tutDoneTag) this.tutDoneTag.setVisible(!!localStorage.getItem('xdh_tut_done'));
       if (XDH.Convo.isActive() || XDH.Tut.isActive() || document.querySelector('.overlay.show')) {
         this.player.setVelocity(0, 0);
         this.prompt.setVisible(false);
@@ -224,6 +294,20 @@
       else if (k.S.isDown || k.DOWN.isDown || t.down) vy = sp;
       this.player.setVelocity(vx, vy);
 
+      // 🚓 chase tick: police is a bit slower than you (195 vs 220) — stop running and you're caught
+      if (this.police) {
+        const msLeft = this.chaseUntil - Date.now();
+        this.chaseText.setText('🚨 CHẠY!! ' + Math.max(0, Math.ceil(msLeft / 1000)) + 's');
+        this.physics.moveToObject(this.police, this.player, 195);
+        if (Phaser.Math.Distance.Between(this.police.x, this.police.y, this.player.x, this.player.y) < 26) {
+          this.endChase(false);
+          return;
+        }
+        if (msLeft <= 0) this.endChase(true);
+        this.prompt.setVisible(false);
+        return;   // no knocking / shopping while being chased
+      }
+
       // proximity checks
       const px = this.player.x, py = this.player.y;
       this.nearTarget = null;
@@ -232,7 +316,9 @@
         if (Phaser.Math.Distance.Between(px, py, h.x, h.y) < 90) {
           const st = XDH.run.houses[h.id];
           this.nearTarget = h;
-          promptText = st.won ? '✅ Đã được mời vào' : '🚪 Gõ cửa (E)';
+          promptText = st.done ? '✅ Nhà này hôm nay xong rồi'
+            : st.won ? '✅ Đã được mời vào'
+              : '🚪 Gõ cửa (E)';
           tx = h.x; ty = h.y + 60;
           break;
         }
@@ -244,10 +330,10 @@
       }
       if (!this.nearTarget && Phaser.Math.Distance.Between(px, py, 820, 500) < 80) {
         this.nearTarget = 'shop';
-        promptText = '🍞 Quầy bánh mì (E)';
+        promptText = XDH.isKetTien() ? '🍜 Quán bánh mì — ăn (E)' : '🍞 Quầy bánh mì (E)';
         tx = 820; ty = 440;
       }
-      if (!this.nearTarget && Phaser.Math.Distance.Between(px, py, 480, 505) < 80) {
+      if (!this.nearTarget && this.hasTut && Phaser.Math.Distance.Between(px, py, 480, 505) < 80) {
         this.nearTarget = 'tutorial';
         promptText = '👵 Học nghề với Bà Năm (E)';
         tx = 480; ty = 445;
