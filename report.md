@@ -106,7 +106,10 @@ Chạy lại toàn bộ bộ kiểm v0.6.1: **25/25 vẫn đạt** — không ph
 **Chưa làm (chờ Lucas gật riêng):** #3 câu mở gợi ý cho ma sói (~30 phút) · #4 nhắc khi đang kẹt ·
 #5 nút "?". Đề xuất: chỉ làm nếu **bài kiểm 30 giây** rớt — nếu người ta tự hiểu thì tutorial là nợ.
 
-### 6b. Lucas chốt THÊM: hướng dẫn 4 BƯỚC bắt buộc (phương án A) — 2026-08-09
+### 6b. Lucas chốt THÊM: hướng dẫn 4 BƯỚC bắt buộc (phương án A) — ✅ LIVE LINK CHÍNH 2026-08-09
+
+**https://xom-dom-hong.pages.dev** — Lucas gật "live". Kiểm sống sau khi đẩy: **66/66 đạt**
+(27 mục hướng dẫn 4 bước + 25 mục v0.6.1 + 14 mục NPC dẫn dắt), 0 lỗi console.
 
 Lucas yêu cầu "must have tutorial step by step". Chọn phương án A: **tận dụng nhà Bà Năm đã có**
 (kịch bản sẵn, 0 lần gọi AI, 0 đồng) thay vì dựng mũi tên chỉ nút trên bản đồ.
