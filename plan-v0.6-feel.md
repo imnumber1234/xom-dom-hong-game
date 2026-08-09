@@ -28,7 +28,7 @@ Bốn nấc cửa · bong bóng 💭 · mặt cảm xúc **GIỮ NGUYÊN HẾT**
 ## 1. Ba việc
 
 > **TRẠNG THÁI THI CÔNG (Terminal B, 2026-08-09):** F1 ✅ · F2 ✅ · F3 ✅ · F4 ✅ · F5 ✅ ·
-> việc vặt riêng từng nhà ✅. 11/11 pass number ĐẠT. Preview: https://cam-giac.xom-dom-hong.pages.dev
+> việc vặt riêng từng nhà ✅. 11/11 pass number ĐẠT. **ĐÃ LÊN LINK CHÍNH https://xom-dom-hong.pages.dev** (Lucas gật "live" 2026-08-09).
 > Chi tiết bằng chứng ở `report.md`.
 
 ### ✅ F1 — Popup số bay (Lucas yêu cầu #3)

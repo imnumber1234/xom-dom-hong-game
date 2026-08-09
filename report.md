@@ -1,7 +1,8 @@
 # Báo cáo Session B — v0.6 GÓI CẢM GIÁC (2026-08-09)
 
-**🔗 Link chơi thử: https://cam-giac.xom-dom-hong.pages.dev** — nhánh preview RIÊNG.
-Link chính `xom-dom-hong.pages.dev` **KHÔNG bị đụng một chữ nào**.
+**✅ ĐÃ LÊN LINK CHÍNH 2026-08-09: https://xom-dom-hong.pages.dev** (Lucas gật "live").
+Kiểm sống sau khi đẩy: 6/6 đạt — popup khớp 100% mức đổi thật ở cả 3 lượt não Haiku thật, ảnh meme tải được, 0 lỗi console, 0 request lỗi.
+Bản preview vẫn còn ở https://cam-giac.xom-dom-hong.pages.dev để so.
 
 **Trạng thái: 🟢 SẴN SÀNG cho Lucas chơi thử. 11/11 pass number ĐẠT.**
 
