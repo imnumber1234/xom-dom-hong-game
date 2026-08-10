@@ -296,6 +296,28 @@ XDH.UI = (function () {
   // ---- conversation card ----
   let typingAbort = false;
 
+  // v0.8d: dựng một lần rồi thôi — 1 lớp sọc + 14 con đom đóm bay trước cửa nhà.
+  // Thuần trang trí, không dính gì tới luật chơi.
+  function dressConvoScene() {
+    const box = $('convo');
+    if (box.dataset.dressed) return;
+    box.dataset.dressed = '1';
+    const scan = document.createElement('div');
+    scan.id = 'convo-scan';
+    box.appendChild(scan);
+    for (let i = 0; i < 14; i++) {
+      const f = document.createElement('div');
+      f.className = 'cv-fly';
+      f.style.left = Math.random() * 100 + '%';
+      f.style.top = (25 + Math.random() * 45) + '%';
+      f.style.setProperty('--dx', (Math.random() * 130 - 65) + 'px');
+      f.style.setProperty('--dy', (-45 - Math.random() * 95) + 'px');
+      f.style.animationDuration = (7 + Math.random() * 7) + 's';
+      f.style.animationDelay = (-Math.random() * 11) + 's';
+      box.appendChild(f);
+    }
+  }
+
   function openConvo(npc, state) {
     const diff = XDH.DIFFICULTY[npc.id];
     $('npc-name').textContent = (diff ? diff.stars + ' ' : '') + npc.name;
@@ -303,6 +325,7 @@ XDH.UI = (function () {
     $('meters').style.display = XDH.DEBUG ? 'flex' : 'none';   // §1: numbers hidden — door + bubbles instead
     XDH.Portraits.draw($('npc-portrait'), npc, 'neutral');
     $('convo').style.backgroundImage = 'url("assets/art/bg/door_' + npc.id + '.png")';  // v0.8: đứng trước cửa NHÀ ĐÓ
+    dressConvoScene();                                   // v0.8d: sọc màn hình cũ + đom đóm bay trước cửa
     $('dialogue').innerHTML = '';
     $('transcript-live').textContent = '';
     $('text-in').value = '';
