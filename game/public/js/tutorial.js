@@ -34,7 +34,16 @@ XDH.Tut = (function () {
       s4: 'Cửa mở = thắng nhà này. Giờ tới phần của MA SÓI 🐺 — bấm nút CẮN!',
       k1: '(phựt… đèn tắt. Tiếng "soạt soạt soạt". Một cuộn len hồng lăn nhẹ ra tới cửa.)',
       k2: '👵➡️🧶 Bà Năm đã… hoá thành một giỏ len ấm áp. Bạn nhặt được 30k tiền lì xì trong hộp bánh quy.',
-      done: 'Học nghề XONG! Ra gõ 3 nhà thật: NGHE người ta mê cái gì, kể chuyện KHỚP ĐỒ, và chịu trả lời khi bị hỏi vặn.'
+      done: 'Học nghề XONG! Ra gõ 3 nhà thật: NGHE người ta mê cái gì, kể chuyện KHỚP ĐỒ, và chịu trả lời khi bị hỏi vặn.',
+      // v0.8 — bà nghe CHƯA RA thì bắt nói lại, không cho qua bước
+      n1: 'HẢ?? Cháu nói cháu LÀ AI mới được? Bà nghe không ra… nói cái NGHỀ của cháu đi con!',
+      n2: 'Ủa rồi cháu giao CÁI GÌ cho bà? Nói đại đi con, bà đứng đây mỏi chân rồi nè.',
+      n3: 'Hử? Bà hỏi ổng ghi TÊN GÌ trong thiệp mà… Nói bà nghe MỘT chi tiết thôi cũng được.',
+      n4: 'Cửa bà mở toang rồi mà con còn nói gì nữa? Bấm cái nút 🐺 CẮN kia kìa!',
+      nj: 'Cái gì?? Nói cái gì kỳ vậy con, bà nghe không lọt lỗ tai. Nói tử tế lại coi.',
+      ex1: 'Ví dụ: "Dạ con chào bà, con là shipper giao hàng ạ."',
+      ex2: 'Ví dụ: "Dạ đây là quà sinh nhật của bà, ông Ba gửi ạ."',
+      ex3: 'Ví dụ: "Dạ ổng ghi là ông Ba, còn viết Chúc Năm sinh nhật vui vẻ."'
     },
     en: {
       g1: "EHH? WHO'S OUT THERE?? Speak UP dear, grandma's ears are not what they used to be!",
@@ -53,7 +62,15 @@ XDH.Tut = (function () {
       s4: 'An open door = you win the house. Now for the WEREWOLF part 🐺 — press BITE!',
       k1: '(click… lights out. A soft "shff shff shff". A pink ball of yarn rolls gently to the door.)',
       k2: '👵➡️🧶 Bà Năm has… become a basket of warm yarn. You find 30k of lucky money in a cookie tin.',
-      done: 'Training DONE! Now knock on the 3 real houses: LISTEN for what they love, match your STORY to your OUTFIT, and answer when they probe you.'
+      done: 'Training DONE! Now knock on the 3 real houses: LISTEN for what they love, match your STORY to your OUTFIT, and answer when they probe you.',
+      n1: "EH?? WHO did you say you are? I can't make it out — tell grandma your JOB, dear!",
+      n2: 'So WHAT is it you are delivering to me? Out with it, my legs are tired.',
+      n3: 'Hmm? I asked what NAME he wrote on the card… just one little detail, dear.',
+      n4: 'My door is wide open, what else is there to say? Press the 🐺 BITE button!',
+      nj: "What?? What kind of talk is that, child. Say it nicely again for grandma.",
+      ex1: 'Try: "Good evening ma\'am, I\'m a delivery driver."',
+      ex2: 'Try: "It\'s a birthday gift for you — Mister Ba sent it."',
+      ex3: 'Try: "He signed it Mister Ba, and wrote Happy birthday Năm."'
     }
   };
 
@@ -76,7 +93,16 @@ XDH.Tut = (function () {
       s4: 'Bà chịu giúp rồi. Nói một câu CẢM ƠN cho tử tế rồi nhận nha.',
       k1: 'Cầm đỡ nghen con, ba chục thôi hà, ra đầu hẻm mua ổ bánh mì cho ấm bụng.',
       k2: '💵 Bà Năm dúi vào tay bạn 30k. Bà còn dặn với theo: "Đi đường cẩn thận nghen con!"',
-      done: 'Học nghề XONG! Ra gõ 3 nhà thật: NGHE người ta mê cái gì, kể hoàn cảnh CỤ THỂ, và chịu trả lời khi bị hỏi vặn.'
+      done: 'Học nghề XONG! Ra gõ 3 nhà thật: NGHE người ta mê cái gì, kể hoàn cảnh CỤ THỂ, và chịu trả lời khi bị hỏi vặn.',
+      n1: 'HẢ?? Cháu là ai mới được? Bà nghe không ra… nói cháu làm gì, học hành ra sao đi con.',
+      n2: 'Kẹt là kẹt làm sao mới được? Kể bà nghe cho rõ coi — tiền nong, ăn uống thế nào rồi?',
+      n3: 'Hử? Bà hỏi trường nào, trọ khúc nào mà… Nói bà nghe MỘT chỗ cụ thể thôi cũng được.',
+      n4: 'Ơ… con nói gì bà không nghe rõ. Nói bà một tiếng cho phải phép rồi cầm nè con.',
+      nj: 'Cái gì?? Nói cái gì kỳ vậy con, bà nghe không lọt lỗ tai. Nói tử tế lại coi.',
+      ex1: 'Ví dụ: "Dạ con chào bà, con là sinh viên bị kẹt lại đây ạ."',
+      ex2: 'Ví dụ: "Dạ con hết sạch tiền, điện thoại hết pin từ trưa, cả ngày chưa ăn gì."',
+      ex3: 'Ví dụ: "Dạ con học VNUK, trọ ở đường Nguyễn Lương Bằng ạ."',
+      ex4: 'Ví dụ: "Dạ con cảm ơn bà nhiều lắm ạ."'
     },
     en: {
       g1: "EHH? WHO'S OUT THERE?? Speak UP dear, grandma's ears are not what they used to be!",
@@ -95,7 +121,16 @@ XDH.Tut = (function () {
       s4: 'She has agreed to help. Say a proper THANK YOU and take it.',
       k1: "Here, take this, only thirty thousand — go buy yourself a bánh mì at the corner.",
       k2: '💵 Bà Năm presses 30k into your hand. She calls after you: "Get home safe, child!"',
-      done: 'Training DONE! Now knock on the 3 real houses: LISTEN for what they love, give SPECIFICS, and answer when they probe you.'
+      done: 'Training DONE! Now knock on the 3 real houses: LISTEN for what they love, give SPECIFICS, and answer when they probe you.',
+      n1: "EH?? WHO are you, dear? I can't make it out — tell grandma what you do.",
+      n2: 'Stranded HOW, exactly? Tell me properly — money, food, how are you doing?',
+      n3: 'Hmm? I asked which school, which street… just one specific place, dear.',
+      n4: "Eh… I didn't catch that. Say a proper word to grandma first, then take it.",
+      nj: 'What?? What kind of talk is that, child. Say it nicely again for grandma.',
+      ex1: 'Try: "Good evening ma\'am, I\'m a student and I got stranded here."',
+      ex2: 'Try: "I\'m out of money, my phone died at noon, I haven\'t eaten all day."',
+      ex3: 'Try: "I study at VNUK, I rent a room on Nguyễn Lương Bằng street."',
+      ex4: 'Try: "Thank you so much, ma\'am."'
     }
   };
 
@@ -105,6 +140,85 @@ XDH.Tut = (function () {
   };
 
   let beat = -1;   // -1 nghỉ · 0 chờ bước 1 · 1 chờ bước 2 · 2 chờ bước 3 · 3 chờ bước 4
+  let misses = 0;  // số lần nói chưa đạt Ở BƯỚC HIỆN TẠI — quá 2 lần thì cho xem câu mẫu
+
+  // ---------- v0.8: BÀ NĂM CHẤM NỘI DUNG (Lucas 2026-08-10: "gõ gì cũng qua" là đồ giả) ----------
+  // Chấm bằng CODE, 0 lần gọi AI, chạy được cả khi não game chết. Không bắt chép đúng từng chữ —
+  // chỉ bắt nói ĐÚNG VIỆC của bước đó, nên nói bằng mic hay gõ kiểu gì cũng được.
+  const bo_dau = (s) => (s || '').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\u0111/g, 'd');
+  const co = (t, list) => list.some(k => t.includes(k));
+  const so_chu = (t) => t.split(/\s+/).filter(Boolean).length;
+
+  // Nói bậy / nói cho có → bà không nghe ra, bắt nói lại (đây chính là ca "chào cc", "im đi").
+  const BAY = ['cc', 'cl', 'dm', 'dcm', 'vcl', 'vl', 'clm', 'dkm', 'ncc', 'im di', 'cam mom',
+    'cut', 'fuck', 'shit', 'stfu', 'shut up', 'idiot', 'stupid'];
+  function la_bay_ba(t) {
+    const w = t.split(/[\s,.!?]+/).filter(Boolean);
+    return BAY.some(b => w.includes(b) || t.includes(' ' + b + ' ') || t === b);
+  }
+
+  const NGHE = {
+    ma_soi: {
+      1: (t) => co(t, ['shipper', 'ship ', 'ship,', 'giao hang', 'giao do', 'giao don', 'don hang',
+        'buu pham', 'buu ta', 'giao gio', 'delivery', 'deliver', 'courier', 'grab', 'ahamove', 'giaohang']),
+      2: (t) => co(t, ['sinh nhat', 'birthday', 'bday'])
+        || (co(t, ['qua', 'gift', 'present', 'hop', 'goi ']) && co(t, ['ong ba', 'nguoi yeu', 'old flame', 'mister ba', 'mr ba'])),
+      3: (t) => so_chu(t) >= 3
+    },
+    ket_tien: {
+      1: (t) => co(t, ['sinh vien', 'student', 'hoc sinh', 'di hoc', 'truong ']),
+      2: (t) => so_chu(t) >= 5 && co(t, ['het tien', 'khong con tien', 'khong co tien', 'het sach',
+        'het pin', 'dien thoai', 'chua an', 'doi bung', 'nhin doi', 'lo xe', 'mat vi', 'mat tien',
+        'no money', 'out of money', 'phone died', 'phone is dead', "haven't eaten", 'hungry', 'missed the bus']),
+      3: (t) => so_chu(t) >= 3,
+      4: (t) => co(t, ['cam on', 'cam.on', 'cmon', 'thank', 'biet on', 'da on'])
+    }
+  };
+
+  // Trả về true nếu câu người chơi ĐẠT yêu cầu của bước đang chờ.
+  function dat_yeu_cau(raw, stepNo) {
+    const t = bo_dau(raw).replace(/\s+/g, ' ').trim();
+    if (!t || so_chu(t) < 2 || la_bay_ba(t)) return false;
+    const rule = (XDH.isKetTien() ? NGHE.ket_tien : NGHE.ma_soi)[stepNo];
+    return rule ? !!rule(t) : true;
+  }
+
+  // ---------- v0.8: công tắc AI cho nhà hướng dẫn (?tutai=1) ----------
+  // Mặc định TẮT vì não game đang hỏng (pending.md mục 1-2). Bật lên thì bà PHẢN ỨNG đúng câu
+  // người chơi vừa nói, còn câu đẩy cốt truyện + việc chấm bước vẫn do code cầm → 4 bước không lệch.
+  const AI_ON = () => { try { return new URLSearchParams(location.search).get('tutai') === '1'; } catch { return false; } };
+  async function baNamAI(text, stepNo, passed, goal) {
+    if (!AI_ON()) return '';
+    try {
+      const r = await fetch('/api/converse', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tutorAsk: true, step: stepNo, passed, goal,
+          playerText: String(text || '').slice(0, 400),
+          lang: XDH.lang, mode: XDH.isKetTien() ? 'ket_tien' : 'ma_soi',
+          pass: (XDH.run && XDH.run.pass) || ''
+        })
+      });
+      const j = await r.json();
+      return (j && j.line) ? String(j.line).slice(0, 300) : '';
+    } catch { return ''; }
+  }
+
+  // Bà nghe chưa ra → nói lại, KHÔNG qua bước. Sai 3 lần thì cho xem luôn câu mẫu.
+  async function nhac_lai(text, stepNo, L) {
+    const goal = [L.s1, L.s2, L.s3, L.s4][stepNo - 1] || '';
+    const canned = la_bay_ba(bo_dau(text)) ? L.nj : (L['n' + stepNo] || L.nj);
+    const held = beat; beat = -9;
+    await pause();
+    const ai = await baNamAI(text, stepNo, false, goal);
+    await XDH.UI.typeNpcLine(ai || canned, 'suspicious', NPC);
+    misses++;
+    const vd = misses >= 3 ? L['ex' + stepNo] : '';
+    step(stepNo, goal + (vd ? ' — ' + vd : ''));
+    beat = held;
+    XDH.UI.setBusy(false);
+  }
 
   // Thanh gợi ý luôn có SỐ BƯỚC — người chơi biết mình đang ở đâu và còn mấy bước.
   function step(n, text) {
@@ -117,7 +231,7 @@ XDH.Tut = (function () {
 
   async function start() {
     if (XDH.Convo.isActive() || beat !== -1) return;
-    beat = 0;
+    beat = 0; misses = 0;
     XDH.UI.openConvo(NPC, { ...XDH.RULES.START });
     XDH.UI.hideOpeners();                        // 3 câu mở gợi ý là cho nhà THẬT — giữ 4 bước sạch
     $('btn-tut-skip').style.display = 'inline-block';
@@ -133,11 +247,17 @@ XDH.Tut = (function () {
     XDH.UI.echoPlayer(text);
     XDH.UI.setBusy(true);
     const L = S();
+    const stepNo = beat + 1;
+
+    // v0.8 — CỬA CHẶN: nói chưa đúng việc của bước này thì bà bắt nói lại, KHÔNG cho qua.
+    if (!dat_yeu_cau(text, stepNo)) { await nhac_lai(text, stepNo, L); return; }
+    misses = 0;
 
     if (beat === 0) {
       beat = -9;                                   // khoá ô nhập trong lúc bà nói
       await pause();
-      await XDH.UI.typeNpcLine(L.b1a, 'amused', NPC);
+      const ai1 = await baNamAI(text, 1, true, L.s1);
+      await XDH.UI.typeNpcLine(ai1 || L.b1a, 'amused', NPC);
       XDH.UI.setThought(L.t1);
       XDH.UI.setDoorStage(1);
       await XDH.UI.typeNpcLine(L.b1b, 'interested', NPC);
@@ -148,7 +268,8 @@ XDH.Tut = (function () {
     } else if (beat === 1) {
       beat = -9;
       await pause();
-      await XDH.UI.typeNpcLine(L.b2a, 'cam_dong', NPC);
+      const ai2 = await baNamAI(text, 2, true, L.s2);
+      await XDH.UI.typeNpcLine(ai2 || L.b2a, 'cam_dong', NPC);
       XDH.UI.setConvoState('trusting');
       XDH.UI.setThought(L.t2);
       XDH.UI.setDoorStage(2);
@@ -160,7 +281,8 @@ XDH.Tut = (function () {
     } else if (beat === 2) {
       beat = -9;
       await pause();
-      await XDH.UI.typeNpcLine(L.b3a, 'interested', NPC);
+      const ai3 = await baNamAI(text, 3, true, L.s3);
+      await XDH.UI.typeNpcLine(ai3 || L.b3a, 'interested', NPC);
       XDH.UI.setDoorStage(3);
       await XDH.UI.typeNpcLine(L.b3b, 'amused', NPC);
       XDH.UI.setDoorStage(4);
@@ -177,6 +299,15 @@ XDH.Tut = (function () {
       beat = -9;
       await pause();
       await finishKetTien();
+
+    } else if (beat === 3) {
+      // ma sói: bước 4 là BẤM NÚT, không phải gõ chữ — nhắc rồi mở lại ô nhập
+      beat = -9;
+      await pause();
+      await XDH.UI.typeNpcLine(L.n4, 'amused', NPC);
+      step(4, L.s4);
+      beat = 3;
+      XDH.UI.setBusy(false);
     }
   }
 

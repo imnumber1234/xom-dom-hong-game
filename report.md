@@ -1,3 +1,23 @@
+# Báo cáo — NHÀ HƯỚNG DẪN BIẾT NGHE (2026-08-10)
+
+**🟡 Preview: https://huong-dan.xom-dom-hong.pages.dev — link chính chưa đụng. Kiểm 27/27, 0 lỗi console.**
+
+Lucas bắt lỗi: gõ "chào cc" rồi "im đi" vẫn qua bước — hướng dẫn cũ **không đọc chữ người chơi**. Lucas chốt phương án **D**.
+
+| Trước | Sau |
+|---|---|
+| Gõ gì cũng qua bước | Nói chưa đúng việc của bước đó thì **không qua**, Bà Năm bắt nói lại |
+| Nói bậy vẫn được khen | Bà "nghe không lọt lỗ tai", bắt nói tử tế lại |
+| Không biết phải nói gì thì kẹt luôn | Sai 3 lần thì hiện luôn **câu mẫu** để gõ theo |
+| Ma sói bước 4 gõ chữ = treo ô nhập | Bà nhắc "bấm nút CẮN kia kìa" |
+| Bà nói y một câu bất kể người chơi nói gì | Bật `?tutai=1` thì bà **phản ứng đúng câu vừa nghe** (ví dụ thật: nghe "chào cc" thành "chào cờ"; nghe "giao trà sữa" thì đùa "tưởng trả sữa") |
+
+Nguyên tắc giữ nguyên: **code cầm việc chấm bước và câu đẩy cốt truyện**, AI chỉ viết lời phản ứng → 4 bước dạy không bao giờ lệch, và AI chết thì hướng dẫn vẫn chạy trọn vẹn 0đ.
+
+Kiểm: ma sói kịch bản 9/9 · ma sói có AI 9/9 · Kẹt Tiền 9/9. Máy kiểm `game/tools/tutorial-check.py`.
+
+---
+
 # Báo cáo Session B — v0.7 GIỌNG THẬT (2026-08-10)
 
 **🟡 DỪNG Ở PREVIEW: https://giong-that.xom-dom-hong.pages.dev — link chính KHÔNG bị đụng.**
