@@ -60,7 +60,19 @@ async def main():
             steps.append(("OK   " if "door_" in bg else "FAIL ") + "nen = anh cua nha")
             size = await pg.evaluate("(c=>c.width+'x'+c.height)(document.getElementById('npc-portrait'))")
             steps.append(("OK   " if size == "96x96" else "FAIL ") + f"chan dung dung anh that ({size})")
-            await pg.wait_for_timeout(4000)          # de NPC noi vai giay -> bat mieng nhep
+
+            # MIENG CO NHEP THAT KHONG: chup canvas nhieu lan trong luc go chu, dem so khung khac nhau
+            frames = await pg.evaluate("""async () => {
+                const c = document.getElementById('npc-portrait');
+                const seen = new Set();
+                for (let i = 0; i < 26; i++) {
+                    seen.add(c.toDataURL().slice(-260));
+                    await new Promise(r => setTimeout(r, 90));
+                }
+                return seen.size;
+            }""")
+            steps.append(("OK   " if frames >= 3 else "FAIL ") + f"mieng NHEP that trong luc noi ({frames} khung khac nhau)")
+            await pg.wait_for_timeout(1500)
             await pg.screenshot(path="game/shots/v08-convo.png")
 
         await b.close()

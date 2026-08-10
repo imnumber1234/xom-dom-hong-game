@@ -62,10 +62,20 @@ XDH.Portraits = (function () {
   }
 
   // ---- nhép miệng ------------------------------------------------------------
-  // Bộ miệng chỉ làm từ khuôn mặt BÌNH THƯỜNG, nên chỉ nhép khi đang ở sắc mặt đó —
-  // tránh cảnh đang cau mày bỗng nhảy sang mặt tươi giữa câu.
+  // Kiểu Ace Attorney: ĐANG NÓI thì mặt nhép miệng, NÓI XONG mới đổi sang sắc mặt cảm xúc.
+  // (Bộ miệng chỉ dựng từ khuôn mặt bình thường, nên không trộn được giữa chừng —
+  //  tách hẳn hai lúc như vậy vừa chạy được vừa nhìn có chủ đích.)
+  function hasMouths(npc) { return npc && ready(img('mouth/' + npc.id + '_rest.png')); }
+
+  function talkStart(canvas, npc, emotion) {
+    if (!canvas || !npc) return;
+    if (!hasMouths(npc)) { draw(canvas, npc, emotion); return; }   // Cô Sáu: chưa có miệng → mặt tĩnh
+    canvas.dataset.talking = '1';
+    paint(canvas, img('mouth/' + npc.id + '_rest.png'));
+  }
+
   function mouth(canvas, ch, npc) {
-    if (!npc || !canvas || canvas.dataset.mood !== 'normal') return;
+    if (!npc || !canvas || canvas.dataset.talking !== '1') return;
     const c = (ch || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
     const v = ' .,!?…\n'.includes(c) ? 'closed' : VIS_OF[c];
     if (!v) return;
@@ -73,8 +83,16 @@ XDH.Portraits = (function () {
     if (ready(im)) paint(canvas, im);
   }
 
+  // Nói xong: khép miệng rồi hiện SẮC MẶT thật — cảm xúc thành phản ứng cuối câu.
+  function talkEnd(canvas, npc, emotion) {
+    if (!canvas || !npc) return;
+    canvas.dataset.talking = '';
+    draw(canvas, npc, emotion);
+  }
+
   function rest(canvas, npc) {
-    if (!npc || !canvas || canvas.dataset.mood !== 'normal') return;
+    if (!npc || !canvas) return;
+    canvas.dataset.talking = '';
     const im = img('mouth/' + npc.id + '_rest.png');
     if (ready(im)) paint(canvas, im);
   }
@@ -184,5 +202,5 @@ XDH.Portraits = (function () {
   // Nạp sẵn ngay khi trang mở — 29 tấm, tổng ~276KB, để lúc gõ cửa không bị khựng.
   if (typeof XDH !== 'undefined' && XDH.NPCS) preload(XDH.NPCS);
 
-  return { draw, mouth, rest, preload };
+  return { draw, mouth, rest, talkStart, talkEnd, hasMouths, preload };
 })();

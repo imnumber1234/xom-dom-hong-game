@@ -379,7 +379,7 @@ XDH.UI = (function () {
       const step = () => {
         if (typingAbort || i >= text.length) {
           el.textContent = text;
-          XDH.Portraits.rest($('npc-portrait'), npc);       // v0.8: hết câu thì miệng khép lại
+          XDH.Portraits.talkEnd($('npc-portrait'), npc, emotion);   // v0.8: nói xong → hiện sắc mặt thật
           if (el.parentElement) el.parentElement.scrollTop = 1e9;
           resolve(); return;
         }
@@ -397,12 +397,13 @@ XDH.UI = (function () {
   }
 
   function typeNpcLine(text, emotion, npc) {
-    XDH.Portraits.draw($('npc-portrait'), npc, XDH.EMOTIONS.includes(emotion) ? emotion : 'neutral');
+    const emo = XDH.EMOTIONS.includes(emotion) ? emotion : 'neutral';
+    XDH.Portraits.talkStart($('npc-portrait'), npc, emo);   // v0.8: bắt đầu nói → nhép miệng
     portraitFx(emotion);
     const line = document.createElement('div');
     line.className = 'npc-line';
     $('dialogue').appendChild(line);
-    return typeInto(line, text, emotion, npc);
+    return typeInto(line, text, emo, npc);
   }
 
   // ---- §1 feedback layer: door stages · 💭 bubble · convo-state icon · thinking dots ----
