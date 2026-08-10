@@ -1,3 +1,38 @@
+# Báo cáo — HƯỚNG DẪN: ĐỔI CÁCH CHẤM (2026-08-10, sau khi Lucas báo "shipper" vẫn bị chặn)
+
+**Preview: https://huong-dan.xom-dom-hong.pages.dev — link chính chưa đụng. 0 lỗi console.**
+
+## Lỗi Lucas bắt được
+Tôi bắt câu phải **từ 2 chữ trở lên** mới xét → gõ đúng một chữ "shipper" bị loại thẳng trước khi kịp so từ khoá. Bà nhắc lại y một câu ba lần nên nhìn như hỏng hẳn.
+
+## Tra cách làm đúng (không đoán)
+- So từ khoá chỉ hợp với thứ máy móc (đúng định dạng, có mặt chữ nào đó); câu người thật nói thì phải **chấm theo Ý** — đây là kỹ thuật "LLM-as-a-judge", dùng khi phép so khớp cứng quá giòn.
+- Chính **Suck Up!** (game gốc mà mình học theo) không hề có cửa từ khoá: AI nghe hiểu rồi tự quyết mở cửa hay không.
+
+## Thí nghiệm thật — 27 câu người thật hay gõ (1 chữ, sai chính tả, sai vai, phủ định, nói bậy)
+
+| Cách chấm | Đúng | Cho qua đúng | **Chặn đúng** |
+|---|---|---|---|
+| Từ khoá (bản cũ) | 23/27 | 12/14 | 11/13 |
+| **AI chấm (bản mới)** | **26/27** | 13/14 | **13/13** |
+
+Chỗ từ khoá thua đau nhất: **"con không phải shipper đâu"** — có chữ shipper nên nó cho qua; AI chặn đúng. Và **"e la shiper"** (viết tắt, sai chính tả) — từ khoá chặn oan, AI cho qua.
+
+Thí nghiệm còn moi ra một lỗi ngầm: phiếu trả lời của AI **thiếu ô "đạt/chưa đạt"** → bà chấm trượt 100% (0/14) dù lời thoại rõ ràng là khen. Không chạy thí nghiệm thì không ai thấy.
+
+## Bản mới chạy thế nào
+**AI là người chấm chính** (theo ý, không theo chữ) → gọi không được thì **tự rơi về từ khoá**, hướng dẫn vẫn chạy trọn 0đ. Ép tắt AI bằng `?tutai=0`. Sai 2 lần là hiện luôn câu mẫu để khỏi kẹt.
+
+**Kiểm:** ma sói 9/9 · Kẹt Tiền 9/9 · gõ đúng một chữ "shipper" qua được ở CẢ hai chế độ (có AI và không AI) · 0 lỗi console. Máy đo mới: `game/tools/gate-experiment.py`.
+
+---
+
+# BÁO CÁO — Xóm Đóm Hòng
+
+**🟡 v0.8 NÃO XOAY VÒNG: DỪNG Ở PREVIEW https://nao-xoay-vong.xom-dom-hong.pages.dev — link chính KHÔNG bị đụng.**
+Pass-number chống chết 6/6 ĐẠT. Bài kiểm 20 mục 15/20 (v0.7 là 13/20) → chưa đủ điều kiện đẩy lên link chính.
+Kẹt duy nhất: hai não giỏi nhất đang khoá vì tiền (Gemini hết hạn mức, Anthropic hết tiền) — pending mục 6.
+
 # Báo cáo — NHÀ HƯỚNG DẪN BIẾT NGHE (2026-08-10)
 
 **🟡 Preview: https://huong-dan.xom-dom-hong.pages.dev — link chính chưa đụng. Kiểm 27/27, 0 lỗi console.**

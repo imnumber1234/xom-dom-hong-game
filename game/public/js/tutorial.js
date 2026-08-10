@@ -179,7 +179,7 @@ XDH.Tut = (function () {
   // Trả về true nếu câu người chơi ĐẠT yêu cầu của bước đang chờ.
   function dat_yeu_cau(raw, stepNo) {
     const t = bo_dau(raw).replace(/\s+/g, ' ').trim();
-    if (!t || so_chu(t) < 2 || la_bay_ba(t)) return false;
+    if (!t || la_bay_ba(t)) return false;   // 08-10: BỎ luật ép 2 chữ — 'shipper' một chữ vẫn đúng
     const rule = (XDH.isKetTien() ? NGHE.ket_tien : NGHE.ma_soi)[stepNo];
     return rule ? !!rule(t) : true;
   }
@@ -187,36 +187,43 @@ XDH.Tut = (function () {
   // ---------- v0.8: công tắc AI cho nhà hướng dẫn (?tutai=1) ----------
   // Mặc định TẮT vì não game đang hỏng (pending.md mục 1-2). Bật lên thì bà PHẢN ỨNG đúng câu
   // người chơi vừa nói, còn câu đẩy cốt truyện + việc chấm bước vẫn do code cầm → 4 bước không lệch.
-  const AI_ON = () => { try { return new URLSearchParams(location.search).get('tutai') === '1'; } catch { return false; } };
-  async function baNamAI(text, stepNo, passed, goal) {
-    if (!AI_ON()) return '';
+  // Tra cách làm 2026-08-10: từ khoá chỉ hợp cho phép thử máy móc; câu người thật nói thì phải
+  // CHẤM THEO Ý (LLM-as-a-judge). Nên AI là người chấm chính; từ khoá tụt xuống làm lưới đỡ
+  // cho lúc gọi không được. Tắt hẳn AI bằng ?tutai=0.
+  const AI_ON = () => { try { return new URLSearchParams(location.search).get('tutai') !== '0'; } catch { return true; } };
+  async function baNamAI(text, stepNo, goal) {
+    if (!AI_ON()) return null;
     try {
       const r = await fetch('/api/converse', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          tutorAsk: true, step: stepNo, passed, goal,
+          tutorAsk: true, step: stepNo, goal,
           playerText: String(text || '').slice(0, 400),
           lang: XDH.lang, mode: XDH.isKetTien() ? 'ket_tien' : 'ma_soi',
           pass: (XDH.run && XDH.run.pass) || ''
         })
       });
       const j = await r.json();
-      return (j && j.line) ? String(j.line).slice(0, 300) : '';
-    } catch { return ''; }
+      if (!j || typeof j.dat !== 'boolean') return null;
+      return { dat: j.dat, line: String(j.line || '').slice(0, 300) };
+    } catch { return null; }
+  }
+
+  // Một cửa chấm duy nhất: AI trả lời được thì nghe AI, không thì rơi về từ khoá.
+  async function cham_buoc(text, stepNo, goal) {
+    const ai = await baNamAI(text, stepNo, goal);
+    if (ai) return { ok: ai.dat, line: ai.line, by: 'ai' };
+    return { ok: dat_yeu_cau(text, stepNo), line: '', by: 'tu-khoa' };
   }
 
   // Bà nghe chưa ra → nói lại, KHÔNG qua bước. Sai 3 lần thì cho xem luôn câu mẫu.
-  async function nhac_lai(text, stepNo, L) {
+  async function nhac_lai(stepNo, L, line, rude) {
     const goal = [L.s1, L.s2, L.s3, L.s4][stepNo - 1] || '';
-    const canned = la_bay_ba(bo_dau(text)) ? L.nj : (L['n' + stepNo] || L.nj);
-    const held = beat; beat = -9;
-    await pause();
-    const ai = await baNamAI(text, stepNo, false, goal);
-    await XDH.UI.typeNpcLine(ai || canned, 'suspicious', NPC);
+    const canned = rude ? L.nj : (L['n' + stepNo] || L.nj);
+    await XDH.UI.typeNpcLine(line || canned, 'suspicious', NPC);
     misses++;
-    const vd = misses >= 3 ? L['ex' + stepNo] : '';
+    const vd = misses >= 2 ? L['ex' + stepNo] : '';   // sai 2 lần là cho xem câu mẫu, đừng để kẹt
     step(stepNo, goal + (vd ? ' — ' + vd : ''));
-    beat = held;
     XDH.UI.setBusy(false);
   }
 
@@ -248,16 +255,23 @@ XDH.Tut = (function () {
     XDH.UI.setBusy(true);
     const L = S();
     const stepNo = beat + 1;
+    const held = beat;
 
-    // v0.8 — CỬA CHẶN: nói chưa đúng việc của bước này thì bà bắt nói lại, KHÔNG cho qua.
-    if (!dat_yeu_cau(text, stepNo)) { await nhac_lai(text, stepNo, L); return; }
+    // v0.8 — CỬA CHẶN: AI chấm xem câu vừa nói có làm đúng việc của bước này không.
+    // Chấm xong mới quyết định đi tiếp hay bắt nói lại. Khoá ô nhập trong lúc chấm.
+    beat = -9;
+    await pause();
+    const cham = (stepNo === 4 && !XDH.isKetTien())
+      ? { ok: true, line: '', by: 'bo-qua' }        // ma sói bước 4 là BẤM NÚT, gõ gì cũng chỉ để bà nhắc
+      : await cham_buoc(text, stepNo, [L.s1, L.s2, L.s3, L.s4][stepNo - 1] || '');
+    if (!cham.ok) { beat = held; await nhac_lai(stepNo, L, cham.line, la_bay_ba(bo_dau(text))); return; }
     misses = 0;
+    beat = held;
+    const loi_ba = cham.line;   // AI đã viết sẵn câu phản ứng đúng lời người chơi vừa nói
 
     if (beat === 0) {
       beat = -9;                                   // khoá ô nhập trong lúc bà nói
-      await pause();
-      const ai1 = await baNamAI(text, 1, true, L.s1);
-      await XDH.UI.typeNpcLine(ai1 || L.b1a, 'amused', NPC);
+      await XDH.UI.typeNpcLine(loi_ba || L.b1a, 'amused', NPC);
       XDH.UI.setThought(L.t1);
       XDH.UI.setDoorStage(1);
       await XDH.UI.typeNpcLine(L.b1b, 'interested', NPC);
@@ -267,9 +281,7 @@ XDH.Tut = (function () {
 
     } else if (beat === 1) {
       beat = -9;
-      await pause();
-      const ai2 = await baNamAI(text, 2, true, L.s2);
-      await XDH.UI.typeNpcLine(ai2 || L.b2a, 'cam_dong', NPC);
+      await XDH.UI.typeNpcLine(loi_ba || L.b2a, 'cam_dong', NPC);
       XDH.UI.setConvoState('trusting');
       XDH.UI.setThought(L.t2);
       XDH.UI.setDoorStage(2);
@@ -280,9 +292,7 @@ XDH.Tut = (function () {
 
     } else if (beat === 2) {
       beat = -9;
-      await pause();
-      const ai3 = await baNamAI(text, 3, true, L.s3);
-      await XDH.UI.typeNpcLine(ai3 || L.b3a, 'interested', NPC);
+      await XDH.UI.typeNpcLine(loi_ba || L.b3a, 'interested', NPC);
       XDH.UI.setDoorStage(3);
       await XDH.UI.typeNpcLine(L.b3b, 'amused', NPC);
       XDH.UI.setDoorStage(4);
@@ -297,13 +307,12 @@ XDH.Tut = (function () {
 
     } else if (beat === 3 && XDH.isKetTien()) {
       beat = -9;
-      await pause();
+      if (loi_ba) await XDH.UI.typeNpcLine(loi_ba, 'cam_dong', NPC);
       await finishKetTien();
 
     } else if (beat === 3) {
       // ma sói: bước 4 là BẤM NÚT, không phải gõ chữ — nhắc rồi mở lại ô nhập
       beat = -9;
-      await pause();
       await XDH.UI.typeNpcLine(L.n4, 'amused', NPC);
       step(4, L.s4);
       beat = 3;
@@ -362,5 +371,6 @@ XDH.Tut = (function () {
       : '👉 Giờ ra gõ nhà thật đi. Đi tới trước cửa rồi bấm E.', 5200);
   }
 
-  return { start, playerSays, kill, end, isActive: () => beat !== -1 };
+  // _gate lộ ra chỉ để bài kiểm gọi được luật từ khoá — game không dùng trực tiếp.
+  return { start, playerSays, kill, end, isActive: () => beat !== -1, _gate: dat_yeu_cau };
 })();
