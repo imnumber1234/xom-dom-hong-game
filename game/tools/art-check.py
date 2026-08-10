@@ -41,16 +41,18 @@ async def main():
         await pg.wait_for_timeout(2000)
         await pg.screenshot(path="game/shots/v08-map.png")
 
-        # 3) di len phia nha Ly roi go cua
-        for _ in range(28):
+        # 3) v0.8: nguoi choi dung giua xom (WW/2=720), nha Ti ngay phia tren (x=700) -> chi can di len
+        for _ in range(30):
             await pg.keyboard.press("ArrowUp"); await pg.wait_for_timeout(45)
-        for _ in range(22):
-            await pg.keyboard.press("ArrowLeft"); await pg.wait_for_timeout(45)
         await pg.wait_for_timeout(700)
-        await pg.keyboard.press("Space")
-        await pg.wait_for_timeout(2500)
-
-        shown = await pg.evaluate("!!document.querySelector('#convo.show')")
+        shown = False
+        for attempt in range(4):                 # go cua may lan cho chac (khoang cach <90px)
+            await pg.keyboard.press("Space")
+            await pg.wait_for_timeout(2200)
+            shown = await pg.evaluate("!!document.querySelector('#convo.show')")
+            if shown: break
+            for _ in range(4):
+                await pg.keyboard.press("ArrowUp"); await pg.wait_for_timeout(50)
         steps.append(("OK   " if shown else "FAIL ") + "man hoi thoai mo ra")
 
         if shown:
