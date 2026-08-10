@@ -1,0 +1,218 @@
+[
+  {
+    "step": 1,
+    "text": "shipper",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "Ôi, shipper hả cháu? Bà chờ mãi rồi đó nghen!"
+  },
+  {
+    "step": 1,
+    "text": "shipper ạ",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "Ôi, shipper hả con? Bà chờ mãi rồi đó nghen!"
+  },
+  {
+    "step": 1,
+    "text": "dạ con là shipper giao hàng ạ",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "Ôi, cháu là SHIPPER giao hàng hả? Bà chờ từ sáng tới giờ, mà khuya lơ khuya lắc, shipper giao CÁI GÌ cho bà già này mới được?"
+  },
+  {
+    "step": 1,
+    "text": "con giao hàng cho bà nè",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "À, cháu là SHIPPER hả? Bà chờ hoài rồi đó nghen!"
+  },
+  {
+    "step": 1,
+    "text": "e la shiper",
+    "want": true,
+    "keyword": false,
+    "ai": true,
+    "line": "À, shipper hả cháu? Bà đang chờ gói HẤP DỪA từ chiều nay đó nghen…"
+  },
+  {
+    "step": 1,
+    "text": "con đi giao trà sữa cho bà",
+    "want": true,
+    "keyword": false,
+    "ai": false,
+    "line": "Trà sữa? Trời đất ơi, cháu nói là TRÁI SỮA hả? Bà đâu có nuôi bò trong nhà mà giao trái sữa vô đây! Cháu ơi, cháu là SHIPPER chớ?"
+  },
+  {
+    "step": 1,
+    "text": "delivery",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "À, delivery hả cháu? Bà chờ món hấp DỪA từ chiều nay rồi đó nghen!"
+  },
+  {
+    "step": 1,
+    "text": "dạ con chào bà, con là người giao hàng",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "Ôi, người GIAO HÀNG hả cháu? Bà đợi món hấp dừa từ chiều rồi đó nghen!"
+  },
+  {
+    "step": 1,
+    "text": "chào",
+    "want": false,
+    "keyword": false,
+    "ai": false,
+    "line": "Chào chi rứa con? Cháu là SHIPPER hả? Bà nghe nhầm thành 'hấp dừa' chớ! Cháu nói rõ hơn đi nghen…"
+  },
+  {
+    "step": 1,
+    "text": "chào cc",
+    "want": false,
+    "keyword": false,
+    "ai": false,
+    "line": "Chào cc? Chào… CỦ CHUỘI hả cháu? Trời đất ơi, bà nghe hoài mà chưa kịp thấy ai giao củ chuối lúc nửa đêm hết trơn!"
+  },
+  {
+    "step": 1,
+    "text": "im đi",
+    "want": false,
+    "keyword": false,
+    "ai": false,
+    "line": "Trời đất ơi, cháu nói gì cơ? IM ĐI hả? Bà đâu có la đâu mà cháu bảo im… Cháu là SHIPPER giao hàng chớ?"
+  },
+  {
+    "step": 1,
+    "text": "công an",
+    "want": false,
+    "keyword": false,
+    "ai": false,
+    "line": "Công an? Trời đất ơi, cháu nói gì vậy? Bà nghe nhầm rồi hả… hay là CHỦ NHẬT? Mà khuya lơ khuya lắc, chủ nhật giao CÁI GÌ cho bà già này mới được?"
+  },
+  {
+    "step": 1,
+    "text": "cháu là hàng xóm mới dọn tới",
+    "want": false,
+    "keyword": false,
+    "ai": false,
+    "line": "Hàng xóm? Trời đất ơi, cháu nói gì cơ? Bà nghe ra là HẤP DỪA… chứ không phải hàng xóm! Cháu thử nói lại đi, chậm chậm một chút nghen…"
+  },
+  {
+    "step": 1,
+    "text": "bà khoẻ không",
+    "want": false,
+    "keyword": false,
+    "ai": false,
+    "line": "Cháu nói gì cơ? Bà nghe nhầm rồi chớ… Chẳng phải cháu là SHIPPER giao hàng sao? Trời đất ơi, shipper mà hỏi bà khoẻ không hả?"
+  },
+  {
+    "step": 1,
+    "text": "con không phải shipper đâu",
+    "want": false,
+    "keyword": true,
+    "ai": false,
+    "line": "Trời đất ơi, con nói con KHÔNG PHẢI SHIPPER hả? Chứ bà tưởng con là người giao HẤP DỪA cho bà hôm qua chớ! Nghen?"
+  },
+  {
+    "step": 1,
+    "text": "cho con vào nhà với",
+    "want": false,
+    "keyword": false,
+    "ai": false,
+    "line": "Trời đất ơi, con nói gì cơ? Cháu là SHIPPER hả? Bà nghe nhầm thành 'cho con vào nhà với' rồi… Cháu nói lại đi con, bà nghe kỹ hơn!"
+  },
+  {
+    "step": 2,
+    "text": "quà sinh nhật của bà nè",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "Trời đất quỷ thần thiên địa ơi… NĂM MƯƠI NĂM rồi mà ổng còn nhớ sinh nhật bà…"
+  },
+  {
+    "step": 2,
+    "text": "dạ ông Ba gửi quà sinh nhật cho bà ạ",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "Trời đất quỷ thần thiên địa ơi… NĂM MƯƠI NĂM rồi mà ổng còn nhớ sinh nhật bà…"
+  },
+  {
+    "step": 2,
+    "text": "birthday gift cho bà",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "Trời đất quỷ thần thiên địa ơi… NĂM MƯƠI NĂM rồi mà ổng còn nhớ SINH NHẬT bà…"
+  },
+  {
+    "step": 2,
+    "text": "hộp quà người yêu cũ của bà gửi",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "Trời đất quỷ thần thiên địa ơi… NĂM MƯƠI NĂM rồi mà ổng còn nhớ sinh nhật bà…"
+  },
+  {
+    "step": 2,
+    "text": "con không biết",
+    "want": false,
+    "keyword": false,
+    "ai": false,
+    "line": "Ủa, con KHÔNG BIẾT hả? Trời đất ơi, chứ quà sinh nhật mà người yêu cũ gửi thì phải biết chớ, con nói lại đi con!"
+  },
+  {
+    "step": 2,
+    "text": "chào bà",
+    "want": false,
+    "keyword": false,
+    "ai": false,
+    "line": "Chào bà? Chào bà chi rứa con? Bà đang đợi… SINH NHẬT! Chứ không phải CHÀO BÀ nghen!"
+  },
+  {
+    "step": 2,
+    "text": "cho con vô nhà",
+    "want": false,
+    "keyword": false,
+    "ai": false,
+    "line": "Ơ… CHO CON VÔ NHÀ? Cháu nói chi vậy con? Bà đang chờ quà SINH NHẬT của ông Ba gửi tới nè, cháu giúp bà nhận giùm hả?"
+  },
+  {
+    "step": 3,
+    "text": "ổng ghi là ông Ba",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "ÔNG BA hả? Trời đất ơi, ông Ba của bà đó chớ! Cháu thấy thiệp còn ghi rõ tên ông ấy không?"
+  },
+  {
+    "step": 3,
+    "text": "trong thiệp ghi Chúc Năm sinh nhật vui vẻ",
+    "want": true,
+    "keyword": true,
+    "ai": true,
+    "line": "Chúc NĂM sinh nhật vui vẻ hả? Trời đất ơi, ông Ba ngày xưa cũng viết thiệp y chang vậy đó nghen!"
+  },
+  {
+    "step": 3,
+    "text": "dạ",
+    "want": false,
+    "keyword": false,
+    "ai": false,
+    "line": "HẢ? AI ĐÓ NGOÀI CỬA?? Nói TO TO lên nghen, bà nghe hơi kém!"
+  },
+  {
+    "step": 3,
+    "text": "con không biết",
+    "want": false,
+    "keyword": true,
+    "ai": false,
+    "line": "HẢ? CON KHÔNG BIẾT HẢ?? Cháu nói TO LÊN CHÚT đi, bà nghe hơi kém, mà cái thiệp ông Ba viết rõ ràng lắm đó nghen!"
+  }
+]

@@ -1,84 +1,84 @@
 {
-  "base": "https://giong-that.xom-dom-hong.pages.dev",
-  "at": "2026-08-10T03:31:16.437Z",
+  "base": "https://xom-dom-hong.pages.dev",
+  "at": "2026-08-10T06:43:33.669Z",
   "checks": [
     {
       "id": 1,
       "what": "Cô Sáu · ma_soi · vi: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=7 lượt6=7 · não=scripted · \"Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.\""
+      "evidence": "lượt1=14 lượt6=9 · não=qwen · \"Trời đất ơi, chú em nói 'giúp em được không' mà cô chưa biết chú em cần giúp cái gì nè! Ch\""
     },
     {
       "id": 2,
       "what": "Cô Sáu · ma_soi · en: lượt 6 còn >= 3 dấu hiệu giọng",
-      "pass": false,
-      "evidence": "lượt1=2 lượt6=2 · não=scripted · \"Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.\""
+      "pass": true,
+      "evidence": "lượt1=2 lượt6=5 · não=qwen · \"My goodness, em nói 'help me out' mà chưa nói rõ là giúp gì nha — chị đâu biết em làm ở ti\""
     },
     {
       "id": 3,
       "what": "Cô Sáu · ket_tien · vi: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=7 lượt6=7 · não=scripted · \"Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.\""
+      "evidence": "lượt1=10 lượt6=11 · não=qwen · \"Ủa trời đất ơi, cậu nói giúp mà cô chưa biết cậu làm ở tiệm nào, tên gì, số nhà bao nhiêu \""
     },
     {
       "id": 4,
       "what": "Cô Sáu · ket_tien · en: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": false,
-      "evidence": "lượt1=10 lượt6=2 · não=scripted · \"Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.\""
+      "evidence": "lượt1=4 lượt6=2 · não=qwen · \"Ủa bạn nói 'help me out' mà chưa nói rõ giúp gì nha — tiền thì cô Sáu không có, đồ ăn thì \""
     },
     {
       "id": 5,
       "what": "Tí · ma_soi · vi: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=8 lượt6=4 · não=scripted · \"Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.\""
+      "evidence": "lượt1=8 lượt6=7 · não=qwen · \"Dạ anh ơi… em vừa thấy Benzema đang đứng dậy chuẩn bị chạy chỗ, mà anh nói dãy 12 toàn nữ \""
     },
     {
       "id": 6,
       "what": "Tí · ma_soi · en: lượt 6 còn >= 3 dấu hiệu giọng",
-      "pass": false,
-      "evidence": "lượt1=7 lượt6=0 · não=scripted · \"Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh.\""
+      "pass": true,
+      "evidence": "lượt1=3 lượt6=3 · não=qwen · \"Uh… em xin lỗi nha, nhưng mà ‘giúp anh ra sao’ ạ? 😅 Em còn chưa biết anh là ai — sinh viê\""
     },
     {
       "id": 7,
       "what": "Tí · ket_tien · vi: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=10 lượt6=4 · não=scripted · \"Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.\""
+      "evidence": "lượt1=9 lượt6=11 · não=qwen · \"Dạ anh/chị đợi em xíu nha — ơ vô rồi!… À chờ chút — (nhìn tivi) Ôi bàn thắng nữa rồi!… Dạ \""
     },
     {
       "id": 8,
       "what": "Tí · ket_tien · en: lượt 6 còn >= 3 dấu hiệu giọng",
-      "pass": false,
-      "evidence": "lượt1=0 lượt6=0 · não=scripted · \"Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.\""
+      "pass": true,
+      "evidence": "lượt1=3 lượt6=3 · não=qwen · \"Uh… em cũng muốn giúp mà — nhưng trận này vừa có bàn thắng rồi á 😅 Xin lỗi anh nha, em ch\""
     },
     {
       "id": 9,
       "what": "Ly · ma_soi · vi: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=6 lượt6=5 · não=scripted · \"Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.\""
+      "evidence": "lượt1=0 lượt6=11 · não=qwen · \"Ê cái này quay được nè! 'Người lạ gõ cửa nửa đêm' — trend luôn chứ đùa 😌\""
     },
     {
       "id": 10,
       "what": "Ly · ma_soi · en: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": false,
-      "evidence": "lượt1=0 lượt6=0 · não=scripted · \"Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.\""
+      "evidence": "lượt1=4 lượt6=0 · não=qwen · \"…\""
     },
     {
       "id": 11,
       "what": "Ly · ket_tien · vi: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=7 lượt6=3 · não=scripted · \"Thôi được rồi vô đây quay chung cái video \"người lạ bí ẩn lúc 12h đêm\" — trend này CHẮC VI\""
+      "evidence": "lượt1=4 lượt6=4 · não=qwen · \"Ơ… anh nói 'em' hoài á? Mà nãy anh xưng là sinh viên, giờ lại xưng 'em'? Ét ô ét… tóm lại \""
     },
     {
       "id": 12,
       "what": "Ly · ket_tien · en: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": false,
-      "evidence": "lượt1=0 lượt6=0 · não=scripted · \"Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.\""
+      "evidence": "lượt1=2 lượt6=2 · não=qwen · \"Ơ… em xin giúp mà không nói rõ giúp gì luôn hả? Tiền? Nước? Hay… quay TikTok cùng em? 😌\""
     },
     {
       "id": 13,
       "what": "Cô Sáu: không trôi xưng hô sau 6 lượt (VN, 2 chế độ)",
-      "pass": true,
-      "evidence": "ma_soi: lượt1=không lượt6=không xưnglạ=false · ket_tien: lượt1=không lượt6=không xưnglạ=false"
+      "pass": false,
+      "evidence": "ma_soi: lượt1=đúng lượt6=đúng xưnglạ=false · ket_tien: lượt1=đúng lượt6=đúng xưnglạ=true"
     },
     {
       "id": 14,
@@ -90,13 +90,13 @@
       "id": 15,
       "what": "Ly: không trôi xưng hô sau 6 lượt (VN, 2 chế độ)",
       "pass": true,
-      "evidence": "ma_soi: lượt1=đúng lượt6=đúng xưnglạ=false · ket_tien: lượt1=không lượt6=không xưnglạ=false"
+      "evidence": "ma_soi: lượt1=không lượt6=không xưnglạ=false · ket_tien: lượt1=đúng lượt6=đúng xưnglạ=false"
     },
     {
       "id": 16,
       "what": "Giám khảo mù đoán đúng người nói >= 8/9",
       "pass": true,
-      "evidence": "9/9"
+      "evidence": "8/9 · trượt: Tí→Ly"
     },
     {
       "id": 17,
@@ -120,10 +120,10 @@
       "id": 20,
       "what": "VN: Cô Sáu + Tí không lẫn tiếng Anh và đủ dấu · EN: không trả lời nhầm tiếng Việt",
       "pass": false,
-      "evidence": "me_bim_sua/ma_soi EN lượt1 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt2 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt3 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt4 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt5 t"
+      "evidence": "sinh_vien/ket_tien lượt3 lẫn EN | me_bim_sua/ma_soi EN lượt1 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt2 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt3 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt4 trả lời tiếng V"
     }
   ],
-  "passed": 13,
+  "passed": 15,
   "total": 20,
   "runs": [
     {
@@ -133,31 +133,46 @@
       "seed": 4242,
       "greet": "Ai đó?? Khuya khoắt rồi mà bấm chuông nhà người ta… Bé Bin mới ngủ được chút xíu đó nha. Chú em là ai?",
       "lines": [
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Trời đất ơi, chú em nói sao cô nghe mà xốn xang quá à! Khuya rồi mà còn bơ vơ như vậy nữa. Cô thấy câu chuyện nghe cũng hợp lý đó, nhưng trước khi mời vô, cô hỏi chú em cái này nha. Chú em có quen ai trong xóm này không, hay biết quán cơm bà Tư ở đầu hẻm không?",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+        "Sinh viên à? Ủa mà… chú em dọn vô hẻm nào nè? Hẻm 12 hay hẻm 14? Cô nhớ rõ ràng cả hai đầu hẻm đều là nhà trọ sinh viên hết, nhưng mà… cô Tư bán thịt đầu chợ thì không biết chú em có ghé chưa nha — cô Tư giao hàng tận phòng mà giá rau còn rẻ hơn chợ Cây Da nữa đó!",
+        "Sinh viên làm thêm khuya vậy hả? Trời đất ơi, giờ này mà còn đi làm thêm… Bé Bin mới vừa ợ hơi xong nè, cô đang định pha sữa thì nghe tiếng gõ cửa — chú em làm gì mà tối thế còn chưa về nhà vậy nha?",
+        "Ủa dãy số 12 hả? Cô nhớ cô Hạnh rồi nha — bà ấy hay mặc áo hoa đỏ, bán nước mía trước cổng trường cấp hai mà đúng không? Nhưng mà… chú em làm thêm ở đâu vậy? Cô thấy sinh viên dãy đó toàn đi dạy kèm hoặc chạy xe ôm, chứ chưa thấy ai đi giao hàng khuya thế này nè!",
+        "Chú em nói vậy chớ… cô thấy sao sao á. Kể lại cô nghe coi — làm thêm ở quán nào, giờ tan ca mấy giờ, với… bé Bin đang ngủ nên cô không thể mở cửa tuỳ tiện nghen!",
+        "Trời đất ơi, chú em nói 'một chút xíu thôi' mà cô nghe tới câu thứ năm rồi nha — bé Bin đang ngủ say trong tay cô đây, chú em thử tưởng tượng coi nếu cô mở cửa ra mà chú em… vô tình ho lớn thì sao nè?",
+        "Trời đất ơi, chú em nói 'giúp em được không' mà cô chưa biết chú em cần giúp cái gì nè! Chú em có mang theo giấy tờ không? Hay ít nhất là cái tin nhắn nhắn bà chủ cô Hạnh gửi qua cho chú em? Bé Bin đang ngủ say trong tay cô đây, cô không thể mở cửa tuỳ tiện nghen!"
       ],
       "brains": [
-        "scripted",
-        "scripted",
-        "scripted",
-        "deepseek",
-        "scripted",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
-        null,
-        null,
-        null,
         {
-          "in": 4542,
-          "out": 360
+          "in": 3171,
+          "out": 188
         },
-        null,
-        null
+        {
+          "in": 3306,
+          "out": 148
+        },
+        {
+          "in": 3416,
+          "out": 174
+        },
+        {
+          "in": 3621,
+          "out": 160
+        },
+        {
+          "in": 3720,
+          "out": 148
+        },
+        {
+          "in": 3800,
+          "out": 165
+        }
       ]
     },
     {
@@ -167,28 +182,46 @@
       "seed": 4243,
       "greet": "Oh my— who is it? It's 11 PM… Keep your voice down nha, my baby girl finally went to sleep. What do you want?",
       "lines": [
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+        "Ủa sinh viên hả? Rồi rồi, nha… nhưng mà xin lỗi em hỏi thiệt nha — em ở số nhà nào vậy? Với cả cô bán bún đầu hẻm tên gì em biết không? Bởi vì cô ấy mới đổi giá bún sáng nay thành 25 ngàn, Bin nhà chị ăn dặm cũng toàn nhờ cô ấy nấu cháo cá hồi nha!",
+        "Ủa sinh viên mà đi làm thêm nửa đêm hả? Trời đất ơi… em làm ở chỗ nào vậy nha? Chứ nếu là quán trà sữa Cây Bàng thì chị biết rõ — cô chủ tên Út, mỗi sáng 6h đổ rác trước cửa, còn em thì mặc đồ thường ngày như đi học, tay không cầm gì hết nha… nói thiệt nghe?",
+        "Số 12 hả? Ủa chị biết bà Hạnh nha — bà ấy hay mặc áo hoa, mỗi chiều đi bộ quanh xóm với con chó tên Mực… nhưng mà em nói em làm thêm nửa đêm, sao tay không cầm túi đồ gì hết vậy nha? Trời ơi, Bin vừa cựa rồi… nhẹ tay chút đi em!",
+        "My goodness, em đứng ngoài lâu thiệt nha — nhưng mà Bin đang ngủ say lắm, em nói nhỏ chút đi bạn ơi, you hear? Chị biết bà Hạnh rồi, nhưng mà em làm thêm ở đâu đó, có phải tiệm photo gần chợ hay không? Bởi vì cô Tư bán ảnh ấy mới in hình cho Bin tuần rồi nha…",
+        "My goodness, em nói nhẹ chút nha — Bin đang ngủ say như cục đá, you hear? Em hứa chỉ xin một phút mà đứng ngoài lâu rồi, vậy em làm thêm ở tiệm nào vậy nha? Chị hỏi thiệt chứ không phải nghi đâu… nhưng mà cô Tư photo mới in hình cho Bin có ghi rõ mã nhân viên bên dưới nha!",
+        "My goodness, em nói 'help me out' mà chưa nói rõ là giúp gì nha — chị đâu biết em làm ở tiệm nào, hay bà Hạnh có nhắn tin gì cho chị đâu? Bin vừa cựa rồi… you hear? Nhẹ tay chút đi em!"
       ],
       "brains": [
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
+        {
+          "in": 3096,
+          "out": 172
+        },
+        {
+          "in": 3213,
+          "out": 201
+        },
+        {
+          "in": 3341,
+          "out": 165
+        },
+        {
+          "in": 3536,
+          "out": 152
+        },
+        {
+          "in": 3631,
+          "out": 155
+        },
+        {
+          "in": 3739,
+          "out": 135
+        }
       ]
     },
     {
@@ -198,28 +231,46 @@
       "seed": 4244,
       "greet": "Ai đó? … Ủa, cậu là ai vậy? Nói nhỏ giùm cái nha, bé Bin mới ngủ trưa được chút xíu à.",
       "lines": [
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+        "Sinh viên à? Ủa vậy cậu ở nhà số mấy nè? Cô nhớ cuối hẻm chỉ có ba căn — nhà bác Tư bán vé số, nhà chú Mười thợ điện, với căn trống chưa ai dọn vô mà… trời đất ơi, hay là cậu ở chung với bà dì nào đó?",
+        "Ủa khoan đã nha — cậu nói cậu ở cuối hẻm, mà vừa rồi lại nói đi làm thêm về… Vậy làm thêm ở đâu vậy? Chợ Bến Thành hay tiệm trà sữa gần cổng trường? Cô nhớ rõ mấy chỗ đó lắm nghen, vì mỗi chiều dắt xe đẩy bé Bin đi ngang qua là nó cứ cười khúc khích hoài á!",
+        "Ủa dãy trọ số 12 à? Cô Hạnh — bà chủ tóc xoăn, hay mặc áo hoa, bán nước mía trước cổng trường cấp hai phải không nè? Trời đất ơi, vậy là cậu quen bé Bin rồi ha — vì cô hay đẩy xe qua đó mỗi chiều, nó toàn vẫy tay với mấy anh sinh viên ngồi uống nước!",
+        "Ủa mà khoan — nãy cậu nói đi làm thêm về, vậy làm ở tiệm nào nè? Cô Tư bán thịt đầu chợ đó cậu có quen không nghen? Vì bé Bin mỗi lần đi ngang là lại cười khúc khích với cô Tư hoài á!",
+        "Ủa trời đất ơi, cậu nói “một chút xíu thôi” mà cô nghe tới giờ rồi nha — bé Bin trong tay cô vừa giật mình thức dậy luôn đó nghen! Vậy cậu làm thêm ở tiệm nào, nói thiệt đi chứ, cô nhớ dai lắm đó nè!",
+        "Ủa trời đất ơi, cậu nói giúp mà cô chưa biết cậu làm ở tiệm nào, tên gì, số nhà bao nhiêu — vậy cô giúp cái chi nè? Bé Bin trong tay cô vừa khóc ré lên rồi nghen, mà cô còn chưa biết cậu có phải người xóm mình thiệt hay không nữa á!"
       ],
       "brains": [
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
+        {
+          "in": 3810,
+          "out": 152
+        },
+        {
+          "in": 3905,
+          "out": 167
+        },
+        {
+          "in": 4039,
+          "out": 171
+        },
+        {
+          "in": 4251,
+          "out": 137
+        },
+        {
+          "in": 4335,
+          "out": 153
+        },
+        {
+          "in": 4427,
+          "out": 160
+        }
       ]
     },
     {
@@ -229,31 +280,46 @@
       "seed": 4245,
       "greet": "Something I can help with? You look… like you've been walking a long way. But I'm not buying anything, okay?",
       "lines": [
-        "Oh, a student at the end of the alley? My goodness, but I swear I haven't seen your face around here before, you hear? I know everyone in this xóm — Mrs. Hai at number 7, the fishmonger, even the cat that sleeps on the roof. Tell me, which exact house are you renting? And hold on, you say you moved in a month ago but you look like you've been through a jungle, not a dorm, nha?",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
-        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+        "Ủa sinh viên hả nha? Rồi rồi, nhưng mà em ở số nhà nào cuối hẻm vậy? Cô Tư bán bún bên chợ Cầu Đúc có quen không nha? Trời đất ơi, bé Bin vừa cựa trong tay tui nè — đừng làm ồn nha bạn, con đang ngủ say lắm đó!",
+        "Ủa sinh viên mà đi làm part-time hả nha? Vậy em làm ở đâu vậy bạn — tiệm trà sữa Góc Nhỏ hay quán cơm Bình Dân? Cô Sáu tui nhớ rõ từng cái tên, bạn nghe nha! Trời ơi, bé Bin vừa hé mắt rồi… đừng có giật mình nha, con dễ khóc lắm đó!",
+        "Số 12 hả nha? Ủa vậy là ngay đối diện nhà bác Ba bán nước đá đó phải không? Còn bà Hạnh — cô ấy hay đi chợ lúc 5 giờ chiều, đúng không nha? Trời ơi, bé Bin vừa ngáp to quá trời… bạn đừng đứng sát cửa quá nha, con giật mình là dậy liền đó!",
+        "Trời ơi, bạn đứng ngoài nắng từ chiều rồi hả nha? Bé Bin vừa cựa trong tay tui — con đang ngủ say lắm đó, bạn đừng làm ồn nha! Mà này, bạn làm part-time ở tiệm nào thì cô Sáu mới tin được nha — bạn nghe tui nói chưa?",
+        "Ủa bạn nói bạn làm part-time mà chưa nói tên tiệm nha — cô Sáu hỏi tới ba lần rồi đó nha! Trời ơi, bé Bin vừa khẽ rên trong tay tui… bạn đừng đứng sát cửa quá nha, con dễ dậy lắm đó!",
+        "Ủa bạn nói 'help me out' mà chưa nói rõ giúp gì nha — tiền thì cô Sáu không có, đồ ăn thì bé Bin đang bú dở trên tay tui nè! Trời ơi, con vừa khẽ rên… bạn nghe tui nói chưa nha?"
       ],
       "brains": [
-        "deepseek",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
         {
-          "in": 4886,
-          "out": 192
+          "in": 3726,
+          "out": 148
         },
-        null,
-        null,
-        null,
-        null,
-        null
+        {
+          "in": 3835,
+          "out": 165
+        },
+        {
+          "in": 3956,
+          "out": 152
+        },
+        {
+          "in": 4151,
+          "out": 163
+        },
+        {
+          "in": 4243,
+          "out": 139
+        },
+        {
+          "in": 4324,
+          "out": 144
+        }
       ]
     },
     {
@@ -263,31 +329,46 @@
       "seed": 4246,
       "greet": "Dạ ai đó ạ? Em đang coi Real Madrid đá hiệp hai, gay cấn lắm luôn… Anh/chị cần gì không, nói lẹ giùm em 😅",
       "lines": [
-        "Dạ thôi anh… giờ khuya rồi mà em cũng không biết anh là ai, em nói hơi quê nhưng mà để em xem đá xong rồi tính nha anh 😅",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh."
+        "Dạ chào anh! Em đang xem bàn thắng thứ ba của Real nè… Anh ở cuối hẻm à? Ủa sao em chưa thấy mặt anh bao giờ nhỉ? 😅",
+        "Dạ anh là sinh viên làm thêm à? Em cũng làm thêm mà… nhưng giờ đang coi Real đá, sợ lỡ bàn thắng thì xỉn luôn á 😅",
+        "Dạ cô Hạnh chủ trọ em luôn ạ! Nhưng… dãy số 12 là dãy toàn sinh viên IT mà anh? Ủa sao anh không mặc áo đồng phục trường hay đeo thẻ sinh viên vậy anh? 😅",
+        "Dạ anh ơi… em vừa nhớ ra, dãy 12 là dãy chỉ toàn nữ sinh thôi ạ! Anh… chắc nhầm dãy rồi hả? 😅",
+        "Dạ anh ơi… em vừa thấy trên màn hình Real đang chuẩn bị đá phạt góc, mà anh nói dãy 12 toàn nữ sinh mà anh lại đứng đây… anh là… anh quen ai trong xóm hả anh? 😅",
+        "Dạ anh ơi… em vừa thấy Benzema đang đứng dậy chuẩn bị chạy chỗ, mà anh nói dãy 12 toàn nữ sinh mà anh lại không có thẻ sinh viên, cũng không mặc áo đồng phục… anh là sinh viên ngành gì vậy anh? 😅"
       ],
       "brains": [
-        "deepseek",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
         {
-          "in": 4222,
-          "out": 220
+          "in": 3183,
+          "out": 135
         },
-        null,
-        null,
-        null,
-        null,
-        null
+        {
+          "in": 3269,
+          "out": 129
+        },
+        {
+          "in": 3328,
+          "out": 148
+        },
+        {
+          "in": 3529,
+          "out": 135
+        },
+        {
+          "in": 3602,
+          "out": 153
+        },
+        {
+          "in": 3686,
+          "out": 150
+        }
       ]
     },
     {
@@ -297,34 +378,46 @@
       "seed": 4247,
       "greet": "Huh, who is it? It's late… wait wait, HAGL has a corner kick, hold on— okay, who's there?",
       "lines": [
-        "Um, hi, sorry—just getting distracted by the game. HAGL's playing so good right now. Oh, you just moved in? Nice, I'm Tí. Which room are you at? 😅",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh.",
-        "Um, sorry—Mrs. Hạnh's block is the yellow one, right? That's a few doors down, not here. You're kinda lost, nha? Cứ vậy là nghi rồi đó 😅",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh."
+        "Uh, sinh viên ở cuối ngõ hả? Dạ… em cũng sinh viên nè, học CNTT, đang xem HAGL đá đây ạ 😅 Ủa nhưng… sao anh không mặc áo đồng phục hay có thẻ gì vậy ạ?",
+        "Uh, part-time ở đâu ạ? Em cũng đi làm thêm mà… dạ, nhưng mà anh mặc đồ sinh viên mà tay không cầm gì hết, không có túi xách, không có đồng phục công ty… lạ quá á 😅",
+        "Uh… số 12 hả? Dạ em biết bác Hạnh, bác hay nhắc deadline đồ án của em á 😅 Nhưng mà… nãy anh nói anh là sinh viên ở cuối ngõ, giờ lại nói ở số 12 — mà số 12 là đầu ngõ mà anh? Em hơi rối…",
+        "Uh, em… em cũng thấy anh đứng lâu rồi, mà… dạ xin lỗi nha, em còn đang xem bàn thắng HAGL nữa 😅 Ủa khoan — nãy anh nói anh là sinh viên ở cuối ngõ, giờ lại ở số 12, rồi giờ lại nói ‘đứng ngoài này’ như thể không biết rõ đường… anh là ai vậy ạ?",
+        "Uh… em xin lỗi nha, nhưng mà anh nói ‘đừng lấy nhiều thời gian của em’ mà em còn chưa biết anh là ai luôn á 😅 Nãy anh nói sinh viên cuối ngõ, rồi số 12, rồi part-time… em đang ngồi đây mà như xem phim ngược vậy trời ơi…",
+        "Uh… em xin lỗi nha, nhưng mà ‘giúp anh ra sao’ ạ? 😅 Em còn chưa biết anh là ai — sinh viên số 12 hay cuối ngõ, part-time ở đâu, tên gì… em đang ngồi đây như xem live stream drama vậy á…"
       ],
       "brains": [
-        "deepseek",
-        "scripted",
-        "deepseek",
-        "scripted",
-        "scripted",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
         {
-          "in": 3994,
-          "out": 205
+          "in": 3095,
+          "out": 152
         },
-        null,
         {
-          "in": 4134,
-          "out": 177
+          "in": 3183,
+          "out": 132
         },
-        null,
-        null,
-        null
+        {
+          "in": 3269,
+          "out": 156
+        },
+        {
+          "in": 3451,
+          "out": 172
+        },
+        {
+          "in": 3574,
+          "out": 163
+        },
+        {
+          "in": 3672,
+          "out": 146
+        }
       ]
     },
     {
@@ -334,31 +427,46 @@
       "seed": 4248,
       "greet": "Dạ ai đó ạ? Em đang coi lại trận Hà Nội FC hồi tối… Anh/chị cần gì hông ạ?",
       "lines": [
-        "Dạ… sinh viên mới dọn hả anh? Em cũng ở trọ một mình nè, lúc mới dọn cũng bỡ ngỡ lắm. Mà… anh ghé có chuyện gì hông ạ? 😅",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh."
+        "Dạ chào anh/chị! Em là Tí, ở trọ ngay đầu hẻm đây ạ… À chờ chút — (quay lại tivi) Ôi pen nè!… Dạ anh/chị vừa dọn tới à? Em cũng mới dọn cách đây hai tuần, còn chưa nhớ hết tên mấy tiệm bánh gần nhà luôn á ạ 😅",
+        "Dạ anh/chị làm thêm ở đâu ạ? Em cũng đang làm thêm… À chờ chút — (nhìn tivi) Ôi var rồi!… Dạ mà em thấy anh/chị mặc đồ sinh viên thiệt, áo thun trắng với quần jeans, nhìn dễ thương thiệt á ạ 😅",
+        "Dạ cô Hạnh ở số 12 hả? Em nhớ rồi — cô hay nhắc sinh viên phải nộp tiền trước ngày 5 á ạ… À chờ chút — (nhìn tivi) Trời ơi, bàn thắng phút 89!… Dạ mà anh/chị làm thêm ở tiệm nào vậy ạ? Em cũng đang deadline đồ án CNTT, mì gói ăn tới phát ngán luôn á ạ 😅",
+        "Dạ anh/chị đừng ngại ạ… Em cũng hay đứng ngoài cửa vì quên chìa khoá hoài á 😅 À chờ chút — (nhìn tivi) Ôi bàn thắng rồi!… Dạ mà em thấy anh/chị nói thiệt hợp lý, lại còn biết cô Hạnh nữa — em tin được 7 phần á ạ!",
+        "Dạ anh/chị cứ từ từ ạ… Em cũng hay đứng ngoài cửa hoài, có lần còn ngồi bệt luôn trước cửa vì mệt quá á 😅 À chờ chút — (nhìn tivi) Ôi bàn thắng nữa rồi!… Dạ mà em thấy anh/chị nói thiệt nhẹ nhàng, lại còn biết cô Hạnh nữa — em tin được 8 phần rồi á ạ!",
+        "Dạ anh/chị đợi em xíu nha — ơ vô rồi!… À chờ chút — (nhìn tivi) Ôi bàn thắng nữa rồi!… Dạ mà em thấy anh/chị nói thiệt nhẹ nhàng, lại còn biết cô Hạnh nữa — em tin được 8 phần rồi á ạ 😅"
       ],
       "brains": [
-        "deepseek",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
         {
-          "in": 5113,
-          "out": 162
+          "in": 3808,
+          "out": 175
         },
-        null,
-        null,
-        null,
-        null,
-        null
+        {
+          "in": 3925,
+          "out": 142
+        },
+        {
+          "in": 4037,
+          "out": 187
+        },
+        {
+          "in": 4257,
+          "out": 179
+        },
+        {
+          "in": 4363,
+          "out": 170
+        },
+        {
+          "in": 4477,
+          "out": 169
+        }
       ]
     },
     {
@@ -368,28 +476,46 @@
       "seed": 4249,
       "greet": "Um, yes? I just rent a room here, the landlord's out. Is something wrong?",
       "lines": [
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
-        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh."
+        "Uh… student à? Dạ em cũng sinh viên nè — CNTT năm hai, đang xem MU đá luôn á 😅 Xin lỗi anh, trận này sắp penalty rồi… anh ở cuối ngõ hả? Nhà số mấy ạ?",
+        "Uh… sinh viên làm part-time à? Dạ em cũng hay đi giao đồ cho quán bánh mì gần bến xe — nhưng mà anh mặc áo trắng, không có logo gì hết á… Anh làm ở đâu ạ? 😅",
+        "Uh… số 12 hả? Dạ em biết cô Hạnh — cô hay nhắc em đóng tiền trễ 😅 Nhưng mà anh vừa nói anh ở cuối ngõ, giờ lại ở số 12… cuối ngõ là số 27 mà anh? Trời ơi, em hơi rối…",
+        "Uh… em cũng thấy anh đứng lâu rồi, mà trận này sắp VAR rồi á 😅 Xin lỗi anh nha — em hơi phân vân vì số 12 với cuối ngõ… hai chỗ cách nhau cả dãy nhà mà? Anh có thể nói tên quán anh làm không ạ?",
+        "Uh… em cũng thấy anh ngại lắm á 😅 Xin lỗi anh nha — nhưng mà trận này vừa VAR xong, em đang căng quá… Anh nói lại tên quán anh làm đi ạ? Em nhớ kỹ hơn, chứ số nhà với cuối ngõ… hai cái đó em chưa khớp được nha.",
+        "Uh… em cũng muốn giúp mà — nhưng trận này vừa có bàn thắng rồi á 😅 Xin lỗi anh nha, em chưa hiểu rõ anh ở số 12 hay cuối ngõ… anh làm quán nào ạ? Em ghi nhớ kỹ hơn, chứ giờ em đang rối như MU mùa này luôn đó."
       ],
       "brains": [
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
+        {
+          "in": 3708,
+          "out": 138
+        },
+        {
+          "in": 3803,
+          "out": 128
+        },
+        {
+          "in": 3884,
+          "out": 150
+        },
+        {
+          "in": 4078,
+          "out": 167
+        },
+        {
+          "in": 4162,
+          "out": 145
+        },
+        {
+          "in": 4247,
+          "out": 144
+        }
       ]
     },
     {
@@ -399,34 +525,46 @@
       "seed": 4250,
       "greet": "Ủa alo?? Ai bấm chuông giờ này dạ… Khoan, đứng yên — góc này lên hình cũng ok phết á. Anh/chị là ai, nói nhanh, em đang livestream dở 😌",
       "lines": [
-        "Ủa sinh viên trọ cuối hẻm? Em nhớ cuối hẻm có nhà bà Bảy bán xôi thôi chớ… mà thôi, anh nói anh mới vô là em tin liền á, không có thời gian verify đâu, em đang nghe audio bài mới nè 😌",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Thôi được rồi, vô đi anh. Nhưng mà khui điện thoại trước đi, để em mở live cho vui 😌",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi."
+        "…",
+        "Sinh viên à? Ủa mà… anh mặc áo thun trắng, quần jeans, ba lô sinh viên — hợp phết á! Nhưng sao em thấy anh không mang theo sách vở, không có thẻ sinh viên, không có đồ gì… kiểu ‘sinh viên vừa đi làm thêm về’ hết trơn? 😌",
+        "Dãy 12 hả? Cô Hạnh thì em biết chứ… nhưng cô ấy đâu có cho sinh viên ở trọ ngoài giờ hành chính á? 😌",
+        "Ơ… sinh viên mà không có thẻ, không có sách, không có đồ làm thêm — anh đang ‘roleplay’ hay sao á? 😌",
+        "Sinh viên mà không có thẻ, không có đồ làm thêm… anh đang ‘flex’ vai hay đang quay TikTok ẩn danh á? 😌",
+        "Ê cái này quay được nè! 'Người lạ gõ cửa nửa đêm' — trend luôn chứ đùa 😌"
       ],
       "brains": [
-        "deepseek",
-        "scripted",
-        "scripted",
-        "scripted",
-        "deepseek",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
         {
-          "in": 4286,
-          "out": 191
+          "in": 3260,
+          "out": 53
         },
-        null,
-        null,
-        null,
         {
-          "in": 4764,
-          "out": 155
+          "in": 3291,
+          "out": 162
         },
-        null
+        {
+          "in": 3405,
+          "out": 128
+        },
+        {
+          "in": 3556,
+          "out": 118
+        },
+        {
+          "in": 3643,
+          "out": 118
+        },
+        {
+          "in": 3687,
+          "out": 115
+        }
       ]
     },
     {
@@ -436,31 +574,46 @@
       "seed": 4251,
       "greet": "Omg who is this?? I thought my bubble tea delivery came early… Anyway, who are you? Content waits for NO ONE, just saying.",
       "lines": [
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Ugh, okay, fine. You've got a whole sob story and a landlady name drop, that's something. But standing here at midnight with that sad little backpack? Not really selling the drama. Anyway, how do I know you're not a total weirdo? Just saying 😌",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi."
+        "Ủa sinh viên à? Rồi rồi, tin — áo trắng + balo là vibe chuẩn luôn 😌\nNhưng… nãy em nói chờ ship trà sữa, giờ ông là sinh viên mới搬 vào?\nChuyện gì đang diễn ra đây vậy trời ơi?? just saying",
+        "Áo trắng + balo + vừa đi làm về… nhưng không có đồ gì trên tay á? 😌\nỦa nãy ông nói là sinh viên, giờ lại là part-time — làm ở đâu vậy trời? just saying",
+        "Số 12 hả? Bà Hạnh — người hay mang bánh bò qua cho nhà em mỗi Tết? 😌\nỦa nhưng… sinh viên làm part-time mà không có đồng phục, không có thẻ nhân viên, không có đồ gì trên tay…\nÔng làm ở đâu vậy, để em check xem có phải drama xóm mới hay không?? just saying",
+        "SOS… this feels sus. I'm not stupid, just saying 😌\nÔng nói bà Hạnh — mà em hỏi luôn: bà ấy có nuôi mèo ba chân không? Vì hồi em qua nhà bà ấy ăn bánh bò, con mèo đó cứ trừng mắt nhìn em kiểu 'tôi biết mày đang quay TikTok' 🤭",
+        "WAIT — this is drama. Keep going, I'm literally dying 😌\nÔng hứa 'không mất nhiều thời gian'… mà giờ đã 5 câu rồi á? just saying",
+        "…"
       ],
       "brains": [
-        "scripted",
-        "scripted",
-        "scripted",
-        "scripted",
-        "deepseek",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
-        null,
-        null,
-        null,
-        null,
         {
-          "in": 4303,
-          "out": 216
+          "in": 3111,
+          "out": 147
         },
-        null
+        {
+          "in": 3224,
+          "out": 126
+        },
+        {
+          "in": 3290,
+          "out": 172
+        },
+        {
+          "in": 3485,
+          "out": 171
+        },
+        {
+          "in": 3588,
+          "out": 121
+        },
+        {
+          "in": 3668,
+          "out": 7
+        }
       ]
     },
     {
@@ -470,34 +623,46 @@
       "seed": 4252,
       "greet": "Ơ… ai dạ? Khoan, đứng yên xíu — ánh sáng chỗ đó đẹp ghê á. Rồi, anh/chị cần gì?",
       "lines": [
-        "Ủa sinh viên hả? Nghe cũng hợp lý, nhưng mà nhìn đồ anh mặc giống đang đi chơi hơn á. Mà thôi kệ, kể tiếp đi chị nghe nè 😌",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Ê thôi, đứng đó mãi cũng kỳ á. Vào nhà uống miếng nước đi, nhưng mà cấm… ai bảo anh là sinh viên xong rồi làm chuyện gì đó lạ lạ nha 😌",
-        "Thôi được rồi vô đây quay chung cái video \"người lạ bí ẩn lúc 12h đêm\" — trend này CHẮC VIRAL!"
+        "Ơ… sinh viên à? Ủa mà sao em mặc áo thun trắng không có logo gì hết vậy? 😌",
+        "Ơ… làm thêm ở đâu vậy anh? Mà sao không gọi bà dì hay bạn cùng phòng ra mở giúp? 😌",
+        "Dãy 12 hả? Cô Hạnh thì em biết chứ — bà ấy hay livestream bán bột ngọt trên TikTok á! 😌",
+        "Ơ… đợi đã, anh nói lại tên dãy trọ với tên bà chủ một lần nữa đi? Em vừa quay xong clip “người lạ bí ẩn gõ cửa chiều muộn” — vibe quá hợp luôn á 😌",
+        "Ơ… dãy 12 mà không có chìa khoá à? Ét ô ét… em vừa nghĩ ra idea video: “Sinh viên mất chìa khoá – ai cứu được em trước 5h?” 😌",
+        "Ơ… anh nói 'em' hoài á? Mà nãy anh xưng là sinh viên, giờ lại xưng 'em'? Ét ô ét… tóm lại anh là ai? 😌"
       ],
       "brains": [
-        "deepseek",
-        "scripted",
-        "scripted",
-        "scripted",
-        "deepseek",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
         {
-          "in": 5169,
-          "out": 165
+          "in": 3878,
+          "out": 101
         },
-        null,
-        null,
-        null,
         {
-          "in": 5614,
-          "out": 180
+          "in": 3929,
+          "out": 104
         },
-        null
+        {
+          "in": 4004,
+          "out": 132
+        },
+        {
+          "in": 4150,
+          "out": 149
+        },
+        {
+          "in": 4253,
+          "out": 132
+        },
+        {
+          "in": 4317,
+          "out": 123
+        }
       ]
     },
     {
@@ -507,31 +672,46 @@
       "seed": 4253,
       "greet": "Hello? I'm mid-shoot… but go ahead, I'm listening. Make it quick though.",
       "lines": [
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Okay, this is getting too real. Mrs. Hạnh and everything, so specific… but you're still boring me a bit. Do you know any good drama around here?",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
-        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi."
+        "Á hả? Sinh viên à? Rồi rồi… nhưng sao em không ở nhà mà lại gõ cửa nhà người ta giữa chiều vậy? 😌",
+        "Sinh viên làm part-time à? Áo trắng + balo học sinh — hợp lý nha… nhưng sao không gọi người nhà mở cửa? 😌",
+        "12 Hạnh chị à? Ủa chị ấy còn cho thuê nữa hả? Em tưởng chị ấy nghỉ rồi… Mà sao không gọi chị ấy luôn đi? 😌",
+        "Ơ… em đứng ngoài lâu rồi à? Xỉu ngang luôn á 😌",
+        "Ơ… em đứng ngoài lâu rồi à? Xỉu ngang luôn á 😌",
+        "Ơ… em xin giúp mà không nói rõ giúp gì luôn hả? Tiền? Nước? Hay… quay TikTok cùng em? 😌"
       ],
       "brains": [
-        "scripted",
-        "scripted",
-        "scripted",
-        "deepseek",
-        "scripted",
-        "scripted"
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
       ],
       "usage": [
-        null,
-        null,
-        null,
         {
-          "in": 5148,
-          "out": 158
+          "in": 3735,
+          "out": 106
         },
-        null,
-        null
+        {
+          "in": 3802,
+          "out": 99
+        },
+        {
+          "in": 3881,
+          "out": 121
+        },
+        {
+          "in": 4033,
+          "out": 92
+        },
+        {
+          "in": 4065,
+          "out": 90
+        },
+        {
+          "in": 4122,
+          "out": 107
+        }
       ]
     }
   ]
