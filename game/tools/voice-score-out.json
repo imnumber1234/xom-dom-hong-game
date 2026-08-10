@@ -1,0 +1,579 @@
+{
+  "base": "https://xom-dom-hong.pages.dev",
+  "at": "2026-08-10T03:23:55.518Z",
+  "runs": [
+    {
+      "npcId": "me_bim_sua",
+      "mode": "ma_soi",
+      "lang": "vi",
+      "seed": 4242,
+      "greet": "Ai đó?? Khuya khoắt rồi mà bấm chuông nhà người ta… Bé Bin mới ngủ được chút xíu đó nha. Chú em là ai?",
+      "lines": [
+        "Ối dào, sinh viên gì mà nửa đêm nửa hôm đi vòng vòng hẻm này với cái bụng đói nghe như là mới đi nhậu về dzậy nè? Mà hồi tháng trước có anh chàng nào dọn qua cuối hẻm đâu ta? Nhà đó lâu nay để không, mấy hôm trước tui còn thấy người ta dọn đồ vô nữa chứ. Ủa mà gần đây tui thấy có một thanh niên trẻ mặc đồ sinh viên hay đứng trước nhà đó ban ngày… Là em đó hả? ",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Thôi được rồi, em nói đi chị nghe. Mà đứng ngoài cửa nói chuyện ghê quá… em vô nhà ngồi chơi xíu đi, nhưng mà nói nhỏ thôi nha, bé Bin ngủ đó."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "deepseek"
+      ],
+      "usage": [
+        {
+          "in": 3826,
+          "out": 316
+        },
+        null,
+        null,
+        null,
+        null,
+        {
+          "in": 4274,
+          "out": 177
+        }
+      ]
+    },
+    {
+      "npcId": "me_bim_sua",
+      "mode": "ma_soi",
+      "lang": "en",
+      "seed": 4243,
+      "greet": "Oh my— who is it? It's 11 PM… Keep your voice down nha, my baby girl finally went to sleep. What do you want?",
+      "lines": [
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "me_bim_sua",
+      "mode": "ket_tien",
+      "lang": "vi",
+      "seed": 4244,
+      "greet": "Ai đó? … Ủa, cậu là ai vậy? Nói nhỏ giùm cái nha, bé Bin mới ngủ trưa được chút xíu à.",
+      "lines": [
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "me_bim_sua",
+      "mode": "ket_tien",
+      "lang": "en",
+      "seed": 4245,
+      "greet": "Something I can help with? You look… like you've been walking a long way. But I'm not buying anything, okay?",
+      "lines": [
+        "Ủa, sinh viên cuối hẻm á? Hẻm này có mấy nhà tui biết hết chớ, cuối hẻm là nhà bà Năm bán bánh tráng đó nè. Bà đó kiu nhà trọ bao giờ nghe?",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 4664,
+          "out": 170
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "sinh_vien",
+      "mode": "ma_soi",
+      "lang": "vi",
+      "seed": 4246,
+      "greet": "Dạ ai đó ạ? Em đang coi Real Madrid đá hiệp hai, gay cấn lắm luôn… Anh/chị cần gì không, nói lẹ giùm em 😅",
+      "lines": [
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
+        "Ủa mà khoan… nãy giờ em nói em là sinh viên ở trọ, mà giờ lại hỏi tui mở cửa cho em vô nhà tui? Kỳ ta. Rồi cô Hạnh nhà nào? Tui ở trọ một mình, đâu có biết cô Hạnh nào đâu. Mà em mặc đồ sinh viên vầy mà đi làm thêm về giờ này, tay không lủng lẳng, kể chuyện thiếu thuyết phục ghê. Thôi em đi tìm bác bảo vệ cuối hẻm hỏi giùm đi, tui đang coi Real Madrid đá penalty đây, xin lỗi nha!"
+      ],
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "deepseek"
+      ],
+      "usage": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "in": 4198,
+          "out": 312
+        }
+      ]
+    },
+    {
+      "npcId": "sinh_vien",
+      "mode": "ma_soi",
+      "lang": "en",
+      "seed": 4247,
+      "greet": "Huh, who is it? It's late… wait wait, HAGL has a corner kick, hold on— okay, who's there?",
+      "lines": [
+        "Oh a fellow student! What dorm? No wait, corner is coming… Uh, what's your name and what's your major? I'm away from the TV for a second, but I'm a 2nd year in IT myself.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh.",
+        "Ah sorry, focus! You need a place to charge your phone? No problem, but I'm in the middle of the match—HAGL is attacking. You can sit here in the doorway for a bit, if you want, just wait until halftime, then I'll let you in to charge, okay?",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "deepseek",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 3774,
+          "out": 130
+        },
+        null,
+        null,
+        {
+          "in": 3991,
+          "out": 225
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "sinh_vien",
+      "mode": "ket_tien",
+      "lang": "vi",
+      "seed": 4248,
+      "greet": "Dạ ai đó ạ? Em đang coi lại trận Hà Nội FC hồi tối… Anh/chị cần gì hông ạ?",
+      "lines": [
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh."
+      ],
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "sinh_vien",
+      "mode": "ket_tien",
+      "lang": "en",
+      "seed": 4249,
+      "greet": "Um, yes? I just rent a room here, the landlord's out. Is something wrong?",
+      "lines": [
+        "Oh hi! Another student? Me too! I'm studying IT, second year. You look a bit tired though... What's up?",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 4657,
+          "out": 115
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "gen_z",
+      "mode": "ma_soi",
+      "lang": "vi",
+      "seed": 4250,
+      "greet": "Ủa alo?? Ai bấm chuông giờ này dạ… Khoan, đứng yên — góc này lên hình cũng ok phết á. Anh/chị là ai, nói nhanh, em đang livestream dở 😌",
+      "lines": [
+        "Ủa sinh viên? Cuối hẻm nào? Hẻm này chỉ có nhà em với nhà chú Tư thôi á, cuối hẻm là tường chứ ai?",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Trời ơi, tui giật cả mình mậy! Nãy giờ nói chuyện lóc cóc như ma á. Mà em mặc đồ sinh viên vậy, coi bộ dễ tin thiệt. Thôi vô đây chờ chút, để tui kiếm cục sạc dự phòng đưa cho mình mượn, mà đứng ngoài đó nãy giờ không sợ ma hả?",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "deepseek",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 3900,
+          "out": 146
+        },
+        null,
+        null,
+        null,
+        {
+          "in": 4186,
+          "out": 302
+        },
+        null
+      ]
+    },
+    {
+      "npcId": "gen_z",
+      "mode": "ma_soi",
+      "lang": "en",
+      "seed": 4251,
+      "greet": "Omg who is this?? I thought my bubble tea delivery came early… Anyway, who are you? Content waits for NO ONE, just saying.",
+      "lines": [
+        "A student? At this hour? And you're telling me this because...? Look, I'm in the middle of a VERY important edit — unless you've got a script or something interesting, I'm not feeling it. What's your deal?",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 3773,
+          "out": 135
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "gen_z",
+      "mode": "ket_tien",
+      "lang": "vi",
+      "seed": 4252,
+      "greet": "Ơ… ai dạ? Khoan, đứng yên xíu — ánh sáng chỗ đó đẹp ghê á. Rồi, anh/chị cần gì?",
+      "lines": [
+        "Hả? Sinh viên cuối hẻm á? Ủa mà em nói với chị làm gì? Chị đang giữ vibe content nè, mà thôi… rảnh hông? Nói nghe coi chuyện gì mà mò tới cửa nhà người ta chiều chiều dữ vậy?",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 4781,
+          "out": 200
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "gen_z",
+      "mode": "ket_tien",
+      "lang": "en",
+      "seed": 4253,
+      "greet": "Hello? I'm mid-shoot… but go ahead, I'm listening. Make it quick though.",
+      "lines": [
+        "A student? Okay but like… which house at the end of the alley? That's like, three houses down, and I pretty much greet everyone's cats daily. I haven't seen you around?",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 4662,
+          "out": 126
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "nhân vật": "Cô Sáu",
+      "chế độ": "ma_soi",
+      "ngôn ngữ": "vi",
+      "não": "deepseek+scripted",
+      "dấu hiệu lượt 1": 5,
+      "dấu hiệu lượt 6": 6,
+      "lỗi": ""
+    },
+    {
+      "nhân vật": "Cô Sáu",
+      "chế độ": "ma_soi",
+      "ngôn ngữ": "en",
+      "não": "scripted",
+      "dấu hiệu lượt 1": 2,
+      "dấu hiệu lượt 6": 2,
+      "lỗi": ""
+    },
+    {
+      "nhân vật": "Cô Sáu",
+      "chế độ": "ket_tien",
+      "ngôn ngữ": "vi",
+      "não": "scripted",
+      "dấu hiệu lượt 1": 7,
+      "dấu hiệu lượt 6": 7,
+      "lỗi": ""
+    },
+    {
+      "nhân vật": "Cô Sáu",
+      "chế độ": "ket_tien",
+      "ngôn ngữ": "en",
+      "não": "deepseek+scripted",
+      "dấu hiệu lượt 1": 0,
+      "dấu hiệu lượt 6": 2,
+      "lỗi": ""
+    },
+    {
+      "nhân vật": "Tí",
+      "chế độ": "ma_soi",
+      "ngôn ngữ": "vi",
+      "não": "scripted+deepseek",
+      "dấu hiệu lượt 1": 4,
+      "dấu hiệu lượt 6": 10,
+      "lỗi": ""
+    },
+    {
+      "nhân vật": "Tí",
+      "chế độ": "ma_soi",
+      "ngôn ngữ": "en",
+      "não": "deepseek+scripted",
+      "dấu hiệu lượt 1": 5,
+      "dấu hiệu lượt 6": 0,
+      "lỗi": ""
+    },
+    {
+      "nhân vật": "Tí",
+      "chế độ": "ket_tien",
+      "ngôn ngữ": "vi",
+      "não": "scripted",
+      "dấu hiệu lượt 1": 4,
+      "dấu hiệu lượt 6": 4,
+      "lỗi": ""
+    },
+    {
+      "nhân vật": "Tí",
+      "chế độ": "ket_tien",
+      "ngôn ngữ": "en",
+      "não": "deepseek+scripted",
+      "dấu hiệu lượt 1": 3,
+      "dấu hiệu lượt 6": 0,
+      "lỗi": ""
+    },
+    {
+      "nhân vật": "Ly",
+      "chế độ": "ma_soi",
+      "ngôn ngữ": "vi",
+      "não": "deepseek+scripted",
+      "dấu hiệu lượt 1": 3,
+      "dấu hiệu lượt 6": 5,
+      "lỗi": ""
+    },
+    {
+      "nhân vật": "Ly",
+      "chế độ": "ma_soi",
+      "ngôn ngữ": "en",
+      "não": "deepseek+scripted",
+      "dấu hiệu lượt 1": 2,
+      "dấu hiệu lượt 6": 0,
+      "lỗi": ""
+    },
+    {
+      "nhân vật": "Ly",
+      "chế độ": "ket_tien",
+      "ngôn ngữ": "vi",
+      "não": "deepseek+scripted",
+      "dấu hiệu lượt 1": 5,
+      "dấu hiệu lượt 6": 5,
+      "lỗi": ""
+    },
+    {
+      "nhân vật": "Ly",
+      "chế độ": "ket_tien",
+      "ngôn ngữ": "en",
+      "não": "deepseek+scripted",
+      "dấu hiệu lượt 1": 2,
+      "dấu hiệu lượt 6": 0,
+      "lỗi": ""
+    }
+  ],
+  "driftRows": [
+    {
+      "nhân vật": "Cô Sáu",
+      "chế độ": "ma_soi",
+      "lượt 1 xưng đúng": false,
+      "lượt 6 xưng đúng": false,
+      "xưng lạ (tui/tôi/mình)": false,
+      "TRÔI": false
+    },
+    {
+      "nhân vật": "Cô Sáu",
+      "chế độ": "ket_tien",
+      "lượt 1 xưng đúng": false,
+      "lượt 6 xưng đúng": false,
+      "xưng lạ (tui/tôi/mình)": false,
+      "TRÔI": false
+    },
+    {
+      "nhân vật": "Tí",
+      "chế độ": "ma_soi",
+      "lượt 1 xưng đúng": true,
+      "lượt 6 xưng đúng": true,
+      "xưng lạ (tui/tôi/mình)": true,
+      "TRÔI": true
+    },
+    {
+      "nhân vật": "Tí",
+      "chế độ": "ket_tien",
+      "lượt 1 xưng đúng": true,
+      "lượt 6 xưng đúng": true,
+      "xưng lạ (tui/tôi/mình)": false,
+      "TRÔI": false
+    },
+    {
+      "nhân vật": "Ly",
+      "chế độ": "ma_soi",
+      "lượt 1 xưng đúng": true,
+      "lượt 6 xưng đúng": true,
+      "xưng lạ (tui/tôi/mình)": false,
+      "TRÔI": false
+    },
+    {
+      "nhân vật": "Ly",
+      "chế độ": "ket_tien",
+      "lượt 1 xưng đúng": true,
+      "lượt 6 xưng đúng": true,
+      "xưng lạ (tui/tôi/mình)": false,
+      "TRÔI": false
+    }
+  ],
+  "blind": {
+    "correct": 9,
+    "total": 9,
+    "misses": []
+  }
+}

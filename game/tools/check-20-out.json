@@ -1,0 +1,538 @@
+{
+  "base": "https://giong-that.xom-dom-hong.pages.dev",
+  "at": "2026-08-10T03:31:16.437Z",
+  "checks": [
+    {
+      "id": 1,
+      "what": "Cô Sáu · ma_soi · vi: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": true,
+      "evidence": "lượt1=7 lượt6=7 · não=scripted · \"Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.\""
+    },
+    {
+      "id": 2,
+      "what": "Cô Sáu · ma_soi · en: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": false,
+      "evidence": "lượt1=2 lượt6=2 · não=scripted · \"Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.\""
+    },
+    {
+      "id": 3,
+      "what": "Cô Sáu · ket_tien · vi: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": true,
+      "evidence": "lượt1=7 lượt6=7 · não=scripted · \"Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.\""
+    },
+    {
+      "id": 4,
+      "what": "Cô Sáu · ket_tien · en: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": false,
+      "evidence": "lượt1=10 lượt6=2 · não=scripted · \"Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.\""
+    },
+    {
+      "id": 5,
+      "what": "Tí · ma_soi · vi: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": true,
+      "evidence": "lượt1=8 lượt6=4 · não=scripted · \"Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.\""
+    },
+    {
+      "id": 6,
+      "what": "Tí · ma_soi · en: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": false,
+      "evidence": "lượt1=7 lượt6=0 · não=scripted · \"Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh.\""
+    },
+    {
+      "id": 7,
+      "what": "Tí · ket_tien · vi: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": true,
+      "evidence": "lượt1=10 lượt6=4 · não=scripted · \"Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.\""
+    },
+    {
+      "id": 8,
+      "what": "Tí · ket_tien · en: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": false,
+      "evidence": "lượt1=0 lượt6=0 · não=scripted · \"Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.\""
+    },
+    {
+      "id": 9,
+      "what": "Ly · ma_soi · vi: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": true,
+      "evidence": "lượt1=6 lượt6=5 · não=scripted · \"Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.\""
+    },
+    {
+      "id": 10,
+      "what": "Ly · ma_soi · en: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": false,
+      "evidence": "lượt1=0 lượt6=0 · não=scripted · \"Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.\""
+    },
+    {
+      "id": 11,
+      "what": "Ly · ket_tien · vi: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": true,
+      "evidence": "lượt1=7 lượt6=3 · não=scripted · \"Thôi được rồi vô đây quay chung cái video \"người lạ bí ẩn lúc 12h đêm\" — trend này CHẮC VI\""
+    },
+    {
+      "id": 12,
+      "what": "Ly · ket_tien · en: lượt 6 còn >= 3 dấu hiệu giọng",
+      "pass": false,
+      "evidence": "lượt1=0 lượt6=0 · não=scripted · \"Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.\""
+    },
+    {
+      "id": 13,
+      "what": "Cô Sáu: không trôi xưng hô sau 6 lượt (VN, 2 chế độ)",
+      "pass": true,
+      "evidence": "ma_soi: lượt1=không lượt6=không xưnglạ=false · ket_tien: lượt1=không lượt6=không xưnglạ=false"
+    },
+    {
+      "id": 14,
+      "what": "Tí: không trôi xưng hô sau 6 lượt (VN, 2 chế độ)",
+      "pass": true,
+      "evidence": "ma_soi: lượt1=đúng lượt6=đúng xưnglạ=false · ket_tien: lượt1=đúng lượt6=đúng xưnglạ=false"
+    },
+    {
+      "id": 15,
+      "what": "Ly: không trôi xưng hô sau 6 lượt (VN, 2 chế độ)",
+      "pass": true,
+      "evidence": "ma_soi: lượt1=đúng lượt6=đúng xưnglạ=false · ket_tien: lượt1=không lượt6=không xưnglạ=false"
+    },
+    {
+      "id": 16,
+      "what": "Giám khảo mù đoán đúng người nói >= 8/9",
+      "pass": true,
+      "evidence": "9/9"
+    },
+    {
+      "id": 17,
+      "what": "Câu mẫu chọn theo hash (lượt+seed): lặp lại giống hệt, đổi theo lượt, luôn đúng 2 câu khác nhau",
+      "pass": true,
+      "evidence": "giống-khi-lặp=true đổi-theo-lượt=true đúng-2-câu-khác-nhau=true"
+    },
+    {
+      "id": 18,
+      "what": "Cả 36 câu mẫu + 3 dòng tic khớp NGUYÊN VĂN voice-sheet-lucas.md (không tự sửa lời Lucas)",
+      "pass": true,
+      "evidence": "36/36 câu + 3 tic khớp nguyên văn"
+    },
+    {
+      "id": 19,
+      "what": "voice_en = đúng 6 câu EN Lucas viết trong sổ, đúng thứ tự (không phải bản dịch máy của câu VN)",
+      "pass": true,
+      "evidence": "3 nhân vật × 6 câu EN khớp đúng thứ tự"
+    },
+    {
+      "id": 20,
+      "what": "VN: Cô Sáu + Tí không lẫn tiếng Anh và đủ dấu · EN: không trả lời nhầm tiếng Việt",
+      "pass": false,
+      "evidence": "me_bim_sua/ma_soi EN lượt1 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt2 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt3 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt4 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt5 t"
+    }
+  ],
+  "passed": 13,
+  "total": 20,
+  "runs": [
+    {
+      "npcId": "me_bim_sua",
+      "mode": "ma_soi",
+      "lang": "vi",
+      "seed": 4242,
+      "greet": "Ai đó?? Khuya khoắt rồi mà bấm chuông nhà người ta… Bé Bin mới ngủ được chút xíu đó nha. Chú em là ai?",
+      "lines": [
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Trời đất ơi, chú em nói sao cô nghe mà xốn xang quá à! Khuya rồi mà còn bơ vơ như vậy nữa. Cô thấy câu chuyện nghe cũng hợp lý đó, nhưng trước khi mời vô, cô hỏi chú em cái này nha. Chú em có quen ai trong xóm này không, hay biết quán cơm bà Tư ở đầu hẻm không?",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "deepseek",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        null,
+        null,
+        null,
+        {
+          "in": 4542,
+          "out": 360
+        },
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "me_bim_sua",
+      "mode": "ma_soi",
+      "lang": "en",
+      "seed": 4243,
+      "greet": "Oh my— who is it? It's 11 PM… Keep your voice down nha, my baby girl finally went to sleep. What do you want?",
+      "lines": [
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "me_bim_sua",
+      "mode": "ket_tien",
+      "lang": "vi",
+      "seed": 4244,
+      "greet": "Ai đó? … Ủa, cậu là ai vậy? Nói nhỏ giùm cái nha, bé Bin mới ngủ trưa được chút xíu à.",
+      "lines": [
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "me_bim_sua",
+      "mode": "ket_tien",
+      "lang": "en",
+      "seed": 4245,
+      "greet": "Something I can help with? You look… like you've been walking a long way. But I'm not buying anything, okay?",
+      "lines": [
+        "Oh, a student at the end of the alley? My goodness, but I swear I haven't seen your face around here before, you hear? I know everyone in this xóm — Mrs. Hai at number 7, the fishmonger, even the cat that sleeps on the roof. Tell me, which exact house are you renting? And hold on, you say you moved in a month ago but you look like you've been through a jungle, not a dorm, nha?",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 4886,
+          "out": 192
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "sinh_vien",
+      "mode": "ma_soi",
+      "lang": "vi",
+      "seed": 4246,
+      "greet": "Dạ ai đó ạ? Em đang coi Real Madrid đá hiệp hai, gay cấn lắm luôn… Anh/chị cần gì không, nói lẹ giùm em 😅",
+      "lines": [
+        "Dạ thôi anh… giờ khuya rồi mà em cũng không biết anh là ai, em nói hơi quê nhưng mà để em xem đá xong rồi tính nha anh 😅",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Real Madrid vừa suýt ghi bàn xỉu luôn á anh."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 4222,
+          "out": 220
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "sinh_vien",
+      "mode": "ma_soi",
+      "lang": "en",
+      "seed": 4247,
+      "greet": "Huh, who is it? It's late… wait wait, HAGL has a corner kick, hold on— okay, who's there?",
+      "lines": [
+        "Um, hi, sorry—just getting distracted by the game. HAGL's playing so good right now. Oh, you just moved in? Nice, I'm Tí. Which room are you at? 😅",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh.",
+        "Um, sorry—Mrs. Hạnh's block is the yellow one, right? That's a few doors down, not here. You're kinda lost, nha? Cứ vậy là nghi rồi đó 😅",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, HAGL vừa suýt ghi bàn xỉu luôn á anh."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 3994,
+          "out": 205
+        },
+        null,
+        {
+          "in": 4134,
+          "out": 177
+        },
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "sinh_vien",
+      "mode": "ket_tien",
+      "lang": "vi",
+      "seed": 4248,
+      "greet": "Dạ ai đó ạ? Em đang coi lại trận Hà Nội FC hồi tối… Anh/chị cần gì hông ạ?",
+      "lines": [
+        "Dạ… sinh viên mới dọn hả anh? Em cũng ở trọ một mình nè, lúc mới dọn cũng bỡ ngỡ lắm. Mà… anh ghé có chuyện gì hông ạ? 😅",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, Hà Nội FC vừa suýt ghi bàn xỉu luôn á anh."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 5113,
+          "out": 162
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "sinh_vien",
+      "mode": "ket_tien",
+      "lang": "en",
+      "seed": 4249,
+      "greet": "Um, yes? I just rent a room here, the landlord's out. Is something wrong?",
+      "lines": [
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh.",
+        "Dạ… em cũng chưa hiểu lắm, mà thôi kệ, MU vừa suýt ghi bàn xỉu luôn á anh."
+      ],
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "npcId": "gen_z",
+      "mode": "ma_soi",
+      "lang": "vi",
+      "seed": 4250,
+      "greet": "Ủa alo?? Ai bấm chuông giờ này dạ… Khoan, đứng yên — góc này lên hình cũng ok phết á. Anh/chị là ai, nói nhanh, em đang livestream dở 😌",
+      "lines": [
+        "Ủa sinh viên trọ cuối hẻm? Em nhớ cuối hẻm có nhà bà Bảy bán xôi thôi chớ… mà thôi, anh nói anh mới vô là em tin liền á, không có thời gian verify đâu, em đang nghe audio bài mới nè 😌",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Thôi được rồi, vô đi anh. Nhưng mà khui điện thoại trước đi, để em mở live cho vui 😌",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi."
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "deepseek",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 4286,
+          "out": 191
+        },
+        null,
+        null,
+        null,
+        {
+          "in": 4764,
+          "out": 155
+        },
+        null
+      ]
+    },
+    {
+      "npcId": "gen_z",
+      "mode": "ma_soi",
+      "lang": "en",
+      "seed": 4251,
+      "greet": "Omg who is this?? I thought my bubble tea delivery came early… Anyway, who are you? Content waits for NO ONE, just saying.",
+      "lines": [
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Ugh, okay, fine. You've got a whole sob story and a landlady name drop, that's something. But standing here at midnight with that sad little backpack? Not really selling the drama. Anyway, how do I know you're not a total weirdo? Just saying 😌",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi."
+      ],
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "deepseek",
+        "scripted"
+      ],
+      "usage": [
+        null,
+        null,
+        null,
+        null,
+        {
+          "in": 4303,
+          "out": 216
+        },
+        null
+      ]
+    },
+    {
+      "npcId": "gen_z",
+      "mode": "ket_tien",
+      "lang": "vi",
+      "seed": 4252,
+      "greet": "Ơ… ai dạ? Khoan, đứng yên xíu — ánh sáng chỗ đó đẹp ghê á. Rồi, anh/chị cần gì?",
+      "lines": [
+        "Ủa sinh viên hả? Nghe cũng hợp lý, nhưng mà nhìn đồ anh mặc giống đang đi chơi hơn á. Mà thôi kệ, kể tiếp đi chị nghe nè 😌",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Ê thôi, đứng đó mãi cũng kỳ á. Vào nhà uống miếng nước đi, nhưng mà cấm… ai bảo anh là sinh viên xong rồi làm chuyện gì đó lạ lạ nha 😌",
+        "Thôi được rồi vô đây quay chung cái video \"người lạ bí ẩn lúc 12h đêm\" — trend này CHẮC VIRAL!"
+      ],
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "deepseek",
+        "scripted"
+      ],
+      "usage": [
+        {
+          "in": 5169,
+          "out": 165
+        },
+        null,
+        null,
+        null,
+        {
+          "in": 5614,
+          "out": 180
+        },
+        null
+      ]
+    },
+    {
+      "npcId": "gen_z",
+      "mode": "ket_tien",
+      "lang": "en",
+      "seed": 4253,
+      "greet": "Hello? I'm mid-shoot… but go ahead, I'm listening. Make it quick though.",
+      "lines": [
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Okay, this is getting too real. Mrs. Hạnh and everything, so specific… but you're still boring me a bit. Do you know any good drama around here?",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.",
+        "Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi."
+      ],
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "deepseek",
+        "scripted",
+        "scripted"
+      ],
+      "usage": [
+        null,
+        null,
+        null,
+        {
+          "in": 5148,
+          "out": 158
+        },
+        null,
+        null
+      ]
+    }
+  ]
+}

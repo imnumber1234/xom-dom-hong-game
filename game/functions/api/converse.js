@@ -89,6 +89,44 @@ const GOSSIP_EVT = {
   }
 };
 
+// ── v0.7 T2/T3 — SỔ GIỌNG ─────────────────────────────────────────────────────
+// Thí nghiệm 2026-08-10 (plan-v0.7 §3): thẻ nhân vật KHÔNG đủ để nghe ra một CON NGƯỜI cụ thể.
+// 6 câu mẫu thật cho gấp 2-4 lần dấu hiệu giọng riêng VÀ chặn trôi xưng hô ở lượt 6.
+// Chọn 2 câu bằng HASH (seed cuộc nói chuyện + số lượt) — KHÔNG random, để chơi lại giống hệt.
+export function pickVoiceLines(persona, lang, turn, seed) {
+  const pool = (lang === 'en' && Array.isArray(persona.voice_en) && persona.voice_en.length)
+    ? persona.voice_en : persona.voice;
+  if (!Array.isArray(pool) || pool.length < 2) return [];
+  const n = pool.length;
+  const h = (Math.abs(Number(seed) || 0) % 9973) * 31 + (Math.abs(Number(turn) || 0) % 97) * 7 + 13;
+  const a = h % n;
+  const b = (a + 1 + (h % (n - 1))) % n;   // luôn khác a → không bao giờ chèn 2 câu trùng nhau
+  return [pool[a], pool[b]];
+}
+
+// Khối câu mẫu đi vào phần ĐỘNG (tin nhắn cuối), KHÔNG vào system — để system giữ nguyên
+// suốt cuộc và vẫn được bộ nhớ đệm của Anthropic dùng lại → chi phí thêm mỗi lượt = 0đ (§6).
+function voiceNote(persona, lang, turn, seed) {
+  const lines = pickVoiceLines(persona, lang, turn, seed);
+  if (!lines.length) return '';
+  const bullets = lines.map(l => '· ' + l).join('\n');
+  // Đo thật 2026-08-10: nếu chỉ dặn "đừng chép nguyên văn" thì Haiku vẫn bê nguyên cả câu.
+  // Phải nói rõ hai điều: (a) đây là câu nói ở CHUYỆN KHÁC, (b) trùng quá 4 chữ liên tiếp là phải viết lại.
+  return lang === 'en'
+    ? `\n[Voice reference — two lines this character said in OTHER conversations, about other things. They are NOT answers to what the stranger just said. Match the rhythm, sentence length and word choice; then say something NEW that actually answers this turn. If your line repeats more than 4 words in a row from the samples, rewrite it:\n${bullets}]`
+    : `\n[Nhại giọng — hai câu nhân vật này từng nói ở CHUYỆN KHÁC, không phải câu trả lời cho lượt này. Hãy bắt chước NHỊP câu, độ dài câu và cách chọn chữ, rồi nói một câu MỚI đáp đúng vào lượt này. Nếu câu bạn viết trùng quá 4 chữ liên tiếp với câu mẫu thì viết lại câu khác:\n${bullets}]`;
+}
+
+// T3 — chống trôi giọng: từ lượt 4 trở đi nhắc lại tic + xưng hô. Thí nghiệm cho thấy chỗ vỡ
+// là lượt 5-6 (Bà Tư trôi giọng Bắc → Nam, Hằng nhảy "em" → "chị").
+function voiceAnchor(persona, lang, turn) {
+  if (turn < 4) return '';
+  if (lang === 'en') {
+    return `\n[Voice re-anchor (this conversation is getting long): keep the exact same habits — ${persona.tic_en || ''}. Stay in the same register: ${persona.pronoun_en || ''}. Do NOT drift into a neutral or generic voice.]`;
+  }
+  return `\n[Nhắc giọng (hội thoại đã dài): giữ ĐÚNG thói quen nói lúc đầu — ${persona.tic || ''}. Xưng hô GIỮ NGUYÊN: ${persona.pronoun || ''}. Không được đổi giọng hay đổi xưng hô giữa chừng, cũng không được nói giọng trung tính chung chung.]`;
+}
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status, headers: { 'Content-Type': 'application/json; charset=utf-8' }
@@ -203,8 +241,23 @@ export async function onRequestPost({ request, env }) {
         ? ' NGOẠI LỆ DUY NHẤT: Ly là Gen Z làm content nên được giữ vài tiếng lóng đã quen tai (slay, vibe, drama, content, trend, flex, cringe) — tối đa 2 từ mỗi lượt, không nói nguyên câu tiếng Anh.'
         : ' Nhân vật này TUYỆT ĐỐI không chêm tiếng Anh, kể cả một từ.');
   }
+  // v0.7 T2 — dòng TIC đặt SÁT CUỐI phần system: chỗ cuối được mô hình nhớ tốt nhất.
+  // Phần này ĐỨNG YÊN suốt cuộc nói chuyện → vẫn nằm trong khối được nhớ đệm, không tốn thêm tiền.
+  if (persona.tic || persona.pronoun) {
+    system += lang === 'en'
+      ? `\n\nHOW THIS CHARACTER TALKS (most important — read last, obey first):
+· Verbal tic, in almost every line: ${persona.tic_en || persona.tic || ''}
+· Register, locked for the whole conversation: ${persona.pronoun_en || ''}
+Never slide into a neutral, generic, "helpful assistant" voice. If a line could have been said by any of the three neighbours, rewrite it.`
+      : `\n\nCÁCH NÓI CỦA NHÂN VẬT NÀY (quan trọng nhất — đọc sau cùng, làm theo trước tiên):
+· Thói quen nói lặp, gần như câu nào cũng có: ${persona.tic || ''}
+· Xưng hô KHOÁ CỨNG cả cuộc nói chuyện: ${persona.pronoun || ''}
+Tuyệt đối không trôi về giọng trung tính chung chung. Nếu một câu mà ba người hàng xóm ai nói cũng được thì viết lại câu khác.`;
+  }
 
   const history = Array.isArray(body.history) ? body.history.slice(-16) : [];
+  // v0.7 — lượt thứ mấy (dùng cho hash chọn câu mẫu + mốc nhắc giọng lượt 4+)
+  const turn = Math.max(1, Math.ceil(history.length / 2));
   const messages = [{
     role: 'user',
     content: mode === 'ket_tien'
@@ -239,6 +292,7 @@ và HOÀN CẢNH của nhân vật: người mẹ bỉm sữa hay cho đồ ăn;
 Gen Z thích drama thì cho đậm nếu thấy vui. Chỉ chọn moi_com khi thật sự quý mến.
 Chọn viec_vat nếu nhân vật muốn người lạ phụ một tay trước. TUYỆT ĐỐI KHÔNG nói ra con số tiền —
 game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.suspicion}/100.]`
+        + voiceNote(persona, lang, turn, seed) + voiceAnchor(persona, lang, turn)
     });
     const hOut = await tryHaiku(env, system, messages, OUTCOME_TOOL).catch(() => null);
     if (hOut) return json(hOut);
@@ -250,7 +304,7 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
   // Hidden state hint on the last user turn (helps calibrate tone + invite pacing)
   const last = messages[messages.length - 1];
   if (last.role === 'user') {
-    last.content += `\n\n[Trạng thái ngầm của nhân vật — KHÔNG nhắc tới trong thoại: tin=${state.trust}/100, nghi=${state.suspicion}/100, hứng thú=${state.interest}/100, kiên nhẫn=${state.patience}/100. Lượt nói chuyện thứ ${Math.ceil(history.length / 2)}.]`;
+    last.content += `\n\n[Trạng thái ngầm của nhân vật — KHÔNG nhắc tới trong thoại: tin=${state.trust}/100, nghi=${state.suspicion}/100, hứng thú=${state.interest}/100, kiên nhẫn=${state.patience}/100. Lượt nói chuyện thứ ${turn}.]`;
     // v0.3 B5 + B6 + B8 — chỉ mode Kẹt Tiền: giờ giấc + xóm đã thấy mặt bao nhiêu lần.
     if (mode === 'ket_tien') {
       const knocked = Number(body.knocked) || 0;
@@ -293,6 +347,9 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
     if (secs > 0 && secs <= 45) {
       last.content += '\n[Trời sắp sáng, nhân vật SỐT RUỘT: hoặc dồn ép hỏi nhanh cho ra lẽ, hoặc nếu câu chuyện tới giờ vẫn vô lý thì nói kiểu "Vô lý quá, thôi đi giùm cái" rồi đặt shutdown=true.]';
     }
+    // v0.7 T2/T3 — ĐẶT CUỐI CÙNG, ngay trước lúc mô hình viết: 2 câu mẫu xoay vòng theo lượt,
+    // rồi (từ lượt 4) nhắc lại tic + xưng hô để chống trôi giọng.
+    last.content += voiceNote(persona, lang, turn, seed) + voiceAnchor(persona, lang, turn);
   }
 
   // Provider chain: Haiku (best VN comedy) → DeepSeek (works from CF Asia colos where

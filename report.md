@@ -1,3 +1,45 @@
+# Báo cáo Session B — v0.7 GIỌNG THẬT (2026-08-10)
+
+**🟡 DỪNG Ở PREVIEW: https://giong-that.xom-dom-hong.pages.dev — link chính KHÔNG bị đụng.**
+Bài kiểm **13/20**. Không đạt 20/20 nên theo đúng luật §8 Q3 của kế hoạch: không tự đẩy lên link chính.
+
+**Điều quan trọng nhất: phần giọng làm xong và đo được. Cái chặn là NÃO CỦA GAME đang hỏng, có từ trước v0.7.**
+
+## Làm được gì
+
+| Việc | Xong | Đo bằng gì |
+|---|---|---|
+| Sổ giọng của Lucas vào thẳng 3 thẻ nhân vật | ✅ | 36/36 câu + 3 dòng tic khớp **nguyên văn** `voice-sheet-lucas.md`, máy so từng chữ. Câu tiếng Anh là câu Lucas VIẾT bằng tiếng Anh, không phải bản dịch máy — so đúng thứ tự trong bảng EN của sổ |
+| Mỗi lượt chèn 2 câu mẫu, xoay vòng theo lượt | ✅ | chọn theo hash (mã ván + số lượt) — chơi lại y hệt, không random. In ra lời dặn thật để xem: lượt 1/3/4/6 khác nhau, luôn đúng 2 câu và không trùng nhau |
+| Dòng "thói quen nói" đặt sát cuối lời dặn | ✅ | in ra thấy nằm cuối cùng phần cố định |
+| Nhắc giọng từ lượt 4 (chống trôi) | ✅ | lượt 1 và 3 không có, lượt 4 và 6 có — cả bản Việt lẫn Anh |
+| Máy chấm giọng | ✅ | `game/tools/` — đếm dấu hiệu giọng lượt 1 vs lượt 6, dò trôi xưng hô, giám khảo mù, dò chép nguyên văn, kiểm trình duyệt |
+
+## Bốn con số chốt trước khi test (§6)
+
+| Chốt trước | Thật | |
+|---|---|---|
+| Dấu hiệu giọng ở lượt 6 ≥ 3 | Tiếng Việt **6/6 ván đạt** (5-10 dấu hiệu, trước đây 0-2) · Tiếng Anh **0/6** vì lượt cuối rơi về câu đóng hộp | ❌ do não hỏng |
+| Trôi xưng hô 0/3 nhân vật | **0/3** (trước 1/3) | ✅ |
+| Giám khảo mù ≥ 8/9 | **9/9** | ✅ |
+| Tốn thêm 0đ mỗi lượt | **0đ** — câu mẫu nằm ở phần thay đổi, khối cố định vẫn được nhớ đệm | ✅ |
+
+0 lỗi console, 0 request hỏng trên preview.
+
+## Vì sao dừng — hai cái hỏng KHÔNG phải do v0.7
+
+1. **Haiku hết tiền.** Khoá Anthropic báo "credit balance too low". Cả link chính lẫn preview đều đã tụt xuống dùng DeepSeek từ hôm nay. Nạp tiền là quyết định của Lucas → không tự làm.
+2. **DeepSeek trả về rỗng khi hội thoại dài.** Đo tay: bản CŨ (chưa có sổ giọng) cũng chỉ 3/5 lượt trả lời được; bản mới lời dặn dài hơn nên 0-1/5. Bỏ chế độ JSON hay đổi nhiệt độ đều không cứu. Rỗng → game rơi về câu đóng hộp, và bộ câu đóng hộp **chỉ có tiếng Việt** nên người chơi English nhận câu Việt.
+
+Ba cách sửa + đề xuất nằm ở `pending.md` mục 1-2. Chưa làm cái nào vì cách tốt nhất dính tới tiền.
+
+## Vấn đề mới ghi lại
+
+- AI **chép nguyên văn** câu mẫu nếu không cấm rõ (lần đầu bê nguyên chuỗi 15 chữ). Đã siết bằng luật "trùng quá 4 chữ liên tiếp thì viết lại" → đo lại tối đa còn 2-4 chữ, 0 lượt vi phạm.
+- Ba cái bẫy trong chính máy đo (chữ có dấu · "một mình" · giám khảo trả lời lan man) — đã sửa, ghi vào `pending.md` mục 5 để lần sau khỏi vấp.
+
+---
+
 # Báo cáo Session B — v0.6.1 SẴN SÀNG CHO BẠN BÈ (2026-08-09)
 
 **✅ ĐÃ LÊN LINK CHÍNH 2026-08-09: https://xom-dom-hong.pages.dev** (Lucas gật "live").
