@@ -302,6 +302,7 @@ XDH.UI = (function () {
     if (XDH.DEBUG) $('debug-log').innerHTML = '';
     $('meters').style.display = XDH.DEBUG ? 'flex' : 'none';   // §1: numbers hidden — door + bubbles instead
     XDH.Portraits.draw($('npc-portrait'), npc, 'neutral');
+    $('convo').style.backgroundImage = 'url("assets/art/bg/door_' + npc.id + '.png")';  // v0.8: đứng trước cửa NHÀ ĐÓ
     $('dialogue').innerHTML = '';
     $('transcript-live').textContent = '';
     $('text-in').value = '';
@@ -378,12 +379,14 @@ XDH.UI = (function () {
       const step = () => {
         if (typingAbort || i >= text.length) {
           el.textContent = text;
+          XDH.Portraits.rest($('npc-portrait'), npc);       // v0.8: hết câu thì miệng khép lại
           if (el.parentElement) el.parentElement.scrollTop = 1e9;
           resolve(); return;
         }
         el.textContent = text.slice(0, ++i);
         const ch = text[i - 1];
         if (i % 2 === 0 && ch && !' .,!?…'.includes(ch) && npc) XDH.Blips.blip(npc.blipHz, emotion);
+        XDH.Portraits.mouth($('npc-portrait'), ch, npc);    // v0.8: nhép miệng theo từng chữ
         if (el.parentElement) el.parentElement.scrollTop = 1e9;
         const pause = PUNCT_PAUSE[ch] || 0;
         setTimeout(step, base + pause * pacingMult);
