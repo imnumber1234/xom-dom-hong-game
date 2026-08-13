@@ -117,7 +117,7 @@
     {
       "what": "Viec vat — tran 2 lan/nha/dem (lan 3 bi tu choi) + tong <=120k",
       "pass": true,
-      "ev": "{\"perHouse\": {\"0\": 2}, \"nightTotal\": 70}"
+      "ev": "{\"perHouse\": {\"0\": 2}, \"nightTotal\": 65}"
     },
     {
       "what": "Soi Du — chua nhan nhiem vu: KHONG thung rac, KHONG o HUD 🎯",

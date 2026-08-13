@@ -316,7 +316,9 @@ XDH.Convo = (function () {
           ...(active.nightMemory ? { nightMemory: active.nightMemory, pastClaim: active.pastClaim } : {}),
           ...modeContext(),         // v0.3: mode + giờ (B6) + số nhà đã gõ (B5) + ngày (B8)
           // v1.0 hệ nhiệm vụ: chỉ mode ma sói mới gửi (missions.js tự gác cửa)
-          ...(XDH.Mission ? XDH.Mission.convoContext() : {})
+          ...(XDH.Mission ? XDH.Mission.convoContext() : {}),
+          // v1.0.1 hộp kính: ?debug=1 → server trả thêm vì-sao-chặn tín hiệu + có-viết-lại-vì-lặp
+          ...(XDH.DEBUG ? { debug: true } : {})
         })
       });
       res = await r.json();
@@ -387,7 +389,15 @@ XDH.Convo = (function () {
         dT: appliedV.trust, dS: appliedV.suspicion, dI: appliedV.interest, dP: appliedV.patience,
         contradiction: contraApplied, corroboration: corroApplied,
         extra: [appliedC ? `mâu-thuẫn tin ${appliedC.trust} nghi ${appliedC.suspicion}` : '',
-                appliedR ? `chống-lưng tin ${appliedR.trust} nghi ${appliedR.suspicion}` : ''].filter(Boolean).join(' | '),
+                appliedR ? `chống-lưng tin ${appliedR.trust} nghi ${appliedR.suspicion}` : '',
+                // v1.0.1 hộp kính nhiệm vụ: tín hiệu thô → sau cổng (kèm lý do) + cờ viết-lại-vì-lặp
+                res.debug ? `nv ${res.debug.mission ? res.debug.mission.stage + '·manh mối ' + res.debug.mission.clues : '—'}`
+                  + ` tín hiệu ${res.debug.signal_raw || '·'}→${res.debug.signal_final || '·'}`
+                  + (res.debug.gate_reason && res.debug.gate_reason !== 'qua' ? ` [${res.debug.gate_reason}]` : '')
+                  + (res.debug.retried ? ' · ĐÃ BẮT VIẾT LẠI VÌ LẶP' : '')
+                  + (res.debug.scripted_vi ? ' · KỊCH BẢN (' + res.debug.scripted_vi + ')' : '')
+                  + (res.debug.bench && Object.keys(res.debug.bench).length
+                      ? ' · não nghỉ: ' + Object.entries(res.debug.bench).map(([n, s]) => n + ' ' + s + 's').join(', ') : '') : ''].filter(Boolean).join(' | '),
         brain: res.brain || (res.scripted ? 'kịch bản' : '?'),
         state: st
       });
@@ -426,6 +436,8 @@ XDH.Convo = (function () {
     if (!isGreeting && ai.mission_signal && XDH.Mission) {
       XDH.Mission.onSignal(ai.mission_signal, active.npc.id, st, { turns: active.turns, houseId: active.houseId });
     }
+    // v1.0.1 "ấm dần": AI muốn khai mà kẹt cổng quan tâm → CODE nhích +hứng thú (số ở config)
+    if (!isGreeting && ai.mission_probe && XDH.Mission) XDH.Mission.onProbe(st);
     // v0.6 F5.1 — bong bóng 💭 RÒ RỈ Ý ĐỊNH trước 1 lượt. CODE quyết, không nhờ AI.
     const leak = leakThought();
     if (leak) XDH.UI.setThought(leak);

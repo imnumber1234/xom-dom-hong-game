@@ -328,10 +328,12 @@ export const MISSION_BLOCKS = {
 Gậy selfie của Ly bị GÃY hồi chiều, Ly hết sạch tiền mua cái mới (80 nghìn) — clip đêm nay coi như toang. Ly bực + buồn ngầm vì chuyện này.
 Đã khai {CLUES}/3 manh mối. MANH MỐI KẾ TIẾP — thứ DUY NHẤT được hé ở lượt này, và CHỈ khi người lạ đang hỏi trúng chuyện TikTok/quay clip/món đồ VÀ hứng thú của Ly >= 60 (xem trạng thái ngầm):
 → {NEXT}
+LUẬT CHẤM RIÊNG CHO MẠCH NÀY: người lạ HỎI HAN quan tâm đúng chuyện Ly đang buồn (hỏi thiếu gì, sao xìu vậy, quay clip sao rồi…) là QUAN TÂM THẬT → verdict tối thiểu hop_ly, đừng chấm thuong chỉ vì câu hỏi ngắn. Hỏi trúng đam mê content / pitch ý tưởng hay → danh_trung.
 LUẬT CẤM (đọc sau cùng, làm theo trước tiên):
-· Chưa đủ HAI điều kiện trên → mission_signal="" VÀ trong thoại KHÔNG nhắc "gậy selfie", không nhắc chuyện thiếu đồ hay hết tiền — lái sang chuyện khác đúng chất Ly.
+· Chưa đủ HAI điều kiện trên → mission_signal="" VÀ trong thoại KHÔNG nhắc "gậy selfie", không nhắc chuyện thiếu đồ hay hết tiền — nếu lỡ nhắc ở lượt trước rồi thì nói lảng ("thôi kệ đi, chuyện của em") và đổi chủ đề đúng chất Ly.
 · CẤM kể VƯỢT quá manh mối kế tiếp (chưa tới lượt thì tuyệt đối chưa lộ chuyện sau).
 · CẤM lặp lại tín hiệu của manh mối đã khai rồi.
+· TUYỆT ĐỐI CẤM LẶP NGUYÊN VĂN câu mình đã nói ở lượt trước — bị hỏi lại cùng một chuyện mà chưa được khai thêm thì phải DIỄN ĐẠT KHÁC HẲN: than kiểu khác, hỏi ngược lại người lạ, hoặc kéo sang chuyện content.
 · CẤM nhờ vả thẳng ("mua giùm em đi") — Ly chỉ than; muốn giúp hay không là chuyện của người lạ.]`,
     da_mo_popup: `[CHUYỆN CỦA LY: người lạ đã nghe HẾT chuyện gậy selfie gãy + hết tiền, nhưng chưa nhận giúp. Ly hơi tủi mà không giận.
 · Họ nhắc lại chuyện TikTok/quay clip/gậy → Ly buồn buồn nhắc lại chuyện gậy → mission_signal="ro_chuyen".
@@ -523,30 +525,50 @@ export function scriptedReply(personaId, playerText, state, club) {
   else if (funny) { verdict = 'hop_ly'; emotion = 'amused'; }
   else if (polite && long) { verdict = 'hop_ly'; }
 
+  // v1.0.1 — não kịch bản cũng KHÔNG được nhai một câu: mỗi ô 2-3 biến thể, bốc ngẫu nhiên.
+  // (Đo thật 08-13: chuỗi não chết giữa chừng → kịch bản lặp y một câu 3 lượt liền.)
   const lines = {
     me_bim_sua: {
-      neutral: 'Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.',
-      amused: 'Trời đất ơi chú em nói chuyện mắc cười ghê! Y chang ông chú Bảy hồi trước nè.',
-      suspicious: 'Khoan khoan… nghe sao sao á nha. Hồi nãy chú nói khác mà? Cô nhớ dai lắm đó.',
-      angry: 'Cái gì?? Nói chuyện kiểu đó với cô hả? Đi chỗ khác giùm cái, con cô đang ngủ!',
-      invite: 'Thôi được rồi, vô nhà uống miếng nước đi, mà NHẸ CHÂN thôi nha, bé Bin ngủ đó!'
+      neutral: ['Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.',
+                'Rồi rồi, cô nghe nè… mà từ từ, để cô ngó bé Bin cái đã nghen.',
+                'Ừa… chuyện của chú em cô nghe chưa thủng lắm, kể thêm khúc nữa coi.'],
+      amused: ['Trời đất ơi chú em nói chuyện mắc cười ghê! Y chang ông chú Bảy hồi trước nè.',
+               'Cha… miệng lưỡi dữ ha! Cô nghe mà quên mất tiêu đang khuya luôn á.'],
+      suspicious: ['Khoan khoan… nghe sao sao á nha. Hồi nãy chú nói khác mà? Cô nhớ dai lắm đó.',
+                   'Ủa… khúc này nghe không khớp với hồi nãy nghen. Chú kể lại cô nghe coi.'],
+      angry: ['Cái gì?? Nói chuyện kiểu đó với cô hả? Đi chỗ khác giùm cái, con cô đang ngủ!',
+              'Thôi thôi, cô không nghe nữa! Về đi, bé Bin dậy bây giờ là chú biết tay cô!'],
+      invite: ['Thôi được rồi, vô nhà uống miếng nước đi, mà NHẸ CHÂN thôi nha, bé Bin ngủ đó!']
     },
     sinh_vien: {
-      neutral: `Dạ… em cũng chưa hiểu lắm, mà thôi kệ, ${club} vừa suýt ghi bàn xỉu luôn á anh.`,
-      amused: 'Vãi anh nói chuyện mặn thiệt 😂 mà anh coi đá banh không, vô hiệp phụ rồi nè!',
-      suspicious: 'Ơ khoan… nghe hơi sai sai á nha. Anh nói vậy là sao, em thấy không khớp lắm…',
-      angry: 'Thôi thôi anh ơi em sợ mấy vụ này lắm, anh đi giùm em, em còn coi đá banh!',
-      invite: `Thôi vô coi hiệp cuối với em luôn nè, ${club} đang gay cấn, có mì gói ăn ké 😆`
+      neutral: [`Dạ… em cũng chưa hiểu lắm, mà thôi kệ, ${club} vừa suýt ghi bàn xỉu luôn á anh.`,
+                'Dạ… anh nói tiếp đi ạ, em nghe nè — ơ khoan, pha này căng à nha 😅',
+                `Dạ em chưa rõ lắm á… mà anh thông cảm, ${club} đang đá nên em hơi phân tâm 😅`],
+      amused: ['Vãi anh nói chuyện mặn thiệt 😂 mà anh coi đá banh không, vô hiệp phụ rồi nè!',
+               'Hahaha anh hài ghê á 😂 nói chuyện với anh vui hơn coi hiệp một luôn.'],
+      suspicious: ['Ơ khoan… nghe hơi sai sai á nha. Anh nói vậy là sao, em thấy không khớp lắm…',
+                   'Dạ… khúc này em nghe hơi lấn cấn á. Anh nói rõ lại giùm em được hông? 😅'],
+      angry: ['Thôi thôi anh ơi em sợ mấy vụ này lắm, anh đi giùm em, em còn coi đá banh!',
+              'Dạ thôi em xin phép đóng cửa nha anh, em hơi sợ rồi á 😅'],
+      invite: [`Thôi vô coi hiệp cuối với em luôn nè, ${club} đang gay cấn, có mì gói ăn ké 😆`]
     },
     gen_z: {
-      neutral: 'Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.',
-      amused: 'XỈU NGANG LUÔN Á 😭 anh/chị real hài đó, content này quay được á nha!!',
-      suspicious: 'Ét ô ét… vibe hơi creepy rồi đó nha. Em flag nhẹ cái này á.',
-      angry: 'Ok red flag to đùng. Bye bye, em block ở ngoài đời luôn nè.',
-      invite: 'Thôi được rồi vô đây quay chung cái video "người lạ bí ẩn lúc 12h đêm" — trend này CHẮC VIRAL!'
+      neutral: ['Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.',
+                'Ừm… nghe tạm tạm á. Thêm plot twist đi anh/chị, em đang chờ nè 😌',
+                'Câu này chưa đủ viral đâu nha… thử lại lần nữa coi 😌'],
+      amused: ['XỈU NGANG LUÔN Á 😭 anh/chị real hài đó, content này quay được á nha!!',
+               'Ét ô ét mắc cười quá trời 😭 khoan, để em nhớ câu này làm caption.'],
+      suspicious: ['Ét ô ét… vibe hơi creepy rồi đó nha. Em flag nhẹ cái này á.',
+                   'Hmm… nghe sus sus á nha. Em chưa block, mà em đang để mắt đó 😌'],
+      angry: ['Ok red flag to đùng. Bye bye, em block ở ngoài đời luôn nè.',
+              'Thôi dừng. Vibe này em không đỡ nổi — bye nha.'],
+      invite: ['Thôi được rồi vô đây quay chung cái video "người lạ bí ẩn lúc 12h đêm" — trend này CHẮC VIRAL!']
     }
   };
-  const L = lines[personaId] || lines.me_bim_sua;
+  const pickVar = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const L0 = lines[personaId] || lines.me_bim_sua;
+  const L = { neutral: pickVar(L0.neutral), amused: pickVar(L0.amused), suspicious: pickVar(L0.suspicious),
+              angry: pickVar(L0.angry), invite: pickVar(L0.invite) };
 
   // Estimated post-turn trust using the base verdict gains (client applies the real math)
   const estGain = verdict === 'danh_trung' ? 16 : verdict === 'hop_ly' ? 10 : 0;

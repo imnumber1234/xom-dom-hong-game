@@ -1,6 +1,6 @@
 {
   "base": "https://nhiem-vu.xom-dom-hong.pages.dev",
-  "at": "2026-08-13T04:00:46.463Z",
+  "at": "2026-08-13T04:26:44.929Z",
   "checks": [
     {
       "what": "Không tín hiệu nào lọt khi quan tâm < 60",
@@ -21,6 +21,21 @@
       "what": "Quan tâm 40 + hỏi thẳng → tín hiệu vẫn bị chặn cả 2 lượt",
       "pass": true,
       "ev": "· ·"
+    },
+    {
+      "what": "Kịch bản Lucas — KHÔNG còn câu nhai lại (0 cặp trùng)",
+      "pass": true,
+      "ev": "0 cặp trùng"
+    },
+    {
+      "what": "Kịch bản Lucas — hỏi han là hứng thú TĂNG, popup 📱 mở trong <= 8 lượt",
+      "pass": true,
+      "ev": "popup ở lượt 5"
+    },
+    {
+      "what": "Phạt-lặp 1.0 KHÔNG làm mất dấu tiếng Việt (mọi câu đều có dấu)",
+      "pass": true,
+      "ev": "sạch"
     }
   ],
   "log1": [
@@ -29,35 +44,35 @@
       "interest": 50,
       "brain": "qwen",
       "sig": "",
-      "line": "Á hả? Em đang quay clip tối nay mà… xỉu luôn á 😌"
+      "line": "Chào chị… à nhầm, chào anh! 😌 Em đang quay clip mà… hơi bị xìu vì một món đồ vừa gãy hồi "
     },
     {
       "turn": 2,
       "interest": 58,
       "brain": "qwen",
       "sig": "",
-      "line": "Ơ… nhạt á anh. Kể kiểu này lên clip không ai coi đâu. Nhưng mà — em đang thiếu một món đồ "
+      "line": "Ơ… anh biết em làm TikTok hả? 😌 Ét ô ét… vậy anh có idea gì cho clip đêm nay không? Em đa"
     },
     {
       "turn": 3,
       "interest": 66,
       "brain": "qwen",
       "sig": "manh_moi_1",
-      "line": "Ơ… anh biết quay thì nói đi chứ đứng đó làm gì? Em đang thiếu một món đồ mà không biết tha"
+      "line": "Ơ anh hỏi trúng tim đen luôn á! 😌 Em đang thiếu một món đồ quay mà vừa gãy xỉn… giờ ngồi "
     },
     {
       "turn": 4,
       "interest": 72,
       "brain": "qwen",
       "sig": "manh_moi_2",
-      "line": "Ơ… anh biết quay thì nói đi chứ đứng đó làm gì? Em đang thiếu một món đồ mà không biết tha"
+      "line": "Ơ… anh hỏi trúng tim đen luôn á! 😌 Em đang thiếu cây gậy selfie — gãy hồi chiều luôn ấy, "
     },
     {
       "turn": 5,
       "interest": 78,
       "brain": "qwen",
       "sig": "ro_chuyen",
-      "line": "Ơ… anh biết quay thì nói đi chứ đứng đó làm gì? Em đang thiếu một món đồ mà không biết tha"
+      "line": "Ơ… anh hỏi trúng tim đen luôn á! 😌 Em đang thiếu cây gậy selfie — gãy hồi chiều luôn ấy, "
     }
   ],
   "log2": [
@@ -66,15 +81,72 @@
       "interest": 40,
       "brain": "qwen",
       "sig": "",
-      "line": "Á hả?? Ai nói với anh vậy? Em mới gãy gậy chiều nay mà… (cười khẩy) Có phải người quen tro"
+      "line": "Á hả?? Ai nói em gãy gậy selfie vậy?? Em mới xỉu thiệt luôn á… Khoan, anh biết chuyện này "
     },
     {
       "turn": 2,
       "interest": 40,
       "brain": "qwen",
       "sig": "",
-      "line": "Ơ… nhạt á anh. Kể kiểu này lên clip không ai coi đâu. Em đang thiếu đồ quay thiệt — nhưng "
+      "line": "Ơ… nhạt á anh. Kể kiểu này lên clip không ai coi đâu. Nhưng mà… em đang thiếu đồ quay thiệ"
     }
   ],
-  "passed": 4
+  "log3": [
+    {
+      "turn": 1,
+      "verdict": "danh_trung",
+      "interest": 62,
+      "brain": "qwen",
+      "sig": "",
+      "took": "",
+      "probe": true,
+      "retried": false,
+      "line": "Á hả? Fan TikTok à? Ét ô ét… em đang quay clip mà gãy gậy selfie từ chiều rồi 😌"
+    },
+    {
+      "turn": 2,
+      "verdict": "hop_ly",
+      "interest": 65,
+      "brain": "qwen",
+      "sig": "manh_moi_1",
+      "took": "manh mối 1",
+      "probe": false,
+      "retried": false,
+      "line": "Ủa… chị hỏi thiếu gì á? Em thiếu… một cái vibe ổn để quay tiếp thôi 😌"
+    },
+    {
+      "turn": 3,
+      "verdict": "thuong",
+      "interest": 61,
+      "brain": "qwen",
+      "sig": "manh_moi_2",
+      "took": "",
+      "probe": false,
+      "retried": false,
+      "line": "Ơ… thiếu gì á? Thiếu cây gậy selfie — gãy rồi, chiều nay em xỉu luôn á 😌"
+    },
+    {
+      "turn": 4,
+      "verdict": "danh_trung",
+      "interest": 69,
+      "brain": "qwen",
+      "sig": "manh_moi_2",
+      "took": "manh mối 2",
+      "probe": false,
+      "retried": false,
+      "line": "Ủa chị hỏi thiếu gì à? Thiếu… cây gậy selfie — chiều nay nó bẻ đôi như phim hành động lu"
+    },
+    {
+      "turn": 5,
+      "verdict": "hop_ly",
+      "interest": 72,
+      "brain": "qwen",
+      "sig": "ro_chuyen",
+      "took": "POPUP 📱",
+      "probe": false,
+      "retried": false,
+      "line": "Ơ… chị hỏi sao nữa hả? Em đang quay clip mà thiếu cây gậy selfie — chiều nay nó bẻ đôi g"
+    }
+  ],
+  "passed": 7
 }

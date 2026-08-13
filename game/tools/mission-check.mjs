@@ -16,7 +16,7 @@ const { onRequestPost } = await loadApi();
 const tmp = path.join(HERE, '.tmp');
 const converseMod = await import('file://' + path.join(tmp, 'converse.mjs').replace(/\\/g, '/'));
 const personasMod = await import('file://' + path.join(tmp, '_personas.mjs').replace(/\\/g, '/'));
-const { gateMission } = converseMod;
+const { gateMission, gateMissionEx, isRepeatLine } = converseMod;
 const { MISSION_BLOCKS, scriptedReply } = personasMod;
 
 const checks = [];
@@ -117,6 +117,26 @@ add(19, 'converse.js có chèn missionNote vào tin nhắn cuối (không đụn
   converseSrc.includes('last.content += missionNote(body, mode)'));
 add(20, 'scriptedReply (não kịch bản) khai mission_signal="" trong hợp đồng',
   JSON.stringify(scriptedReply('gen_z', 'xin chào', { trust: 30, suspicion: 20, patience: 100 }, 'MU')).includes('"mission_signal":""'));
+
+// ── 21-24: v1.0.1 chống nhai lại câu + hộp kính (sau khi Lucas bắt lỗi 08-13) ──
+add(21, 'Máy bắt lặp: trùng hệt / câu ngắn nằm trong câu dài → true; câu khác / quá ngắn → false',
+  isRepeatLine('Thiếu… một món đồ để quay thôi á 😌', ['Thiếu... một món đồ để quay thôi á']) === true &&
+  isRepeatLine('Thiếu một món đồ để quay thôi á, nói chung là vậy đó nha anh', ['Thiếu... một món đồ để quay thôi á 😌']) === true &&
+  isRepeatLine('Ơ anh hỏi gì kỳ vậy, em đang bận mà', ['Thiếu... một món đồ để quay thôi á 😌']) === false &&
+  isRepeatLine('Dạ', ['Dạ']) === false);
+add(22, 'Hộp kính: cổng gác trả LÝ DO vì sao chặn (quan tâm thấp / đồng ý mồm)',
+  /quan tâm 40 < 60/.test(gateMissionEx('ro_chuyen', B('gen_z', 'da_goi'), { interest: 40 }).why) &&
+  /đồng ý mồm/.test(gateMissionEx('dong_y_cho_muon', B('sinh_vien', 'da_nhan'), { trust: 40 }).why));
+add(23, 'Chống lặp 2 lớp trong prompt: bảng "CÂU BẠN ĐÃ NÓI" ở cuối + phát hiện người chơi hỏi lại',
+  converseSrc.includes('CÂU BẠN ĐÃ NÓI') && converseSrc.includes('vừa HỎI LẠI gần y nguyên câu cũ') &&
+  converseSrc.includes('isRepeatLine(playerText, prevPlayer)'));
+add(24, 'Núm phạt-lặp bật cho não thoại (presence_penalty 1.0, viết lại 1.2) + Ly có luật chấm hỏi-han',
+  converseSrc.includes('presencePenalty: 1.0') && converseSrc.includes('presencePenalty: 1.2') &&
+  /HỎI HAN quan tâm/.test(MISSION_BLOCKS.gen_z.chua_biet));
+
+add(25, 'Ấm dần + chống câu rỗng: server báo mission_probe khi kẹt cổng quan tâm · câu "…" bị bắt viết lại',
+  converseSrc.includes('shaped.npc.mission_probe = true') && converseSrc.includes('tooBlank') &&
+  fs.readFileSync(path.resolve(HERE, '../public/js/missions.js'), 'utf8').includes('function onProbe'));
 
 // ── in bảng ──
 console.table(checks.map(c => ({ '#': c.id, 'mục': c.what.slice(0, 70), 'đạt': c.pass ? '✅' : '❌' })));

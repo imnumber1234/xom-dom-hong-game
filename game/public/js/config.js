@@ -374,6 +374,8 @@ XDH.MISSION_CFG = {
   REWARD_K: 50,            // thưởng khi trả đồ cho Ly (đáp án 7)
   REWARD_TRUST: 12,        // + tin của Ly khi trả đồ
   TI_LEND_TRUST: 55,       // Tí cho mượn gậy khi tin >= ngưỡng này (CODE xét, AI chỉ phát tín hiệu)
+  PROBE_INTEREST: 4,       // hỏi trúng chuyện Ly đang giấu mà chưa đủ quan tâm → CODE nhích +4/lượt
+                           // (khuôn "invite_nudge" 08-09 — người đào đúng chỗ phải ấm dần, không kẹt)
   CHORE: { MIN_K: 20, MAX_K: 40, PER_HOUSE: 2, NIGHT_CAP_K: 120 }  // việc vặt ma sói (mục 3 + rủi ro cân bằng)
 };
 // Máy trạng thái: chua_biet → da_goi (đã lộ manh mối) → da_mo_popup (đã hỏi, kể cả bị từ chối)

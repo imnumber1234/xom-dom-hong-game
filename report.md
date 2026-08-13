@@ -1,3 +1,35 @@
+# Báo cáo nóng — v1.0.1 SỬA "LY NHAI LẠI CÂU" (2026-08-13, ngay sau khi Lucas bắt lỗi)
+
+**Link thử (đã cập): https://nhiem-vu.xom-dom-hong.pages.dev** — chơi lại đúng kịch bản cũ để thấy khác.
+
+## Lucas bắt được gì
+Hỏi "thiếu gì" 2 lần → Ly lặp nguyên văn "Thiếu… một món đồ để quay thôi á 😌", không nhả manh mối mới.
+
+## Mổ xẻ (đo bằng máy, không đoán)
+1. **Hứng thú kẹt dưới 60** — câu hỏi cụt kiểu "thiếu gì" bị chấm "nhạt" (−hứng thú) → cửa khai không bao giờ mở, trong khi miệng Ly lỡ hé trước → nhai lại.
+2. **Não Qwen có bệnh lặp CÓ GIẤY TỜ** (research: thẻ model Qwen khuyên bật phạt-lặp; mình chưa bật).
+3. **Não dự phòng (kịch bản) cũng chỉ có 1 câu/ô** → chuỗi não chết là lặp y hệt.
+
+## Đã sửa — 6 tầng (research 08-13: tài liệu Qwen/DeepSeek/Gemini + bài viết game NPC + AI Dungeon)
+| Tầng | Cách |
+|---|---|
+| Núm phạt-lặp | Bật presence_penalty 1.0 cho Qwen (thuốc chính hãng; 1.5 dễ lẫn tiếng Anh nên không dùng). Gemini 2.5 cấm núm này + kẹt vòng khi temperature < 1 → kẹp 1.0 riêng Gemini |
+| Máy bắt câu hỏng | Server so câu mới với 4 câu đã nói: lặp hoặc rỗng "…" → bắt VIẾT LẠI một lần; rỗng 2 lần → rơi kịch bản |
+| Cấm-lặp đặt cuối prompt | Bảng "CÂU BẠN ĐÃ NÓI — cấm trùng quá 4 chữ" đặt CUỐI (chỗ não nhớ nhất) + kể rõ chuyện đã hé để nhắc lại phải diễn đạt khác |
+| Người chơi hỏi lại | Máy phát hiện hỏi-lại-câu-cũ → Ly phản ứng với việc BỊ hỏi lại (bực/đùa) thay vì trả lời y nguyên — biến loop thành tấu hài |
+| Ấm dần | Đào đúng chuyện Ly giấu mà chưa đủ quan tâm → +4 hứng thú/lượt (hiện popup 🎬) — người kiên trì không bao giờ kẹt |
+| Kịch bản dự phòng | Mỗi ô 2-3 biến thể bốc ngẫu nhiên + nhịp "rõ chuyện" chỉ cần qua 1 lượt (hết cảnh moi đủ rồi mà bắt chờ) |
+
+## Kiểm lại bằng máy — kịch bản Y HỆT của Lucas trên não thật
+- Trước: 6 lượt lặp 1 câu, popup KHÔNG mở. **Sau: 0 câu trùng, popup 📱 mở ở lượt 5**, dấu tiếng Việt nguyên vẹn. Bộ sống 7/7 · offline 25/25 · trình duyệt 27/27 · console 0 lỗi.
+
+## 🔍 OBSERVABILITY — cách anh tự soi (không cần em)
+Thêm **`?debug=1`** vào link (giữ nguyên các chữ sau dấu ?). Trong lúc nói chuyện, bảng chữ xanh dưới khung thoại hiện MỖI LƯỢT:
+- **[não]** đang trả lời (qwen/gemini/kịch bản) + **não nghỉ: qwen 320s** nếu có não đang bị cho nghỉ.
+- **nv chua_biet·manh mối 1** = nhiệm vụ đang ở đâu, đã moi được mấy manh mối.
+- **tín hiệu manh_moi_1→·** [quan tâm 52 < 60] = AI muốn khai nhưng bị CHẶN vì lý do gì.
+- **ĐÃ BẮT VIẾT LẠI VÌ LẶP** = máy vừa tóm được não định nhai lại.
+- Dòng **[nv]** xanh dương = mọi quyết định của máy nhiệm vụ (nhận manh mối, chặn, mở popup, trả thưởng).
 # Báo cáo Session B — v1.0 HỆ NHIỆM VỤ (2026-08-13)
 
 **Link thử: https://nhiem-vu.xom-dom-hong.pages.dev — link chính CHƯA đụng.**

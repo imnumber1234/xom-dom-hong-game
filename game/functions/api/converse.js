@@ -8,7 +8,7 @@
 // The AI never decides win/fail — game code on the client owns the rules.
 
 import { PERSONAS, BA_NAM, SYSTEM_TEMPLATE, SCENES, CLUBS, MISSION_BLOCKS, scriptedReply, scriptedOutcome } from './_personas.js';
-import { callBrain } from './_brain.js';
+import { callBrain, benchState } from './_brain.js';
 
 // v0.6 F4 — 10 nhãn cảm xúc (5 nhãn mới: chan · nguong · cam_dong · phan_khich · buc_minh).
 // Client vẽ đủ 10 chân dung bằng code (portraits.js); nhãn lạ rơi về neutral ở shapeReply.
@@ -147,6 +147,13 @@ function missionNote(body, mode) {
   let out = blocks[st]
     ? '\n' + blocks[st].replaceAll('{CLUES}', String(clues)).replaceAll('{NEXT}', MISSION_BLOCKS.gen_z_next[clues])
     : '';
+  // Research 08-13 (curiouser institute): kể cho AI biết ĐÃ hé những gì — được nhắc lại
+  // nhưng phải diễn đạt khác, không nhai nguyên văn.
+  if (body.npcId === 'gen_z' && (st === 'chua_biet' || st === 'da_goi') && clues > 0) {
+    const told = ['đang thiếu một món đồ để quay', 'cây gậy selfie bị gãy'];
+    out += '\n(Chuyện ĐÃ kể cho người lạ: ' + told.slice(0, clues).join(' · ')
+      + ' — được nhắc lại nhưng phải DIỄN ĐẠT KHÁC HẲN, cấm lặp nguyên văn câu cũ.)';
+  }
   if (st === 'da_nhan' || st === 'co_do') out += '\n' + MISSION_BLOCKS.chore;
   return out;
 }
@@ -391,20 +398,69 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
     // v1.0 — khối NHIỆM VỤ đặt ở tin nhắn cuối (như gossip/nightMemory), KHÔNG vào system:
     // stage đổi giữa cuộc mà system đổi theo là mất bộ nhớ đệm (§6). Chữ nằm ở _personas.js.
     last.content += missionNote(body, mode);
-    // v0.7 T2/T3 — ĐẶT CUỐI CÙNG, ngay trước lúc mô hình viết: 2 câu mẫu xoay vòng theo lượt,
-    // rồi (từ lượt 4) nhắc lại tic + xưng hô để chống trôi giọng.
+    // v0.7 T2/T3 — 2 câu mẫu xoay vòng theo lượt, rồi (từ lượt 4) nhắc lại tic + xưng hô.
     last.content += voiceNote(persona, lang, turn, seed) + voiceAnchor(persona, lang, turn);
+    // v1.0.1 — chống lặp theo research 08-13 (phasespace + AI Dungeon), đặt CUỐI CÙNG vì
+    // mô hình nhớ đoạn cuối tốt nhất: (a) liệt kê ĐÚNG các câu đã nói + luật cấm lặp;
+    // (b) người chơi HỎI LẠI câu cũ → nhân vật phản ứng với việc BỊ hỏi lại (hài) thay vì kẹt vòng.
+    const saidLines = history.filter(h => h.role === 'npc').map(h => String(h.text || '')).filter(Boolean).slice(-3);
+    if (saidLines.length) {
+      last.content += '\n[CÂU BẠN ĐÃ NÓI trong cuộc này — CẤM lặp nguyên văn; câu mới không được trùng quá 4 chữ liên tiếp với bất kỳ dòng nào dưới đây:\n'
+        + saidLines.map(s => '· ' + s.slice(0, 160)).join('\n') + ']';
+    }
+    const prevPlayer = history.filter(h => h.role === 'player').slice(0, -1).map(h => String(h.text || ''));
+    if (isRepeatLine(playerText, prevPlayer)) {
+      last.content += '\n[Đạo diễn: người lạ vừa HỎI LẠI gần y nguyên câu cũ. Nhân vật NHẬN RA điều đó và phản ứng đúng tính cách (bực nhẹ, đùa kiểu "hỏi hoài dạ", hoặc trả lời cụt hơn) — tuyệt đối không trả lời lại giống lần trước.]';
+    }
   }
 
   // v0.8 B4 — chuỗi não nằm hết trong _brain.js. Ở đây chỉ còn: hỏi một cửa, hỏng thì kịch bản.
-  const res = await askBrain(env, system, messages, NPC_TOOL).catch(() => null);
+  let res = await askBrain(env, system, messages, NPC_TOOL, { presencePenalty: 1.0 }).catch(() => null);
+  // v1.0.1 — máy bắt CÂU HỎNG: (a) lặp nguyên văn câu đã nói · (b) câu rỗng kiểu "…" (bệnh Qwen
+  // đo được ở check-20 #10). Bắt được thì cho viết lại MỘT lần, giữ nguyên phần chấm điểm.
+  const tooBlank = (s) => String(s || '').replace(/[^\p{L}\p{N}]+/gu, '').length < 4;
+  let retried = false;
+  const prevNpc = history.filter(h => h.role === 'npc').map(h => String(h.text || '')).slice(-4);
+  if (res && res.input && (isRepeatLine(res.input.dialogue, prevNpc) || tooBlank(res.input.dialogue))) {
+    const why = tooBlank(res.input.dialogue) ? 'bị RỖNG (chỉ có dấu chấm lửng)' : 'LẶP LẠI câu đã nói trước đó';
+    const retryMsgs = messages.concat([
+      { role: 'assistant', content: String(res.input.dialogue).slice(0, 400) || '…' },
+      { role: 'user', content: `[Đạo diễn: câu bạn vừa viết ${why}. Điền lại phiếu với verdict/các cờ GIỮ NGUYÊN, nhưng dialogue và thought phải viết KHÁC HẲN — câu đầy đủ, diễn đạt mới, không trùng quá 4 chữ liên tiếp với bất kỳ câu nào bạn đã nói trong cuộc này.]` }
+    ]);
+    const retry = await askBrain(env, system, retryMsgs, NPC_TOOL, { presencePenalty: 1.2, temperature: 0.9 }).catch(() => null);
+    if (retry && retry.input && retry.input.dialogue &&
+        !isRepeatLine(retry.input.dialogue, prevNpc) && !tooBlank(retry.input.dialogue)) {
+      res = { ...res, input: { ...res.input, dialogue: retry.input.dialogue, thought: retry.input.thought || res.input.thought } };
+      retried = true;
+    } else if (tooBlank(res.input.dialogue)) {
+      res = null;   // hai lần đều rỗng → rơi về kịch bản, còn hơn hiện "…" cho người chơi
+    }
+  }
   if (res) {
     const shaped = shapeReply(res.input, res.brain, res.usage, 'reply');
     // v1.0 — tín hiệu nhiệm vụ phải qua cổng server trước khi về client
-    shaped.npc.mission_signal = gateMission(shaped.npc.mission_signal, { npcId: body.npcId, mode, mission: body.mission }, state);
+    const rawSig = shaped.npc.mission_signal;
+    const gate = gateMissionEx(rawSig, { npcId: body.npcId, mode, mission: body.mission }, state);
+    shaped.npc.mission_signal = gate.sig;
+    // v1.0.1 — "ấm dần": AI muốn khai (người chơi đang đào đúng chỗ) mà kẹt MỖI cổng quan tâm
+    // → báo client nhích +hứng thú (khuôn invite_nudge 08-09). Số nằm ở config client.
+    if (!gate.sig && rawSig && gate.why.startsWith('quan tâm')) shaped.npc.mission_probe = true;
+    // v1.0.1 — HỘP KÍNH (?debug=1): client gửi debug:true thì trả về vì-sao-chặn + có-viết-lại-không
+    if (body.debug === true) {
+      shaped.debug = {
+        retried,
+        mission: body.mission ? { stage: body.mission.stage, clues: Number(body.mission.clues) || 0 } : null,
+        signal_raw: rawSig, signal_final: gate.sig, gate_reason: gate.why,
+        bench: benchState()   // não nào đang "ngồi ghế nghỉ" (giây còn lại) — soi được vì sao rơi não
+      };
+    }
     return json(shaped);
   }
-  return json({ ok: true, scripted: true, npc: scriptedReply(body.npcId, playerText, state, club) });
+  return json({
+    ok: true, scripted: true, npc: scriptedReply(body.npcId, playerText, state, club),
+    // hộp kính: rơi về kịch bản thì nói rõ não nào đang nghỉ — hết cảnh đoán mò "sao nhạt vậy"
+    ...(body.debug === true ? { debug: { scripted_vi: 'chuỗi não chết', bench: benchState() } } : {})
+  });
 }
 
 // ── v0.8 B1 — MỘT CỬA DUY NHẤT ───────────────────────────────────────────────
@@ -429,7 +485,24 @@ async function askBrain(env, system, messages, tool = NPC_TOOL, opts = {}) {
     schemaNote: schemaNoteFor(tool),
     maxTokens: opts.maxTokens ?? 500,
     // Chấm điểm cần ổn định hơn cần bay bổng (QA 08-08: cùng một câu chuyện lúc hop_ly lúc lo_lieu).
-    temperature: opts.temperature ?? 0.7
+    temperature: opts.temperature ?? 0.7,
+    // v1.0.1 chống nhai lại câu (Lucas bắt 08-13): phạt chữ đã có trong ngữ cảnh — Qwen/DeepSeek nhận.
+    presencePenalty: opts.presencePenalty
+  });
+}
+
+// ── v1.0.1 — MÁY BẮT LẶP (code cầm, không tin prompt) ────────────────────────
+// Chuẩn hoá rồi so với các câu NPC gần nhất: trùng hệt, hoặc câu ngắn nằm gần nguyên trong câu dài.
+export function isRepeatLine(line, prevLines) {
+  const norm = (s) => String(s || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const a = norm(line);
+  if (a.length < 12) return false;
+  return (prevLines || []).some(p => {
+    const b = norm(p);
+    if (!b || b.length < 12) return false;
+    if (a === b) return true;
+    const [short, long] = a.length <= b.length ? [a, b] : [b, a];
+    return short.length >= 20 && long.includes(short.slice(0, Math.ceil(short.length * 0.8)));
   });
 }
 
@@ -624,25 +697,32 @@ const MISSION_SIGNALS = ['manh_moi_1', 'manh_moi_2', 'ro_chuyen', 'dong_y_cho_mu
 // v1.0 — CHỐT CHẶN LỚP SERVER (bài học "đồng ý mồm" 08-09: prompt không đủ, code phải giữ cửa).
 // Client (missions.js) còn một lớp nữa với núm chỉnh trong config.js; hai con số 60/55 ở đây
 // là bản sao cứng của XDH.MISSION_CFG.INTEREST_GATE / TI_LEND_TRUST — đổi thì đổi CẢ HAI chỗ.
-export function gateMission(sig, body, state) {
-  if (!sig) return '';
+export function gateMissionEx(sig, body, state) {
+  if (!sig) return { sig: '', why: '' };
   const m = body.mission;
-  if (!m || body.mode === 'ket_tien') return '';
+  if (!m || body.mode === 'ket_tien') return { sig: '', why: 'không có nhiệm vụ / Kẹt Tiền' };
   if (['manh_moi_1', 'manh_moi_2', 'ro_chuyen'].includes(sig)) {
-    if (body.npcId !== 'gen_z') return '';
-    if ((Number(state.interest) || 0) < 60) return '';   // chưa đủ quan tâm → Ly CẤM khai
+    if (body.npcId !== 'gen_z') return { sig: '', why: 'manh mối chỉ của Ly' };
+    const interest = Number(state.interest) || 0;
+    if (interest < 60) return { sig: '', why: `quan tâm ${interest} < 60` };   // chưa đủ quan tâm → Ly CẤM khai
     // Não yếu hay LẶP LẠI manh mối cũ (đo thật 08-13: Qwen bắn manh_moi_1 sáu lượt liền).
     // CODE cầm nhịp: tín hiệu manh mối nào cũng được nắn về manh mối KẾ TIẾP theo sổ client.
     const clues = Number(m.clues) || 0;
-    return clues === 0 ? 'manh_moi_1' : clues === 1 ? 'manh_moi_2' : 'ro_chuyen';
+    const next = clues === 0 ? 'manh_moi_1' : clues === 1 ? 'manh_moi_2' : 'ro_chuyen';
+    return { sig: next, why: next === sig ? 'qua' : `nắn ${sig} → ${next}` };
   }
   if (sig === 'dong_y_cho_muon') {
-    if (body.npcId !== 'sinh_vien' || m.stage !== 'da_nhan') return '';
-    if ((Number(state.trust) || 0) < 55) return '';      // Tí nói "cho mượn" mà chưa đủ tin → coi như chưa
-    return sig;
+    if (body.npcId !== 'sinh_vien' || m.stage !== 'da_nhan')
+      return { sig: '', why: 'sai nhà hoặc chưa nhận nhiệm vụ / đã có đồ' };
+    const trust = Number(state.trust) || 0;
+    if (trust < 55) return { sig: '', why: `tin ${trust} < 55 — đồng ý mồm` };
+    return { sig, why: 'qua' };
   }
   if (sig === 'nhan_viec_vat') {
-    return (m.stage === 'da_nhan' || m.stage === 'co_do') ? sig : '';
+    return (m.stage === 'da_nhan' || m.stage === 'co_do')
+      ? { sig, why: 'qua' } : { sig: '', why: 'việc vặt chưa mở (chưa nhận nhiệm vụ)' };
   }
-  return '';
+  return { sig: '', why: 'tín hiệu lạ' };
 }
+// Vỏ cũ giữ nguyên hợp đồng cho bài kiểm + chỗ gọi khác.
+export function gateMission(sig, body, state) { return gateMissionEx(sig, body, state).sig; }

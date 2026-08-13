@@ -1,5 +1,5 @@
 {
-  "at": "2026-08-13T04:00:24.527Z",
+  "at": "2026-08-13T04:26:24.831Z",
   "checks": [
     {
       "id": 1,
@@ -120,8 +120,38 @@
       "what": "scriptedReply (não kịch bản) khai mission_signal=\"\" trong hợp đồng",
       "pass": true,
       "evidence": ""
+    },
+    {
+      "id": 21,
+      "what": "Máy bắt lặp: trùng hệt / câu ngắn nằm trong câu dài → true; câu khác / quá ngắn → false",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 22,
+      "what": "Hộp kính: cổng gác trả LÝ DO vì sao chặn (quan tâm thấp / đồng ý mồm)",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 23,
+      "what": "Chống lặp 2 lớp trong prompt: bảng \"CÂU BẠN ĐÃ NÓI\" ở cuối + phát hiện người chơi hỏi lại",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 24,
+      "what": "Núm phạt-lặp bật cho não thoại (presence_penalty 1.0, viết lại 1.2) + Ly có luật chấm hỏi-han",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 25,
+      "what": "Ấm dần + chống câu rỗng: server báo mission_probe khi kẹt cổng quan tâm · câu \"…\" bị bắt viết lại",
+      "pass": true,
+      "evidence": ""
     }
   ],
-  "passed": 20,
-  "total": 20
+  "passed": 25,
+  "total": 25
 }

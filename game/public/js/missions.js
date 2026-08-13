@@ -7,6 +7,21 @@ XDH.Mission = (function () {
   const t = (vi, en) => (XDH.lang === 'en' ? en : vi);
   const C = () => XDH.MISSION_CFG;
 
+  // v1.0.1 — HỘP KÍNH: mọi quyết định của máy nhiệm vụ đều kể ra được vì sao.
+  // ?debug=1 → một dòng [nv] trong bảng debug + console; bình thường → im lặng.
+  function dbg(msg) {
+    if (!XDH.DEBUG) return;
+    console.log('[nhiệm vụ]', msg);
+    const el = $('debug-log');
+    if (!el) return;
+    el.style.display = 'block';
+    const row = document.createElement('div');
+    row.style.color = '#8fd4ff';
+    row.textContent = '[nv] ' + msg;
+    el.appendChild(row);
+    el.scrollTop = 1e9;
+  }
+
   // ---- trạng thái sống trên XDH.run (mất khi refresh — đáp án 8: chấp nhận) ----
   function initRun() {
     const r = XDH.run;
@@ -41,27 +56,60 @@ XDH.Mission = (function () {
     if (!on() || !sig) return;
     const M = m(), turns = (act && act.turns) || 0;
     if (npcId === 'gen_z' && ['manh_moi_1', 'manh_moi_2', 'ro_chuyen'].includes(sig)) {
-      if ((st.interest || 0) < C().INTEREST_GATE) return;                    // chưa đủ quan tâm → CẤM khai
-      if (M.clues > 0 && turns - M.lastClueTurn < C().CLUE_GAP_TURNS) return; // mỗi manh mối cách >= 2 lượt
+      if ((st.interest || 0) < C().INTEREST_GATE) {                          // chưa đủ quan tâm → CẤM khai
+        dbg(`chặn ${sig}: quan tâm ${st.interest} < ${C().INTEREST_GATE}`); return;
+      }
+      // Nhịp: giữa 2 MANH MỐI cách >= 2 lượt; riêng cú chốt "rõ chuyện" chỉ cần qua 1 lượt —
+      // người chơi đã moi đủ mà bắt chờ thêm là tái bệnh "hỏi lại không có gì mới" (Lucas 08-13).
+      const needGap = sig === 'ro_chuyen' ? 1 : C().CLUE_GAP_TURNS;
+      if (M.clues > 0 && turns - M.lastClueTurn < needGap) {
+        dbg(`chặn ${sig}: mới khai lượt ${M.lastClueTurn}, chưa đủ nhịp ${needGap} lượt`); return;
+      }
       if (sig === 'manh_moi_1' && M.clues === 0) {
         M.clues = 1; M.lastClueTurn = turns;
         if (M.stage === 'chua_biet') M.stage = 'da_goi';
+        dbg(`nhận manh mối 1/3 (lượt ${turns}, quan tâm ${st.interest})`);
       } else if (sig === 'manh_moi_2' && M.clues === 1) {
         M.clues = 2; M.lastClueTurn = turns;
+        dbg(`nhận manh mối 2/3 (lượt ${turns})`);
       } else if (sig === 'ro_chuyen' && M.clues >= 2 &&
                  (M.stage === 'da_goi' || M.stage === 'da_mo_popup')) {
         M.lastClueTurn = turns;
+        dbg(`RÕ CHUYỆN → mở popup 📱 (lượt ${turns})`);
         openPopup();                 // từ chối rồi nhắc lại TikTok → popup hiện LẠI (số đậu #5)
+      } else {
+        dbg(`bỏ qua ${sig}: sai thứ tự (đang có ${M.clues} manh mối, giai đoạn ${M.stage})`);
       }
       return;
     }
     if (npcId === 'sinh_vien' && sig === 'dong_y_cho_muon') {
       // CODE xét tin, không tin lời AI suông: tin >= ngưỡng mới thật sự được mượn
-      if (M.stage === 'da_nhan' && !hasStick() && (st.trust || 0) >= C().TI_LEND_TRUST) grantStick('ti');
+      if (M.stage === 'da_nhan' && !hasStick() && (st.trust || 0) >= C().TI_LEND_TRUST) {
+        dbg(`Tí cho mượn thật (tin ${st.trust} >= ${C().TI_LEND_TRUST})`);
+        grantStick('ti');
+      } else dbg(`chặn Tí cho mượn: tin ${st.trust} < ${C().TI_LEND_TRUST} hoặc chưa nhận nhiệm vụ`);
       return;
     }
     if (sig === 'nhan_viec_vat') {
-      if (stageGte('da_nhan') && M.stage !== 'xong') chorePay(act ? act.houseId : 0);
+      if (stageGte('da_nhan') && M.stage !== 'xong') {
+        const ok = chorePay(act ? act.houseId : 0);
+        dbg(ok ? 'việc vặt: trả công' : 'việc vặt: ĐỤNG TRẦN (2 lần/nhà hoặc 120k/đêm) — không trả');
+      }
+    }
+  }
+
+  // ---- v1.0.1 "ấm dần" — hỏi trúng chuyện Ly giấu mà CHƯA đủ quan tâm: server báo probe,
+  // CODE nhích +hứng thú (khuôn invite_nudge 08-09) → người kiên trì đào sẽ mở được cửa khai.
+  function onProbe(st) {
+    if (!on()) return;
+    const M = m();
+    if (M.stage !== 'chua_biet' && M.stage !== 'da_goi' && M.stage !== 'da_mo_popup') return;
+    const before = st.interest || 0;
+    st.interest = Math.min(100, before + C().PROBE_INTEREST);
+    if (st.interest !== before) {
+      XDH.UI.floatNums([{ text: t('🎬 Hỏi trúng chỗ ngứa +' + (st.interest - before) + ' hứng thú',
+        '🎬 Poking the right spot +' + (st.interest - before) + ' interest'), cls: 'good' }]);
+      dbg(`probe: đào đúng chỗ → hứng thú ${before} → ${st.interest}`);
     }
   }
 
@@ -260,6 +308,7 @@ XDH.Mission = (function () {
     XDH.MissionTest = {
       st: () => ({ ...m(), items: XDH.run.items.slice(), money: XDH.run.money, chore: JSON.parse(JSON.stringify(XDH.run.chore)) }),
       signal: (sig, npcId, st, turns) => onSignal(sig, npcId, st, { turns: turns == null ? 99 : turns, houseId: 0 }),
+      probe: (st) => { onProbe(st); return st.interest; },
       accept, decline,
       grant: (src) => grantStick(src || 'test'),
       buy: buyStick,
@@ -274,7 +323,7 @@ XDH.Mission = (function () {
     };
   }
 
-  return { initRun, newNight, convoContext, onSignal, hudText, canBuyStick, buyStick,
+  return { initRun, newNight, convoContext, onSignal, onProbe, hudText, canBuyStick, buyStick,
            lootTrash, canGive, reward, thankLine, isDone, hienEligible, showHien,
            hasStick, on, stage: () => (on() ? m().stage : null) };
 })();

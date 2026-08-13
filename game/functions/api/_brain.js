@@ -82,7 +82,9 @@ async function callGemini(env, req) {
       parts: [{ text: m.content }]
     })),
     generationConfig: {
-      temperature: req.temperature,
+      // ⚠️ Gemini 2.5: temperature DƯỚI 1.0 tự nó gây kẹt vòng lặp ("doom loop", diễn đàn Google AI
+      // 94446) và họ KHÔNG cho dùng núm phạt-lặp trên 2.5 → kẹp 1.0, chống lặp để lớp ứng dụng lo.
+      temperature: Math.max(1, req.temperature),
       maxOutputTokens: req.maxTokens,
       // ⚠️ BẪY CHẾT NGƯỜI (§2): Gemini 2.5 mặc định "suy nghĩ" trước khi nói, và phần suy nghĩ
       // ĂN VÀO hạn mức chữ trả lời → câu bị cắt cụt giữa chừng. Đã dính đúng lỗi này lúc so găng
@@ -135,6 +137,13 @@ async function callOpenAiStyle({ url, key, model, req, extraHeaders }) {
       ...req.messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }))
     ]
   };
+  // v1.0.1 chống NHAI LẠI CÂU (Lucas bắt 08-13: Qwen lặp nguyên văn 3 lượt liền):
+  // Qwen có bệnh lặp CÓ GIẤY TỜ — thẻ model Qwen3 khuyên presence_penalty tới 1.5, nhưng
+  // mức cao dễ sinh LẪN NGÔN NGỮ (nguy hiểm cho game tiếng Việt) → mình chạy 1.0-1.2.
+  // DeepSeek: tài liệu ghi tham số này ĐÃ CHẾT ("will not take effect") — gửi kèm vô hại.
+  // Nguồn: alibabacloud.com/help/en/model-studio/qwen-api-via-openai-chat-completions ·
+  //        huggingface.co/Qwen/Qwen3-8B (Best Practices) · api-docs.deepseek.com
+  if (typeof req.presencePenalty === 'number') body.presence_penalty = req.presencePenalty;
   if (req.tool) body.response_format = { type: 'json_object' };
 
   const r = await fetch(url, {
@@ -224,7 +233,8 @@ export const CHAIN = [
  *                                     mà không phải xoá khoá thật.
  */
 export async function callBrain(env, {
-  system, messages, tool = null, schemaNote = '', maxTokens = 500, temperature = 0.7
+  system, messages, tool = null, schemaNote = '', maxTokens = 500, temperature = 0.7,
+  presencePenalty   // v1.0.1: chỉ Qwen/DeepSeek dùng (Gemini/Anthropic bỏ qua — tham số lạ là bị nhà đó chê)
 }) {
   const now = Date.now();
   const order = String(env.BRAIN_ORDER || '').trim();
@@ -246,7 +256,7 @@ export async function callBrain(env, {
   for (const p of ready) {
     try {
       const res = await p.call(env, {
-        system, messages, tool, schemaNote, maxTokens, temperature, timeoutMs: p.timeoutMs
+        system, messages, tool, schemaNote, maxTokens, temperature, presencePenalty, timeoutMs: p.timeoutMs
       });
       bench.delete(p.name);                       // chạy được thì xoá án nghỉ
       tried.push(p.name + ':ok');
