@@ -1,0 +1,317 @@
+{
+  "at": "2026-08-10T05:04:09.540Z",
+  "results": [
+    {
+      "label": "ĐỦ 4 não",
+      "finished": true,
+      "brains": [
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
+      ],
+      "lines": [
+        "Sinh viên à? Ủa nãy em nói em ở cuối hẻm, vậy là số nhà mấy nè? Cô Tư bán thịt đầu chợ Hòa Khánh đó, em có ghé mua bao giờ chưa? Bé Bin thích ngủ trên tay cô nhất đó nghen.",
+        "Sinh viên làm thêm khuya vậy hả? Trời đất ơi, giờ này mà còn đi làm à nè… Bé Bin vừa ợ hơi xong, cô đang bế đứng đây nghen. Chú làm ở chỗ nào mà khuya dữ vậy?",
+        "Ủa dãy trọ số 12 hả? Vậy là ngay sau tiệm tạp hoá bà Năm đó nha — cô mới mua nước mắm ở đó chiều nay còn nói chuyện với bà ấy luôn đó nghen. Chú làm thêm ở đâu mà về khuya dữ vậy? Bé Bin vừa dụi mắt xong, dễ thương muốn xỉu luôn á nè.",
+        "Ủa chú nói vậy chớ… cô thấy sao sao á nè. Chú làm thêm ở chỗ nào mà về khuya dữ vậy? Bé Bin vừa cười khúc khích trong tay cô luôn đó nghen.",
+        "Trời đất ơi, chú nói vậy mà cô thấy… hơi lạ nè. Chú làm thêm ở chỗ nào mà không có điện thoại, không có chìa khoá, mà cũng không cầm cái gì hết trơn luôn á nha? Bé Bin vừa ngáp to như cá vàng đó nghen.",
+        "Trời đất ơi, chú nói giúp em được không mà cô chưa biết chú làm ở đâu, tên gì, hay có quen ai trong xóm nữa nè… Bé Bin vừa đạp chân lên bụng cô luôn đó nghen."
+      ],
+      "dauDu": true,
+      "hintOk": true,
+      "hint": "Em tên Minh, ở phòng 302 dãy trọ số 12, làm thêm tại tiệm photocopy cô",
+      "funnyOk": true,
+      "funny": "Đi làm thêm về mà để quên chìa khóa trong phòng — chắc đi… làm thêm ở…",
+      "latTB": 3148,
+      "latMax": 3561,
+      "tong": 21689
+    },
+    {
+      "label": "RÚT gemini",
+      "finished": true,
+      "brains": [
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
+      ],
+      "lines": [
+        "Sinh viên à? Ủa nãy em nói em ở cuối hẻm, vậy số nhà bao nhiêu nè? Cô Tư bán thịt đầu chợ Hòa Khánh đó cô nhớ dai lắm đó nha — em có ghé mua bao giờ chưa?",
+        "Sinh viên làm thêm khuya vậy hả? Trời đất ơi, giờ này mà còn đi làm — em làm ở quán nào nè? Cô Tư bán thịt đầu chợ Hòa Khánh đó cô đi hoài à, cô nhớ mặt hết mấy đứa sinh viên hay ghé mua bì lợn về nấu cháo cho bạn bè đó nha.",
+        "Ủa dãy trọ số 12 hả? Đó là chỗ bà Hạnh bán nước mía trước cổng trường Cao Đẳng Kỹ Thuật nè — cô hay ghé mua cho bé Bin uống lúc chiều mà! Bà ấy có nuôi con mèo tam thể tên Mít đó, nhớ không nè?",
+        "Ủa… chú em nói chú ở dãy trọ số 12, mà cô thấy trên người chú mặc áo thun trắng, quần jeans, đeo ba lô sinh viên — vậy mà không cầm theo cái gì hết luôn hả? Không có thẻ sinh viên, không có giấy tờ, không có chai nước mía của bà Hạnh đưa cho à nè? Trời đất ơi, bé Bin trong phòng đang rên một tiếng rồi đó nghen…",
+        "Trời đất ơi, chú em nói 'một chút xíu thôi' mà cô nghe tiếng chú gõ cửa là bé Bin đã giật mình rồi đó nghen! Chú em ở dãy trọ số 12, vậy chú có biết bà Hạnh hay cho sinh viên mượn chìa khoá lúc quên không nè? Cô nhớ hồi tháng rồi có cậu bạn tên Tèo — cũng đeo ba lô y chang chú — mà còn cầm theo cái thẻ sinh viên in hình con mèo Mít nữa đó nha.",
+        "Trời đất ơi, chú em nói 'giúp em được không' mà cô đang nghe tiếng bé Bin trở mình trong nôi rồi đó nghen! Chú em ở dãy trọ số 12, vậy chú có nhớ tên người bạn cùng phòng không nè? Cô Tư bán thịt hồi chiều còn hỏi cô: 'Cô Sáu ơi, mấy đứa sinh viên mới vô ở số 12 có hay mua bì lợn luộc không?' — cô chưa kịp trả lời đã phải chạy vô dỗ con rồi đó nha."
+      ],
+      "dauDu": true,
+      "hintOk": true,
+      "hint": "Dạ em ở chung với anh Tèo, bữa trước anh ấy còn nhờ em mua giúp chai n",
+      "funnyOk": true,
+      "funny": "Đi làm thêm về mà để quên chìa khóa trong phòng — chắc đi… làm thêm ở…",
+      "latTB": 3661,
+      "latMax": 4256,
+      "tong": 24193
+    },
+    {
+      "label": "RÚT qwen",
+      "finished": true,
+      "brains": [
+        "deepseek",
+        "deepseek",
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "lines": [
+        "Trời đất ơi, cuối hẻm á? Để cô coi… cô nhớ cuối hẻm có nhà ông Bảy bán tạp hóa với dãy trọ mới xây hồi đầu năm đó hả? Chú em ở phòng nào?",
+        "Ủa, chú em nói là sinh viên đi làm thêm về hả? Nhưng cô thấy chú em mặc áo thun trắng với quần jeans, đeo ba lô sinh viên, tay không cầm gì hết. Đi làm thêm gì mà sạch sẽ quá vậy? Cô đi chợ về còn dính bùn đất nữa à, chú em làm nghề gì mà đồ không dính gì hết vậy nè?",
+        "Cô Hạnh? Ừ cô biết bả, bả hiền mà kỹ tính lắm. Mà nè, chú em nói chú em ở dãy trọ số 12, vậy chú em biết cô Hạnh hay cho mèo ăn trước cửa nhà hồi nào không? Cô thấy bả hay ngồi trước hiên lúc chiều lắm đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "dauDu": true,
+      "hintOk": true,
+      "hint": "Để ý coi họ đang mê chuyện gì, rồi kể một câu chuyện khớp với bộ đồ bạ",
+      "funnyOk": false,
+      "funny": "(không có)",
+      "latTB": 2509,
+      "latMax": 3281,
+      "tong": 15662
+    },
+    {
+      "label": "RÚT deepseek",
+      "finished": true,
+      "brains": [
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
+      ],
+      "lines": [
+        "Sinh viên à? Ủa mà sinh viên giờ còn trọ cuối hẻm nữa hả nè? Trời đất ơi, cô tưởng giờ toàn ở ký túc xá hay chung cư mini rồi chứ… Bé Bin nhà cô mới biết lẫy hôm qua đó nghen, dễ thương muốn xỉu luôn á!",
+        "Sinh viên làm thêm khuya vậy hả? Cô Tư bán thịt đầu chợ còn nói với cô là giờ sinh viên toàn đi giao đồ ăn mà ít thấy ai chạy xe ôm nữa nè… Chú làm ở đâu vậy, có gần tiệm trà sữa Mít Ơi không?",
+        "Ủa dãy số 12 hả? Cô nhớ rồi, đó là chỗ bà Hạnh hay bán mít sấy cho mấy đứa học sinh trường Nguyễn Đình Chiểu nè! Nhưng mà… chú mặc áo thun trắng, quần jeans, đeo ba lô mà không thấy cầm gì hết — sinh viên đi làm thêm khuya giờ còn ai mang theo đồ không vậy trời?",
+        "Chú em nói vậy chớ… cô thấy sao sao á nè! Trời đất ơi, bé Bin trong phòng đang thở đều đều đó nghen — cô mà mở cửa rồi chú làm ồn là dậy liền luôn á! Chú làm thêm ở chỗ nào mà khuya thế, có phải tiệm trà sữa Mít Ơi không ta?",
+        "Ủa nãy chú nói ở dãy số 12 mà giờ lại không nhớ tên tiệm mình làm à? Trời đất ơi, bé Bin nhà cô mới ngủ được có mười phút đó nghen — cô mà mở cửa rồi chú lỡ ho lớn một cái là dậy liền luôn á!",
+        "Chú em nói giúp cô được không… mà giúp cái gì chứ? Trời đất ơi, bé Bin trong phòng đang ngủ say sưa đó nghen — cô mà mở cửa rồi chú lỡ nói lớn một tiếng là dậy liền luôn á!"
+      ],
+      "dauDu": true,
+      "hintOk": true,
+      "hint": "Dạ em làm thêm tại tiệm bánh Mì Xinh trên đường Nguyễn Văn Cừ, chị Năm",
+      "funnyOk": true,
+      "funny": "Đi làm thêm về mà để quên chìa khóa trong phòng — chắc đi… làm thêm ở…",
+      "latTB": 3432,
+      "latMax": 4278,
+      "tong": 23866
+    },
+    {
+      "label": "RÚT haiku",
+      "finished": true,
+      "brains": [
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
+      ],
+      "lines": [
+        "Sinh viên à? Ủa nãy em nói em ở cuối hẻm mà sao cô thấy cả dãy nhà đó toàn người lớn tuổi hết trơn, không có cái bảng “cho thuê phòng sinh viên” nào hết nè — chú em ở số mấy vậy? Bé Bin đang ngủ sâu lắm nghen, đừng làm ồn nha.",
+        "Sinh viên làm thêm khuya vậy hả? Chú em làm ở đâu mà giờ này mới về nè? Cô Tư bán thịt đầu chợ còn chưa dọn hàng đi nữa kìa — cô vừa ra đổ rác lúc 11h45, thấy đèn cửa hàng bà ấy vẫn sáng trưng nghen.",
+        "Ủa số 12 hả? Cô Hạnh à? Trời đất ơi, cô Hạnh đó là bà dì ruột của chồng cô nè — mà sao cô chưa từng nghe ổng nhắc có người thuê trọ mới ở đó hồi tháng trước luôn á? Bé Bin đang thở đều đều trong phòng, chú em nói thiệt nghen, đừng làm cô lo rồi con dậy lại là… xỉu liền đó nha.",
+        "Chú em nói vậy chớ… cô thấy sao sao á. Kể lại cô nghe coi — cô nhớ dai lắm đó nha, mà bé Bin đang ngủ say như cục đá, đừng làm ồn nghen.",
+        "Ủa mà khoan, chú em nói hứa không làm phiền lâu — vậy chú em định vô nhà cô làm chi nè? Bé Bin đang ngủ như cục bông, một tiếng động nhỏ thôi là dậy khóc liền đó nghen. Trời đất ơi, giờ này mà còn đứng ngoài cửa… chắc chú em cũng mệt rồi ha?",
+        "Chú em nói giúp cô cái chi mà chưa nói rõ luôn đi nè? Bé Bin đang ngủ say như cục bông, một tiếng động nhỏ thôi là dậy khóc liền đó nghen. Trời đất ơi, giờ này mà còn đứng ngoài cửa… chắc chú em cũng mệt rồi ha?"
+      ],
+      "dauDu": true,
+      "hintOk": true,
+      "hint": "Dạ em định gọi điện thoại nhờ bạn mang chìa khoá qua, mà điện thoại hế",
+      "funnyOk": true,
+      "funny": "Đi làm thêm về mà để quên chìa khóa trong phòng — chắc đi… làm thêm ng",
+      "latTB": 3456,
+      "latMax": 3785,
+      "tong": 23136
+    },
+    {
+      "label": "CHỈ CÒN gemini",
+      "finished": true,
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "lines": [
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "dauDu": true,
+      "hintOk": true,
+      "hint": "Để ý coi họ đang mê chuyện gì, rồi kể một câu chuyện khớp với bộ đồ bạ",
+      "funnyOk": false,
+      "funny": "(không có)",
+      "latTB": 236,
+      "latMax": 481,
+      "tong": 1761
+    },
+    {
+      "label": "CHỈ CÒN qwen",
+      "finished": true,
+      "brains": [
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen",
+        "qwen"
+      ],
+      "lines": [
+        "Sinh viên à? Ủa sinh viên mà dọn vô hẻm Đóm Hòng hồi tháng trước thì chắc quen cô Tư bán thịt đầu chợ rồi hả nè? Cô Tư hay cho thêm miếng mỡ heo cho sinh viên nghèo đó nghen!",
+        "Sinh viên làm thêm khuya vậy hả? Trời đất ơi, giờ này mà còn đi làm thì chắc là quán trà sữa đầu hẻm nè — cô thấy mấy em hay đứng đó quẹt thẻ lúc 11h đêm lắm đó nghen! Bé Bin mới ngủ được hai phút thôi, chú nói nhỏ nhỏ chút nha.",
+        "Ủa dãy 12 hả? Cô nhớ rồi — cô Hạnh bán xôi sáng đầu hẻm mà đúng không nè? Mỗi sáng cô ấy hay kêu 'chào các cháu sinh viên' rồi múc thêm một muỗng đậu phộng rang! Bé Bin nhà cô mới ngủ được chút xíu thôi, chú nói nhỏ nhỏ chút nghen.",
+        "Ủa chú em nói dãy 12 mà cô nhớ dãy 12 là dãy nhà trọ toàn sinh viên năm nhất, nhưng… chú mặc áo thun trắng quần jeans mà không thấy đeo thẻ sinh viên hay balô có logo trường nào hết nè? Bé Bin đang ngủ sâu lắm nghen, chú đứng yên một chút cô kiểm tra lại tí nha.",
+        "Ủa chú em nói dãy 12 mà cô nhớ dãy 12 toàn sinh viên năm nhất, nhưng… chú mặc áo thun trắng quần jeans mà không thấy đeo thẻ sinh viên hay balô có logo trường nào hết nè? Bé Bin đang ngủ sâu lắm nghen, chú đứng yên một chút cô kiểm tra lại tí nha.",
+        "Chú em nói giúp cô một chút thôi à? Trời đất ơi, bé Bin mới ngủ được có năm phút mà cô đã phải đứng đây hỏi tới hỏi lui rồi nghen — chú nói rõ tên trường với mã sinh viên đi, cô kiểm tra qua nhóm Zalo xóm Đóm Hòng tí nha."
+      ],
+      "dauDu": true,
+      "hintOk": true,
+      "hint": "Dạ em học Khoa Kỹ thuật Trường ĐH Bách Khoa, mã số sinh viên 21012345,",
+      "funnyOk": true,
+      "funny": "Đi làm thêm về mà để quên chìa khóa trong phòng — chắc đi… làm thêm ng",
+      "latTB": 3444,
+      "latMax": 3865,
+      "tong": 23961
+    },
+    {
+      "label": "CHỈ CÒN deepseek",
+      "finished": true,
+      "brains": [
+        "deepseek",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "lines": [
+        "Trời đất ơi, sinh viên gì mà nửa đêm rồi còn lê la ngoài đường, để bé Bin nó giật mình thức giấc là cô không tha đâu nha. Mà chú em trọ cuối hẻm nào? Cô ở đây lâu năm, sao chưa thấy mặt mũi chú em bao giờ vậy nè?",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "dauDu": true,
+      "hintOk": true,
+      "hint": "Em thấy bé Bin đáng yêu quá, bé ngủ ngon ghê, giống hệt con của dì Ba ",
+      "funnyOk": true,
+      "funny": "Mới dọn tới đã đi xin ăn, chắc tháng sau lại dọn tiếp quá.",
+      "latTB": 2277,
+      "latMax": 3077,
+      "tong": 16075
+    },
+    {
+      "label": "CHỈ CÒN haiku",
+      "finished": true,
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "lines": [
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "dauDu": true,
+      "hintOk": true,
+      "hint": "Để ý coi họ đang mê chuyện gì, rồi kể một câu chuyện khớp với bộ đồ bạ",
+      "funnyOk": false,
+      "funny": "(không có)",
+      "latTB": 381,
+      "latMax": 463,
+      "tong": 3013
+    },
+    {
+      "label": "RÚT SẠCH (phải rơi về kịch bản)",
+      "finished": true,
+      "brains": [
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted",
+        "scripted"
+      ],
+      "lines": [
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó.",
+        "Ừm… nghe cũng được á, mà khoan, nói nhỏ thôi nha, bé Bin mới ngủ đó."
+      ],
+      "dauDu": true,
+      "hintOk": true,
+      "hint": "Để ý coi họ đang mê chuyện gì, rồi kể một câu chuyện khớp với bộ đồ bạ",
+      "funnyOk": false,
+      "funny": "(không có)",
+      "latTB": 0,
+      "latMax": 1,
+      "tong": 2
+    }
+  ],
+  "checks": [
+    {
+      "what": "Rút bất kỳ 1 khoá → vẫn chơi hết ván (4/4)",
+      "pass": true,
+      "ev": "RÚT gemini:ok · RÚT qwen:ok · RÚT deepseek:ok · RÚT haiku:ok"
+    },
+    {
+      "what": "Rút 3, chỉ chừa 1 → vẫn chơi hết ván (4/4)",
+      "pass": true,
+      "ev": "CHỈ CÒN gemini:ok · CHỈ CÒN qwen:ok · CHỈ CÒN deepseek:ok · CHỈ CÒN haiku:ok"
+    },
+    {
+      "what": "Quân sư 💡 + câu-hài-nhất SỐNG khi không có Anthropic",
+      "pass": true,
+      "ev": "💡=\"Dạ em định gọi điện thoại nhờ bạn mang chìa khoá qua, mà điện thoại hế\" · hài=\"Đi làm thêm về mà để quên c"
+    },
+    {
+      "what": "Rút sạch khoá → rơi về kịch bản, KHÔNG vỡ",
+      "pass": true,
+      "ev": "não=scripted"
+    },
+    {
+      "what": "Lượt bình thường không bị chậm thêm vì rơi tầng (≤ 1 giây thêm)",
+      "pass": true,
+      "ev": "não=qwen · TB=3148ms · chậm nhất=3561ms"
+    },
+    {
+      "what": "Tiếng Việt có dấu 100% ở mọi vòng có não thật",
+      "pass": true,
+      "ev": "ĐỦ 4 não:đủ dấu · RÚT gemini:đủ dấu · RÚT qwen:đủ dấu · RÚT deepseek:đủ dấu · RÚT haiku:đủ dấu · CHỈ CÒN gemin"
+    }
+  ]
+}

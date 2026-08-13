@@ -165,6 +165,13 @@
   .ward-opt{background:var(--panel2); border:2px solid var(--line); border-radius:8px;
     padding:8px 12px; font-size:14px; cursor:pointer; color:var(--ink);}
   .ward-opt.sel{border-color:var(--accent); color:var(--accent);}
+  /* v0.9 tủ đồ thật: món đồ CÓ HÌNH icon 8-bit; gương nháy sáng khi mặc món mới */
+  .ward-opt.iconed{display:flex; flex-direction:column; align-items:center; gap:3px;
+    padding:7px 10px; min-width:74px; font-size:12px;}
+  .ward-opt.iconed img{width:30px; height:30px; image-rendering:pixelated;}
+  .ward-opt.locked img{filter:grayscale(1) brightness(.6);}
+  #av-preview.flash{animation:ward-flash .45s ease-out;}
+  @keyframes ward-flash{0%{filter:brightness(1);}30%{filter:brightness(2.1) saturate(1.4);}100%{filter:brightness(1);}}
   /* v0.6 F3.1 — món chưa loot ra thì còn khoá, nhìn thấy nhưng bấm không được */
   .ward-opt.locked{opacity:.4; cursor:not-allowed; border-style:dashed; color:var(--dim);}
 
@@ -183,6 +190,29 @@
     border:1px dashed var(--accent); border-radius:8px; font-size:13px; color:var(--accent);}
   #btn-kill{display:none; margin:6px auto; padding:12px 34px; font-size:22px; font-weight:800;
     background:var(--danger); color:#fff; border-radius:12px; animation:xdh-pulse 1.1s infinite;}
+  /* v1.0 — nút trả đồ nhiệm vụ: cùng khuôn nút CẮN, màu "tốt lành" */
+  #btn-give-stick{display:none; margin:6px auto; padding:12px 30px; font-size:20px; font-weight:800;
+    background:var(--ok); color:#0a2416; border-radius:12px; animation:xdh-pulse 1.1s infinite;}
+
+  /* v1.0 — popup 📱 kiểu THÔNG BÁO ĐIỆN THOẠI (đáp án 5, hợp Ly TikToker) */
+  #ov-mission{align-items:flex-start; padding-top:9vh; z-index:32;}
+  #mi-card{width:min(430px,94vw); background:#101322; border:2px solid #3fd4d4; border-radius:18px;
+    overflow:hidden; box-shadow:0 18px 50px rgba(0,0,0,.75); animation:mi-drop .45s cubic-bezier(.2,.9,.3,1.2);}
+  @keyframes mi-drop{0%{transform:translateY(-70px); opacity:0;} 100%{transform:translateY(0); opacity:1;}}
+  #mi-bar{display:flex; align-items:center; gap:8px; padding:8px 14px; background:#181c30;
+    font-size:12px; color:var(--dim);}
+  #mi-bar .mi-app{width:22px; height:22px; border-radius:6px; background:#3fd4d4; color:#08131a;
+    display:flex; align-items:center; justify-content:center; font-size:13px;}
+  #mi-bar .mi-now{margin-left:auto;}
+  #mi-card .mi-inner{padding:14px 16px 16px;}
+  #mi-title{font-weight:800; color:#3fd4d4; font-size:16px; margin-bottom:6px;}
+  #mi-body{font-size:14px; line-height:1.5; color:var(--ink); margin-bottom:10px;}
+  #mi-ask{font-weight:800; font-size:15px; color:var(--accent); margin-bottom:8px;}
+  #mi-hint{font-size:12.5px; color:var(--dim); line-height:1.55; margin-bottom:14px;}
+  #mi-btns{display:flex; gap:8px;}
+  #btn-mi-yes{flex:1; padding:12px; font-size:15px; background:var(--ok); color:#0a2416; border-radius:10px;}
+  #btn-mi-no{flex:0 0 auto; padding:12px 14px; font-size:14px; background:var(--panel2);
+    color:var(--dim); border:1px solid var(--line); border-radius:10px;}
 
   /* Shop + convo powerup buttons */
   #shop-items{display:flex; flex-direction:column; gap:8px; margin-bottom:12px;}
@@ -275,6 +305,45 @@
     #dialogue{font-size:15px;}
   }
 
+  /* ============================================================
+     v0.9 THÍ NGHIỆM MÀN MỞ ĐẦU (2026-08-12, chờ Lucas chốt 7 câu):
+     màn hình sống + tựa game pixel + thẻ chế độ có hình + truyện mở 4 khung.
+     Muốn bỏ: xoá khối này + khối #ov-story trong body là về như cũ.
+     ============================================================ */
+  #ov-intro{background:linear-gradient(to bottom, rgba(8,5,15,.10) 0%, rgba(8,5,15,.28) 55%, rgba(8,5,15,.74) 100%);
+    flex-direction:column; justify-content:flex-end; gap:12px; padding-bottom:4vh;}
+  #ov-intro .panel{background:rgba(20,15,35,.92); border-color:var(--accent);}
+  #title-hero{text-align:center; margin-bottom:1vh; animation:cv-bob 3.6s steps(2) infinite;}
+  #title-moon{font-size:54px; filter:drop-shadow(0 0 28px rgba(255,233,168,.85));}
+  #title-text{font-size:44px; font-weight:900; letter-spacing:4px; color:var(--accent);
+    text-shadow:3px 3px 0 #5a1a22, 6px 6px 0 rgba(0,0,0,.65);}
+  #title-sub{font-size:14px; color:var(--ink); opacity:.9; font-style:italic; margin-top:4px;
+    text-shadow:0 2px 0 rgba(0,0,0,.6);}
+  #mode-pick .ward-opt{display:flex; flex-direction:column; align-items:center; gap:3px; padding:12px 10px;}
+  #mode-pick .mc-ico{font-size:30px; line-height:1;}
+  #mode-pick small{font-size:11px; color:var(--dim); font-weight:400; line-height:1.35; text-align:center;}
+  #mode-pick .ward-opt.sel small{color:var(--accent);}
+  @media(max-width:640px){ #title-text{font-size:30px; letter-spacing:2px;} #title-moon{font-size:40px;} }
+
+  #ov-story{position:fixed; inset:0; z-index:34; display:none; background:#05030a; cursor:pointer;}
+  #ov-story.show{display:block;}
+  #story-stage{position:absolute; inset:0; background-size:cover; background-position:center;
+    image-rendering:pixelated;}
+  #story-stage:after{content:""; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(5,3,10,.92) 0%, rgba(5,3,10,.30) 50%, rgba(5,3,10,.40) 100%);}
+  #story-ico{position:absolute; left:50%; top:32%; transform:translate(-50%,-50%); font-size:96px; z-index:2;
+    filter:drop-shadow(0 8px 0 rgba(0,0,0,.5)); animation:cv-bob 2.4s steps(2) infinite;}
+  #story-cap{position:absolute; left:50%; bottom:17%; transform:translateX(-50%); z-index:2; width:min(620px,88vw);
+    background:rgba(16,13,10,.93); border:3px solid var(--accent); padding:16px 20px; font-size:19px;
+    line-height:1.5; text-align:center; color:var(--ink);}
+  #story-dots{position:absolute; left:50%; bottom:10%; transform:translateX(-50%); z-index:2; display:flex; gap:8px;}
+  #story-dots span{width:10px; height:10px; background:var(--line);}
+  #story-dots span.on{background:var(--accent);}
+  #story-hint{position:absolute; right:18px; bottom:18px; z-index:2; color:var(--dim); font-size:13px;
+    animation:xdh-pulse 1.2s infinite;}
+  #story-skip{position:absolute; top:14px; right:14px; z-index:3; font-size:13px; padding:7px 12px;}
+  @media(max-width:640px){ #story-ico{font-size:64px;} #story-cap{font-size:16px; bottom:20%;} }
+
   /* Touch controls */
   #touchpad{position:fixed; bottom:14px; left:14px; z-index:9; display:none;
     grid-template-columns:repeat(3,54px); grid-template-rows:repeat(2,54px); gap:6px;}
@@ -298,8 +367,10 @@
   <div class="hud-chip" id="hud-night">🌙 Đêm 1/3 · vào 0/1 nhà</div>
   <div class="hud-chip" id="hud-money">💰 0k</div>
   <div class="hud-chip" id="hud-meal" style="display:none">🎯 —</div>
+  <div class="hud-chip" id="hud-mission" style="display:none">🎯 —</div>
   <div class="hud-chip" id="hud-outfit">👕 Đồ thường</div>
   <div class="spacer"></div>
+  <button class="btn ghost hud-chip" id="btn-mute" style="pointer-events:auto" title="Bật/tắt nhạc">🔊</button>
   <button class="btn ghost hud-chip" id="btn-wardrobe" style="pointer-events:auto">🎽 Tủ đồ</button>
 </div>
 
@@ -320,14 +391,18 @@
   </div>
 </div>
 
-<!-- Intro / password -->
+<!-- Intro / password. v0.9 THÍ NGHIỆM: màn hình SỐNG — xóm đêm chạy phía sau, tựa game nổi lên trên -->
 <div class="overlay show" id="ov-intro">
+  <div id="title-hero">
+    <div id="title-moon">🌕</div>
+    <div id="title-text">XÓM ĐÓM HÒNG</div>
+    <div id="title-sub">Nói dối cho hay — để được mời vào nhà</div>
+  </div>
   <div class="panel">
     <div class="ward-opts" style="float:right">
       <button class="ward-opt" id="lang-vi" style="padding:5px 10px;font-size:13px">🇻🇳 VN</button>
       <button class="ward-opt" id="lang-en" style="padding:5px 10px;font-size:13px">🇬🇧 EN</button>
     </div>
-    <h2>🌕 Xóm Đóm Hòng</h2>
     <!-- B1 (v0.3): chọn chế độ — cùng một bộ não hội thoại, khác ĐIỀU KIỆN THẮNG -->
     <div class="ward-opts" id="mode-pick" style="margin-bottom:12px">
       <button class="ward-opt sel" data-m="ma_soi">🐺 <b>Ma Sói</b></button>
@@ -343,25 +418,33 @@
   </div>
 </div>
 
-<!-- Avatar mirror (Q-J: left live preview + right tabbed grid + dice) -->
+<!-- v0.9 THÍ NGHIỆM: truyện mở 4 khung — bấm để qua, Bỏ qua luôn có, chỉ hiện lần đầu (?story=1 để xem lại) -->
+<div id="ov-story">
+  <button class="btn ghost" id="story-skip">⏭️ Bỏ qua</button>
+  <div id="story-stage"></div>
+  <div id="story-ico"></div>
+  <div id="story-cap"></div>
+  <div id="story-dots"></div>
+  <div id="story-hint">bấm để tiếp ▶</div>
+</div>
+
+<!-- v0.9 TỦ ĐỒ THẬT (Lucas chốt A · icon · bỏ 3 tab · hiệu ứng, 2026-08-12):
+     gương = ĐÚNG nhân vật PixelLab đang mặc đồ, xoay được 4 hướng, món đồ có hình -->
 <div class="overlay" id="ov-wardrobe">
-  <div class="panel" style="max-width:640px">
-    <h2>🪞 Gương hoá trang</h2>
-    <p>Mặt / Tóc / Da chỉ để đẹp. <b>Đồ</b> mới là thứ hàng xóm nhìn thấy và tin (hoặc nghi).</p>
-    <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:12px">
+  <div class="panel" style="max-width:680px">
+    <h2>🪞 Tủ đồ</h2>
+    <p>Hàng xóm tin (hay nghi) là nhờ bộ đồ này. Bấm món nào, mặc ngay món đó.</p>
+    <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:8px">
       <div style="flex:0 0 auto; text-align:center">
         <canvas id="av-preview" width="128" height="128"
-          style="width:150px;height:150px;image-rendering:pixelated;border:2px solid var(--line);border-radius:10px;background:#241e35"></canvas>
-        <div><button class="btn ghost" id="btn-av-dice" style="margin-top:8px">🎲 Ngẫu nhiên</button></div>
-      </div>
-      <div style="flex:1; min-width:240px">
-        <div class="ward-opts" id="av-tabs" style="margin-bottom:10px">
-          <button class="ward-opt" data-t="face">Mặt</button>
-          <button class="ward-opt" data-t="hair">Tóc</button>
-          <button class="ward-opt" data-t="skin">Da</button>
-          <button class="ward-opt sel" data-t="do">Đồ</button>
+          style="width:170px;height:170px;image-rendering:pixelated;border:2px solid var(--line);border-radius:10px;background:#241e35"></canvas>
+        <div style="display:flex; gap:6px; justify-content:center; margin-top:8px">
+          <button class="btn ghost" id="mirror-left" title="Xoay trái">◀</button>
+          <button class="btn ghost" id="btn-av-dice">🎲 Ngẫu nhiên</button>
+          <button class="btn ghost" id="mirror-right" title="Xoay phải">▶</button>
         </div>
-        <div class="ward-opts" id="av-opts"></div>
+      </div>
+      <div style="flex:1; min-width:260px">
         <div id="av-do-groups">
           <div class="ward-group"><h3>Áo</h3><div class="ward-opts" id="w-shirt"></div></div>
           <div class="ward-group"><h3>Nón</h3><div class="ward-opts" id="w-hat"></div></div>
@@ -369,6 +452,7 @@
         </div>
       </div>
     </div>
+    <p id="ward-desc" style="font-size:13px; font-style:italic; min-height:20px"></p>
     <button class="btn" id="btn-ward-done">Xong, đi thôi</button>
   </div>
 </div>
@@ -398,6 +482,8 @@
     </div>
     <div id="dialogue"></div>
     <button id="btn-kill">🐺 CẮN</button>
+    <!-- v1.0 hệ nhiệm vụ: có gậy + đứng trước cửa Ly thì nút này hiện thay lời muốn nói -->
+    <button id="btn-give-stick">🤳 ĐƯA GẬY SELFIE</button>
     <div id="tut-hint"></div>
     <div id="debug-log"></div>
     <div id="convo-input">
@@ -489,6 +575,45 @@
   </div>
 </div>
 
+<!-- v1.0 — popup nhiệm vụ 📱 kiểu thông báo điện thoại (missions.js điền chữ + nối nút) -->
+<div class="overlay" id="ov-mission">
+  <div id="mi-card">
+    <div id="mi-bar"><span class="mi-app">🎬</span><b>TikTok · Ly</b><span class="mi-now">bây giờ</span></div>
+    <div class="mi-inner">
+      <div id="mi-title">…</div>
+      <div id="mi-body">…</div>
+      <div id="mi-ask">…</div>
+      <div id="mi-hint">…</div>
+      <div id="mi-btns">
+        <button id="btn-mi-yes">CÓ, GIÚP LIỀN 🤳</button>
+        <button id="btn-mi-no">Thôi, để sau</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- v1.0 — màn kết 😇 SÓI HIỀN (khuôn màn đồn công an: cảnh 8-bit vẽ code, hiện TRƯỚC bảng tổng kết) -->
+<div class="overlay" id="ov-hien" style="z-index:46">
+  <div class="panel" style="max-width:560px; text-align:center">
+    <div class="big-result win" id="hien-title">😇 SÓI HIỀN — XÓM NHẬN NUÔI!</div>
+    <canvas id="hien-scene" width="240" height="150"
+      style="width:100%; max-width:480px; image-rendering:pixelated; border:3px solid var(--ok); background:#0a0612"></canvas>
+    <p id="hien-line" style="margin-top:10px">…</p>
+    <button class="btn" id="btn-hien-next" style="margin-top:6px">Xem bảng tổng kết 📋</button>
+  </div>
+</div>
+
+<!-- 🚔 v0.9: màn kết BỊ TÓM — nền đồn công an 8-bit vẽ bằng code, hiện TRƯỚC bảng tổng kết -->
+<div class="overlay" id="ov-station" style="z-index:46">
+  <div class="panel" style="max-width:560px; text-align:center">
+    <div class="big-result lose" id="station-title">🚔 BỊ TÓM VỀ ĐỒN</div>
+    <canvas id="station-scene" width="240" height="150"
+      style="width:100%; max-width:480px; image-rendering:pixelated; border:3px solid var(--line); background:#0a0612"></canvas>
+    <p id="station-line" style="margin-top:10px">Ngồi đồn tới sáng — đêm nay mất trắng…</p>
+    <button class="btn" id="btn-station-next" style="margin-top:6px">Xem lại đêm nay 📋</button>
+  </div>
+</div>
+
 <!-- Score -->
 <div class="overlay" id="ov-score">
   <div class="panel">
@@ -516,10 +641,12 @@
 
 <script src="vendor/phaser.min.js"></script>
 <script src="js/config.js"></script>
+<script src="js/music.js"></script>
 <script src="js/blips.js"></script>
 <script src="js/portraits.js"></script>
 <script src="js/memes.js"></script>
 <script src="js/speech.js"></script>
+<script src="js/missions.js"></script>
 <script src="js/convo.js"></script>
 <script src="js/tutorial.js"></script>
 <script src="js/mode-ket-tien.js"></script>

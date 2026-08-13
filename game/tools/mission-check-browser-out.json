@@ -1,0 +1,143 @@
+{
+  "base": "https://nhiem-vu.xom-dom-hong.pages.dev",
+  "passed": 27,
+  "total": 27,
+  "console_errors": [],
+  "checks": [
+    {
+      "what": "Tay nam ?mission=test co mat",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "P1a — quan tam 40 → ro_chuyen bi CHAN, popup KHONG hien",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "P1b — quan tam 70 nhung CHUA du 2 manh moi → van chan",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "P1c — manh moi 1 vao so (clues=1)",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "P1d — manh moi 2 den SOM (cach <2 luot) → chua nhan",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "P1e — du nhip 2 luot → manh moi 2 vao so (clues=2)",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "P1f — du 2 manh moi + quan tam 70 → popup 📱 HIEN",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "P5a — bam THOI → popup dong, chua nhan nhiem vu",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "P5b — nhac lai chuyen TikTok → popup HIEN LAI (tu choi khong giet mach)",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Nhan nhiem vu → stage da_nhan + o HUD 🎯 hien",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "The gioi doi: 3 thung rac moc ra tren ban do",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Duong 💰 — xe banh mi co ban gay selfie (UI)",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Duong 💰 — mua 80k: tru tien dung + co do (co_do)",
+      "pass": true,
+      "ev": "{\"stage\": \"co_do\", \"clues\": 2, \"lastClueTurn\": 9, \"source\": \"mua\", \"items\": [\"gay_selfie\"], \"money\":"
+    },
+    {
+      "what": "Gap Ly voi gay trong tui → nut 🤳 DUA GAY hien",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Tra do → stage xong + thuong +50k (20 → 70k)",
+      "pass": true,
+      "ev": "{\"stage\": \"xong\", \"clues\": 2, \"lastClueTurn\": 9, \"source\": \"mua\", \"items\": [], \"money\": 70, \"chore\":"
+    },
+    {
+      "what": "0 cu can + nhiem vu xong → man ket 😇 SOI HIEN hien NGAY",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Bang tong ket doi tieu de SOI HIEN",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Duong 🤝 — Ti 'dong y mom' khi tin 40 → CODE chan, chua co do",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Duong 🤝 — tin 70 → duoc muon that (co_do, nguon 'ti')",
+      "pass": true,
+      "ev": "{\"stage\": \"co_do\", \"clues\": 0, \"lastClueTurn\": -99, \"source\": \"ti\", \"items\": [\"gay_selfie\"], \"money\""
+    },
+    {
+      "what": "Duong 🗑️ — thung rac nha ra gay (co_do, nguon 'rac')",
+      "pass": true,
+      "ev": "{\"stage\": \"co_do\", \"clues\": 0, \"lastClueTurn\": -99, \"source\": \"rac\", \"items\": [\"gay_selfie\"], \"money"
+    },
+    {
+      "what": "Thung da luc → luc lai KHONG an them (1 lan/dem)",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Thung khac — tien le 5-10k vao vi",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Viec vat — tran 2 lan/nha/dem (lan 3 bi tu choi) + tong <=120k",
+      "pass": true,
+      "ev": "{\"perHouse\": {\"0\": 2}, \"nightTotal\": 70}"
+    },
+    {
+      "what": "Soi Du — chua nhan nhiem vu: KHONG thung rac, KHONG o HUD 🎯",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Binh minh 0 cu can + nhiem vu CHUA xong → dem troi binh thuong (khong thua, sang dem 2)",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Luoi do binh minh: 0 can + xong → ket SOI HIEN",
+      "pass": true,
+      "ev": ""
+    },
+    {
+      "what": "Ket Tien — he nhiem vu TAT (on()=false), khong o 🎯, khong thung rac",
+      "pass": true,
+      "ev": ""
+    }
+  ]
+}

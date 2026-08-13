@@ -1,3 +1,50 @@
+# Báo cáo Session B — v1.0 HỆ NHIỆM VỤ (2026-08-13)
+
+**Link thử: https://nhiem-vu.xom-dom-hong.pages.dev — link chính CHƯA đụng.**
+Đủ 5 chặng C1→C5 của `plan-v1.0-nhiem-vu.md`. Kẹt Tiền: **0 dòng đổi** (kiểm bằng git + máy).
+
+## ✅ Đã xong (đúng 9 đáp án Lucas khoá)
+
+| Mảnh | Trạng thái |
+|---|---|
+| **Chuyện ngầm của Ly** — gậy selfie gãy + hết tiền; Ly KHÔNG tự khai. Người chơi lần theo mạch TikTok → 3 manh mối lộ dần (quan tâm ≥ 60, mỗi manh mối cách ≥ 2 lượt) → popup | ✅ kiểm sống trên não thật: moi ra chuyện ở lượt 5 (chỉ tiêu ≤ 8) |
+| **Popup 📱 kiểu thông báo điện thoại** (đáp án 5) — "TikTok · Ly · bây giờ", nút CÓ/KHÔNG. Từ chối KHÔNG mất mạch: nhắc lại TikTok là popup quay lại | ✅ máy kiểm 2 chiều |
+| **Nhận là THẾ GIỚI ĐỔI** — 3 thùng rác mọc ra trên bản đồ, xe bánh mì bắt đầu bán gậy, việc vặt mở ở cả 3 nhà, ô HUD 🎯 bật (đáp án 6) | ✅ |
+| **3 đường giải (đáp án 3)** — 💰 việc vặt 20-40k/lần (trần 2 lần/nhà/đêm, ≤120k/đêm) + tiền lẻ trong rác → mua gậy 80k · 🤝 mượn Tí (CODE xét tin ≥ 55 — AI "đồng ý mồm" cũng không lọt) · 🗑️ 3 thùng rác, bảng loot 50% đồ vứt đi hài / 30% tiền lẻ / 15% đồ ăn / 5% gậy | ✅ cả 3 đường đi tới cùng bằng máy |
+| **Trả đồ + thưởng (đáp án 7)** — gặp Ly với gậy trong túi → nút 🤳 ĐƯA GẬY → cảnh Ly mừng xỉu (phan_khich) → +50k + tin, chạy được cả khi não AI chết (kịch bản) | ✅ |
+| **2 lối chơi (đáp án 2)** — 😇 Sói Hiền: 0 cú cắn + xong nhiệm vụ → màn kết 8-bit "xóm nhận nuôi" + bảng điểm riêng · 🐺 Sói Dữ: y nguyên luật cũ · đêm 0 cắn chưa xong nhiệm vụ = đêm trôi bình thường, không thua | ✅ |
+| **AI không cầm game** — AI chỉ phát tín hiệu `mission_signal`; 3 lớp gác: chữ CẤM trong thẻ Ly + cổng server + cổng client. Số cân bằng nằm hết ở config.js một chỗ | ✅ |
+
+## 🔬 Bộ kiểm mục 6 — CẢ 5 SỐ ĐẬU
+
+| # | Số đậu | Kết quả |
+|---|---|---|
+| 1 | Nhắc TikTok → moi ra chuyện ≤ 8 lượt, AI không khai sớm | ✅ não thật (Qwen): rõ chuyện ở **lượt 5**, đúng thứ tự 1→2→3; quan tâm 40 hỏi thẳng 2 lượt đều bị chặn (`mission-live.mjs` 4/4) |
+| 2 | Cả 3 đường giải đi được tới cùng (cờ `?mission=test`) | ✅ Playwright: mua 80k / mượn Tí / lục rác đều ra gậy → trả → +50k (`mission-check.py` 27/27) |
+| 3 | Kết Hiền đúng lúc · Sói Dữ y hệt bản live | ✅ kết Hiền hiện khi 0 cắn + xong (cả ngay lúc trả lẫn lưới bình minh) · hồi quy 20 mục não thật: **bản thử 17/20 > link chính 15/20** — 3 mục rớt là bệnh giọng não Qwen CÓ SẴN trên live (đã có trong pending 08-10), không phải do nhiệm vụ |
+| 4 | 0 lỗi console mới · Kẹt Tiền không đổi | ✅ console 0 lỗi trên mọi đường đi · `mode-ket-tien.js` diff trống · máy xác nhận Kẹt Tiền không thấy nhiệm vụ/thùng rác |
+| 5 | Từ chối → nhắc TikTok → popup hiện lại | ✅ máy kiểm |
+
+Bài kiểm mới để lại cho lần sau: `game/tools/mission-check.mjs` (20 mục, chạy không cần mạng) · `mission-check.py` (27 mục trình duyệt) · `mission-live.mjs` (4 mục não thật).
+
+## ⚠️ QUYẾT ĐỊNH TỰ ĐƯA + VẤN ĐỀ MỚI (không có trong plan) — cho Lucas
+
+1. **Kết Sói Hiền hiện NGAY khi trả đồ** (0 cắn), không bắt chờ bình minh 8 phút — plan viết "qua đêm 0 cắn" nhưng bắt ngồi chờ là ức chế. Bình minh vẫn là lưới đỡ. Muốn kiểu "chờ trời sáng" thì đảo 1 khối nhỏ.
+2. **Máy bắt được não Qwen lặp manh mối 1 sáu lượt liền** → đã cho CODE nắn tín hiệu về manh mối kế tiếp (não yếu cỡ nào mạch vẫn chạy). Nhưng **miệng Ly có lúc lỡ nhắc chuyện gậy sớm** dù tín hiệu bị chặn đúng — đã siết chữ, Qwen vẫn thỉnh thoảng lỡ miệng. Cùng gốc bệnh "não EN yếu" 08-10 (đổi thứ tự não chờ Lucas gật).
+3. **Đêm 0 cú cắn giờ KHÔNG thua nữa** (luật Sói Hiền của plan) — người chơi Sói Dữ thất bại cả đêm cũng được ân xá qua đêm mới thay vì thua. Chơi thử thấy dễ quá thì nói em siết lại.
+4. **Đồ ăn trong rác hiện chỉ là câu hài** (không cộng gì) — để dành cho nhiệm vụ v1.1 dùng lại hệ rác.
+
+## 🎯 Lucas làm tiếp
+1. Chơi thử link thử theo mạch người mới: nói chuyện với Ly về TikTok → nhận nhiệm vụ → chọn 1 trong 3 đường → trả gậy → xem kết Sói Hiền.
+2. Ưng thì gật một tiếng — em merge lên link chính (chưa đụng gì cho tới lúc đó).
+
+## Kỹ thuật (đọc khi cần)
+- Mới: `public/js/missions.js` (máy trạng thái + luật). Sửa: config/convo/ui/game/index + `functions/api/converse.js` (mission_signal đủ 4 chỗ schema + cổng gateMission) + `_personas.js` (khối nhiệm vụ MISSION_BLOCKS, chèn vào tin nhắn cuối để giữ bộ nhớ đệm).
+- Núm chỉnh: `XDH.MISSION_CFG` + `XDH.TRASH` trong config.js. Ngưỡng 60/55 có bản sao cứng trong gateMission (server) — đổi thì đổi CẢ HAI.
+- Deploy thử: `npx wrangler pages deploy --branch=nhiem-vu --commit-dirty=true` trong `game/`.
+
+---
+
 # Báo cáo — HƯỚNG DẪN: ĐỔI CÁCH CHẤM (2026-08-10, sau khi Lucas báo "shipper" vẫn bị chặn)
 
 **Preview: https://huong-dan.xom-dom-hong.pages.dev — link chính chưa đụng. 0 lỗi console.**

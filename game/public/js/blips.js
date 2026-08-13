@@ -39,6 +39,7 @@ XDH.Blips = (function () {
     if (!c) return;
     const notes = kind === 'win' ? [523, 659, 784, 1047]
       : kind === 'lose' ? [392, 330, 262, 196]
+      : kind === 'equip' ? [659, 988]                 // v0.9: tiếng "ting" mặc đồ
       : [440, 554];
     notes.forEach((f, i) => {
       const t = c.currentTime + i * 0.12;
@@ -51,5 +52,28 @@ XDH.Blips = (function () {
     });
   }
 
-  return { blip, jingle, unlock: ensureCtx };
+  // 🚨 Còi "ò í e" cho xe công an (v0.9 mini-game rượt) — hai nốt thay phiên, tự lặp.
+  // Khi Lucas đưa file nhạc còi thật thì thay hàm này bằng <audio>, chỗ gọi giữ nguyên.
+  let sirenTimer = null;
+  function siren(on) {
+    if (!on) { if (sirenTimer) { clearInterval(sirenTimer); sirenTimer = null; } return; }
+    if (sirenTimer) return;
+    const c = ensureCtx();
+    if (!c) return;
+    let hi = true;
+    const tone = () => {
+      const t = c.currentTime;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'square'; o.frequency.value = hi ? 660 : 495;
+      g.gain.setValueAtTime(0.05, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.34);
+      o.connect(g).connect(c.destination);
+      o.start(t); o.stop(t + 0.36);
+      hi = !hi;
+    };
+    tone();
+    sirenTimer = setInterval(tone, 380);
+  }
+
+  return { blip, jingle, siren, unlock: ensureCtx };
 })();

@@ -1,0 +1,127 @@
+{
+  "at": "2026-08-13T04:00:24.527Z",
+  "checks": [
+    {
+      "id": 1,
+      "what": "Chỗ 1/4 — NPC_TOOL.properties có mission_signal (enum đủ 5 tín hiệu + rỗng)",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 2,
+      "what": "Chỗ 2/4 — NPC_TOOL.required có mission_signal",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 3,
+      "what": "Chỗ 3/4 — REPLY_SCHEMA_NOTE (ghi chú cho não chỉ-biết-JSON) có mission_signal",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 4,
+      "what": "Chỗ 4/4 — shapeReply kẹp mission_signal về danh sách hợp lệ (nhãn lạ → rỗng)",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 5,
+      "what": "Ly quan tâm < 60 → ro_chuyen bị CHẶN (AI khai sớm cũng vô ích)",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 6,
+      "what": "Ly quan tâm >= 60 → manh mối đi qua ĐÚNG NHỊP + não lặp lại bị NẮN về manh mối kế tiếp",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 7,
+      "what": "Manh mối từ nhà KHÔNG PHẢI Ly → chặn (Tí/Cô Sáu không được kể chuyện của Ly)",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 8,
+      "what": "Tí \"đồng ý mồm\" khi tin < 55 → CHẶN; tin >= 55 + đã nhận nhiệm vụ → cho qua",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 9,
+      "what": "Tí cho mượn khi CHƯA nhận nhiệm vụ (hoặc đã có đồ) → chặn",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 10,
+      "what": "Việc vặt chỉ mở SAU khi nhận nhiệm vụ (da_nhan/co_do)",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 11,
+      "what": "Mode Kẹt Tiền / không gửi mission → mọi tín hiệu bị chặn (Kẹt Tiền không đổi 1 dòng)",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 12,
+      "what": "Câu chào kịch bản (mọi nhà) trả mission_signal=\"\" — hợp đồng JSON đồng nhất",
+      "pass": true,
+      "evidence": "{\"dialogue\":\"Trời ơi ai đây?? Em tưởng ship trà sữa tới sớm… Mà thôi kệ, anh/chị là ai? Content không đợi ai đâu nha.\",\""
+    },
+    {
+      "id": 13,
+      "what": "Ly đổi dáng chờ: đã nhận nhiệm vụ mà quay lại → câu chào THAN THỞ về gậy selfie",
+      "pass": true,
+      "evidence": "Alo… Em đợi nãy giờ á. Gậy selfie sao rồi anh/chị?? Chưa có hả trời… content không đợi ai đâu nha 🥲"
+    },
+    {
+      "id": 14,
+      "what": "Kẹt Tiền KHÔNG dính câu chào nhiệm vụ (dù client có lỡ gửi mission)",
+      "pass": true,
+      "evidence": "Alo? Em đang quay dở cái clip… mà thôi nói đi, em nghe nè. Nhanh nha."
+    },
+    {
+      "id": 15,
+      "what": "Não kịch bản (FORCE_SCRIPTED) trả mission_signal=\"\" — không vỡ hợp đồng khi não chết",
+      "pass": true,
+      "evidence": "{\"dialogue\":\"Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.\",\"emotion\":\"neutral\",\"verdict\":\"thuong"
+    },
+    {
+      "id": 16,
+      "what": "MISSION_BLOCKS: Ly đủ 6 giai đoạn + Tí có khối \"đồ của tôi\" + khối việc vặt",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 17,
+      "what": "Mọi khối nhiệm vụ là tiếng Việt CÓ DẤU (luật cứng toàn workspace)",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 18,
+      "what": "Khối Ly có chốt chặn chữ: ngưỡng quan tâm 60 + LUẬT CẤM (không nhắc gậy khi chưa đủ điều kiện)",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 19,
+      "what": "converse.js có chèn missionNote vào tin nhắn cuối (không đụng system — giữ bộ nhớ đệm)",
+      "pass": true,
+      "evidence": ""
+    },
+    {
+      "id": 20,
+      "what": "scriptedReply (não kịch bản) khai mission_signal=\"\" trong hợp đồng",
+      "pass": true,
+      "evidence": ""
+    }
+  ],
+  "passed": 20,
+  "total": 20
+}

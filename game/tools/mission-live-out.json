@@ -1,0 +1,80 @@
+{
+  "base": "https://nhiem-vu.xom-dom-hong.pages.dev",
+  "at": "2026-08-13T04:00:46.463Z",
+  "checks": [
+    {
+      "what": "Không tín hiệu nào lọt khi quan tâm < 60",
+      "pass": true,
+      "ev": "manh_moi_1 → manh_moi_2 → ro_chuyen"
+    },
+    {
+      "what": "Manh mối ra đúng thứ tự 1 → 2 → rõ chuyện",
+      "pass": true,
+      "ev": "manh_moi_1 → manh_moi_2 → ro_chuyen"
+    },
+    {
+      "what": "Moi ra chuyện gậy (ro_chuyen) trong <= 8 lượt",
+      "pass": true,
+      "ev": "ro_chuyen ở lượt 5"
+    },
+    {
+      "what": "Quan tâm 40 + hỏi thẳng → tín hiệu vẫn bị chặn cả 2 lượt",
+      "pass": true,
+      "ev": "· ·"
+    }
+  ],
+  "log1": [
+    {
+      "turn": 1,
+      "interest": 50,
+      "brain": "qwen",
+      "sig": "",
+      "line": "Á hả? Em đang quay clip tối nay mà… xỉu luôn á 😌"
+    },
+    {
+      "turn": 2,
+      "interest": 58,
+      "brain": "qwen",
+      "sig": "",
+      "line": "Ơ… nhạt á anh. Kể kiểu này lên clip không ai coi đâu. Nhưng mà — em đang thiếu một món đồ "
+    },
+    {
+      "turn": 3,
+      "interest": 66,
+      "brain": "qwen",
+      "sig": "manh_moi_1",
+      "line": "Ơ… anh biết quay thì nói đi chứ đứng đó làm gì? Em đang thiếu một món đồ mà không biết tha"
+    },
+    {
+      "turn": 4,
+      "interest": 72,
+      "brain": "qwen",
+      "sig": "manh_moi_2",
+      "line": "Ơ… anh biết quay thì nói đi chứ đứng đó làm gì? Em đang thiếu một món đồ mà không biết tha"
+    },
+    {
+      "turn": 5,
+      "interest": 78,
+      "brain": "qwen",
+      "sig": "ro_chuyen",
+      "line": "Ơ… anh biết quay thì nói đi chứ đứng đó làm gì? Em đang thiếu một món đồ mà không biết tha"
+    }
+  ],
+  "log2": [
+    {
+      "turn": 1,
+      "interest": 40,
+      "brain": "qwen",
+      "sig": "",
+      "line": "Á hả?? Ai nói với anh vậy? Em mới gãy gậy chiều nay mà… (cười khẩy) Có phải người quen tro"
+    },
+    {
+      "turn": 2,
+      "interest": 40,
+      "brain": "qwen",
+      "sig": "",
+      "line": "Ơ… nhạt á anh. Kể kiểu này lên clip không ai coi đâu. Em đang thiếu đồ quay thiệt — nhưng "
+    }
+  ],
+  "passed": 4
+}

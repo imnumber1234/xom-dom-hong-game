@@ -1,10 +1,14 @@
 // POST /api/converse — the only backend endpoint.
 // Client sends transcript + hidden meters; we return the NPC's move as strict JSON.
-// Brain: Claude Haiku 4.5 with FORCED tool call (schema-guaranteed JSON) + prompt caching.
+// Brain: v0.8 "não xoay vòng" — MỌI lời gọi AI trong file này đi qua MỘT CỬA duy nhất
+// (askBrain → _brain.js): Gemini → Qwen → DeepSeek → Haiku → kịch bản, có ghế nghỉ 10 phút.
+// KHÔNG hàm nào ở đây được fetch thẳng tới một nhà cung cấp nữa — đó là lỗi đã giết
+// quân sư 💡 và câu-hài-nhất hôm 2026-08-10 khi khoá Anthropic hết tiền.
 // No key / API error → scripted fallback keeps the game playable.
 // The AI never decides win/fail — game code on the client owns the rules.
 
-import { PERSONAS, SYSTEM_TEMPLATE, SCENES, CLUBS, scriptedReply, scriptedOutcome } from './_personas.js';
+import { PERSONAS, BA_NAM, SYSTEM_TEMPLATE, SCENES, CLUBS, MISSION_BLOCKS, scriptedReply, scriptedOutcome } from './_personas.js';
+import { callBrain } from './_brain.js';
 
 // v0.6 F4 — 10 nhãn cảm xúc (5 nhãn mới: chan · nguong · cam_dong · phan_khich · buc_minh).
 // Client vẽ đủ 10 chân dung bằng code (portraits.js); nhãn lạ rơi về neutral ở shapeReply.
@@ -66,10 +70,16 @@ const NPC_TOOL = {
       player_claim: {
         type: 'string',
         description: 'Người lạ hiện đang XƯNG là ai / vai gì — tóm TỐI ĐA 10 từ dựa trên toàn bộ lời họ đã kể (vd "shipper giao trà sữa", "sinh viên lỡ xe buýt", "cháu bà Tư ở xa về"). Họ CHƯA xưng vai gì → để chuỗi rỗng "". Chỉ ghi lại lời họ TỰ XƯNG, không suy diễn.'
+      },
+      // v1.0 hệ nhiệm vụ — AI chỉ PHÁT TÍN HIỆU; game code cầm trạng thái, tiền, đồ, thưởng.
+      mission_signal: {
+        type: 'string',
+        enum: ['', 'manh_moi_1', 'manh_moi_2', 'ro_chuyen', 'dong_y_cho_muon', 'nhan_viec_vat'],
+        description: 'Tín hiệu nhiệm vụ của lượt này — CHỈ dùng khi khối [NHIỆM VỤ]/[ĐỒ CỦA TÍ]/[VIỆC VẶT] trong tin nhắn cho phép, ngoài ra LUÔN để "". manh_moi_1/manh_moi_2/ro_chuyen = Ly hé từng manh mối chuyện gậy selfie (đúng thứ tự, mỗi lượt tối đa một). dong_y_cho_muon = Tí thật sự đồng ý cho mượn gậy. nhan_viec_vat = nhân vật nhận cho người lạ làm một việc vặt lấy tiền công.'
       }
     },
     required: ['dialogue', 'emotion', 'verdict', 'thought', 'convo_state', 'final_test',
-      'invite_intent', 'contradiction', 'corroboration', 'shutdown', 'player_claim']
+      'invite_intent', 'contradiction', 'corroboration', 'shutdown', 'player_claim', 'mission_signal']
   }
 };
 
@@ -127,6 +137,20 @@ function voiceAnchor(persona, lang, turn) {
   return `\n[Nhắc giọng (hội thoại đã dài): giữ ĐÚNG thói quen nói lúc đầu — ${persona.tic || ''}. Xưng hô GIỮ NGUYÊN: ${persona.pronoun || ''}. Không được đổi giọng hay đổi xưng hô giữa chừng, cũng không được nói giọng trung tính chung chung.]`;
 }
 
+// v1.0 — khối nhiệm vụ theo nhân vật + giai đoạn (chữ nằm ở _personas.js MISSION_BLOCKS).
+// Ly: luật khai manh mối có chốt chặn · Tí: khối "đồ của tôi" · cả 3 nhà: việc vặt sau khi nhận.
+function missionNote(body, mode) {
+  if (mode !== 'ma_soi' || !body.mission || body.mission.id !== 'ly_selfie') return '';
+  const st = String(body.mission.stage || 'chua_biet');
+  const blocks = MISSION_BLOCKS[body.npcId] || {};
+  const clues = Math.max(0, Math.min(2, Number(body.mission.clues) || 0));
+  let out = blocks[st]
+    ? '\n' + blocks[st].replaceAll('{CLUES}', String(clues)).replaceAll('{NEXT}', MISSION_BLOCKS.gen_z_next[clues])
+    : '';
+  if (st === 'da_nhan' || st === 'co_do') out += '\n' + MISSION_BLOCKS.chore;
+  return out;
+}
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status, headers: { 'Content-Type': 'application/json; charset=utf-8' }
@@ -147,6 +171,14 @@ export async function onRequestPost({ request, env }) {
   if (body.summaryAsk) {
     const funny = await tryFunniest(env, body).catch(() => null);
     return json({ ok: true, funny });
+  }
+
+  // v0.8 — nhà HƯỚNG DẪN (Bà Năm). AI chỉ viết lời PHẢN ỨNG với câu người chơi vừa nói;
+  // câu đẩy cốt truyện + việc chấm đạt/chưa đạt vẫn do code phía client cầm.
+  // Không gọi được (hết tiền / não hỏng) → trả line rỗng, client dùng câu kịch bản như cũ.
+  if (body.tutorAsk) {
+    const t = await tryTutor(env, body).catch(() => null);
+    return json({ ok: true, line: (t && t.line) || '', dat: t ? t.dat : null, brain: t ? t.brain : null });
   }
 
   const persona = PERSONAS[body.npcId];
@@ -188,6 +220,17 @@ export async function onRequestPost({ request, env }) {
     // Ưu tiên: quay-lại-cùng-đêm > nhớ-đêm-trước > nghe-đồn > chào thường.
     const greetMem = Array.isArray(body.nightMemory) ? body.nightMemory : [];
     const greetGossip = Array.isArray(body.gossip) ? body.gossip : [];
+    // v1.0 — Ly đổi dáng chờ (plan C2): đã nhận nhiệm vụ mà quay lại chưa có gậy → câu than thở
+    const mSt = body.mission && body.mission.stage;
+    if (mode === 'ma_soi' && body.npcId === 'gen_z' && (mSt === 'da_nhan' || mSt === 'co_do') &&
+        !body.returning && persona.mission_greets) {
+      const mg = (lang === 'en' && persona.mission_greets_en) ? persona.mission_greets_en : persona.mission_greets;
+      const g2 = mg[seed % mg.length].replaceAll('{CLUB}', club);
+      return json({
+        ok: true, scripted: true,
+        npc: { dialogue: g2, emotion: 'chan', verdict: null, thought: '', convo_state: 'listening', final_test: false, invite_intent: false, contradiction: false, shutdown: false, mission_signal: '' }
+      });
+    }
     if (greetMem.length && !body.returning && persona.memory_greets) {
       const pastClaim = String(body.pastClaim || '').slice(0, 120);
       const past = lang === 'en'
@@ -209,7 +252,7 @@ export async function onRequestPost({ request, env }) {
     }
     return json({
       ok: true, scripted: true,
-      npc: { dialogue: g, emotion: 'suspicious', verdict: null, thought: '', convo_state: 'doubting', final_test: false, invite_intent: false, contradiction: false, shutdown: false }
+      npc: { dialogue: g, emotion: 'suspicious', verdict: null, thought: '', convo_state: 'doubting', final_test: false, invite_intent: false, contradiction: false, shutdown: false, mission_signal: '' }
     });
   }
 
@@ -294,10 +337,8 @@ Chọn viec_vat nếu nhân vật muốn người lạ phụ một tay trước.
 game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.suspicion}/100.]`
         + voiceNote(persona, lang, turn, seed) + voiceAnchor(persona, lang, turn)
     });
-    const hOut = await tryHaiku(env, system, messages, OUTCOME_TOOL).catch(() => null);
-    if (hOut) return json(hOut);
-    const dsOut = await tryDeepSeek(env, system, messages, OUTCOME_SCHEMA_NOTE, 'outcome').catch(() => null);
-    if (dsOut) return json(dsOut);
+    const out = await askBrain(env, system, messages, OUTCOME_TOOL).catch(() => null);
+    if (out) return json(shapeReply(out.input, out.brain, out.usage, 'outcome'));
     return json({ ok: true, scripted: true, npc: scriptedOutcome(body.npcId) });
   }
 
@@ -347,116 +388,161 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
     if (secs > 0 && secs <= 45) {
       last.content += '\n[Trời sắp sáng, nhân vật SỐT RUỘT: hoặc dồn ép hỏi nhanh cho ra lẽ, hoặc nếu câu chuyện tới giờ vẫn vô lý thì nói kiểu "Vô lý quá, thôi đi giùm cái" rồi đặt shutdown=true.]';
     }
+    // v1.0 — khối NHIỆM VỤ đặt ở tin nhắn cuối (như gossip/nightMemory), KHÔNG vào system:
+    // stage đổi giữa cuộc mà system đổi theo là mất bộ nhớ đệm (§6). Chữ nằm ở _personas.js.
+    last.content += missionNote(body, mode);
     // v0.7 T2/T3 — ĐẶT CUỐI CÙNG, ngay trước lúc mô hình viết: 2 câu mẫu xoay vòng theo lượt,
     // rồi (từ lượt 4) nhắc lại tic + xưng hô để chống trôi giọng.
     last.content += voiceNote(persona, lang, turn, seed) + voiceAnchor(persona, lang, turn);
   }
 
-  // Provider chain: Haiku (best VN comedy) → DeepSeek (works from CF Asia colos where
-  // Anthropic 403s) → scripted. Model quality IS the product — order matters.
-  const haiku = await tryHaiku(env, system, messages).catch(() => null);
-  if (haiku) return json(haiku);
-  const ds = await tryDeepSeek(env, system, messages).catch(() => null);
-  if (ds) return json(ds);
+  // v0.8 B4 — chuỗi não nằm hết trong _brain.js. Ở đây chỉ còn: hỏi một cửa, hỏng thì kịch bản.
+  const res = await askBrain(env, system, messages, NPC_TOOL).catch(() => null);
+  if (res) {
+    const shaped = shapeReply(res.input, res.brain, res.usage, 'reply');
+    // v1.0 — tín hiệu nhiệm vụ phải qua cổng server trước khi về client
+    shaped.npc.mission_signal = gateMission(shaped.npc.mission_signal, { npcId: body.npcId, mode, mission: body.mission }, state);
+    return json(shaped);
+  }
   return json({ ok: true, scripted: true, npc: scriptedReply(body.npcId, playerText, state, club) });
 }
 
-// tool mặc định = npc_reply (lượt nói chuyện thường). v0.3 truyền OUTCOME_TOOL cho "màn xin".
-async function tryHaiku(env, system, messages, tool = NPC_TOOL) {
-  if (!env.ANTHROPIC_API_KEY) return null;
-  {
-    // Via Cloudflare AI Gateway (created by Lucas 2026-08-06): routes around the
-    // Anthropic 403 that direct calls hit from CF Asia colos. Same headers/body.
-    const r = await fetch('https://gateway.ai.cloudflare.com/v1/56e3175ef4d0c606c465a116c3939d5d/xom-dom-hong/anthropic/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json'
-      },
-      signal: AbortSignal.timeout(6000),   // §4: fail fast to DeepSeek instead of stalling the turn
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5',
-        max_tokens: 500,
-        temperature: 0.7,   // grading consistency > wild variance (QA 08-08: same story graded hop_ly→lo_lieu across runs)
-        system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
-        tools: [tool],
-        tool_choice: { type: 'tool', name: tool.name },
-        messages
-      })
-    });
-    if (!r.ok) {
-      console.log('anthropic error', r.status, (await r.text()).slice(0, 300));
-      return null;
-    }
-    const data = await r.json();
-    const toolUse = (data.content || []).find(c => c.type === 'tool_use');
-    if (!toolUse) return null;
-    return shapeReply(toolUse.input, 'haiku', data.usage, tool.name === OUTCOME_TOOL.name ? 'outcome' : 'reply');
+// ── v0.8 B1 — MỘT CỬA DUY NHẤT ───────────────────────────────────────────────
+// Mỗi cái "phiếu" (tool) có một bản ghi chú lược đồ riêng, dành cho những nhà chỉ biết
+// trả JSON chứ không biết điền phiếu (DeepSeek · Qwen). Dò bằng TÊN phiếu, không bằng biến,
+// để hai phiên làm việc song song trên file này không giẫm chân nhau.
+function schemaNoteFor(tool) {
+  if (!tool) return '';
+  switch (tool.name) {
+    case 'npc_outcome': return OUTCOME_SCHEMA_NOTE;
+    case 'pick_funniest': return FUNNY_SCHEMA_NOTE;
+    case 'ba_nam_noi': return TUTOR_SCHEMA_NOTE;
+    default: return REPLY_SCHEMA_NOTE;
   }
+}
+
+// tool = null → chỉ xin CHỮ (quân sư 💡). tool có → bắt điền phiếu.
+// Trả { input | text, brain, usage } hoặc null khi cả chuỗi chết.
+async function askBrain(env, system, messages, tool = NPC_TOOL, opts = {}) {
+  return callBrain(env, {
+    system, messages, tool,
+    schemaNote: schemaNoteFor(tool),
+    maxTokens: opts.maxTokens ?? 500,
+    // Chấm điểm cần ổn định hơn cần bay bổng (QA 08-08: cùng một câu chuyện lúc hop_ly lúc lo_lieu).
+    temperature: opts.temperature ?? 0.7
+  });
 }
 
 // The strategist knows the persona card (that's what the powerup buys you).
+// v0.8 B4 — TRƯỚC ĐÂY gọi thẳng Anthropic → hết tiền là quân sư chết ngay. Giờ đi chung một cửa.
 async function tryHint(env, persona, club, body) {
-  if (!env.ANTHROPIC_API_KEY) return null;
   const history = (Array.isArray(body.history) ? body.history.slice(-10) : [])
     .map(h => (h.role === 'npc' ? 'Hàng xóm: ' : 'Người chơi: ') + String(h.text || '').slice(0, 300))
     .join('\n');
-  const r = await fetch('https://gateway.ai.cloudflare.com/v1/56e3175ef4d0c606c465a116c3939d5d/xom-dom-hong/anthropic/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json'
-    },
-    signal: AbortSignal.timeout(10000),
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5',
-      max_tokens: 150,
-      system: 'Bạn là quân sư của người chơi trong game thuyết phục hàng xóm mời mình vào nhà. Dựa vào hồ sơ nhân vật và cuộc nói chuyện, đề xuất đúng MỘT câu ' + (body.lang === 'en' ? 'TIẾNG ANH' : 'tiếng Việt (đầy đủ dấu)') + ' ngắn, tự nhiên mà người chơi NÊN NÓI tiếp theo để tăng lòng tin. CHỈ trả về câu đó, không giải thích, không ngoặc kép.',
-      messages: [{
-        role: 'user',
-        content: `HỒ SƠ HÀNG XÓM:\n${persona.card.replaceAll('{CLUB}', club)}\n\nNGƯỜI CHƠI ĐANG MẶC: ${String(body.outfit || 'không rõ').slice(0, 400)}\n\nCUỘC NÓI CHUYỆN:\n${history}\n\nCâu nên nói tiếp theo:`
-      }]
-    })
-  });
-  if (!r.ok) return null;
-  const data = await r.json();
-  const t = (data.content || []).find(c => c.type === 'text');
-  return t ? t.text.trim().slice(0, 300) : null;
+  const system = 'Bạn là quân sư của người chơi trong game thuyết phục hàng xóm mời mình vào nhà. Dựa vào hồ sơ nhân vật và cuộc nói chuyện, đề xuất đúng MỘT câu '
+    + (body.lang === 'en' ? 'TIẾNG ANH' : 'tiếng Việt (đầy đủ dấu)')
+    + ' ngắn, tự nhiên mà người chơi NÊN NÓI tiếp theo để tăng lòng tin. CHỈ trả về câu đó, không giải thích, không ngoặc kép.';
+  const messages = [{
+    role: 'user',
+    content: `HỒ SƠ HÀNG XÓM:\n${persona.card.replaceAll('{CLUB}', club)}\n\nNGƯỜI CHƠI ĐANG MẶC: ${String(body.outfit || 'không rõ').slice(0, 400)}\n\nCUỘC NÓI CHUYỆN:\n${history}\n\nCâu nên nói tiếp theo:`
+  }];
+  const res = await askBrain(env, system, messages, null, { maxTokens: 200, temperature: 0.8 });
+  return res && res.text ? res.text.replace(/^["“”']|["“”']$/g, '').trim().slice(0, 300) : null;
 }
+
+// ── v0.8 nhà hướng dẫn: một câu thoại của Bà Năm, phản ứng ĐÚNG câu người chơi vừa nói ──
+const TUTOR_TOOL = {
+  name: 'ba_nam_noi',
+  description: 'Chấm xem người chơi đã làm đúng việc của bước này chưa, rồi nói một câu. Luôn dùng tool này.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      dat: {
+        type: 'boolean',
+        description: 'true nếu câu người chơi vừa nói ĐÃ LÀM ĐƯỢC việc được yêu cầu ở bước này — xét theo Ý, không xét đúng từng chữ. Nói cụt lủn một chữ mà đúng ý thì vẫn true. Nói lạc đề, nói bậy, hỏi ngược lại, hoặc xưng một vai KHÁC vai được yêu cầu thì false.'
+      },
+      dialogue: { type: 'string', description: 'Thoại 1–2 câu, đúng giọng bà già nghễnh ngãng.' }
+    },
+    required: ['dat', 'dialogue']
+  }
+};
+
+async function tryTutor(env, body) {
+  const lang = body.lang === 'en' ? 'en' : 'vi';
+  const step = Math.max(1, Math.min(4, Number(body.step) || 1));
+  const said = String(body.playerText || '').slice(0, 400);
+  const goal = String(body.goal || '').slice(0, 300);
+  const v = lang === 'en' ? BA_NAM.voice_en : BA_NAM.voice;
+  const pick = [v[(step * 2) % v.length], v[(step * 2 + 1) % v.length]];
+
+  const system = lang === 'en'
+    ? `You are playing Bà Năm in a Vietnamese comedy game. Reply in ENGLISH only.
+${BA_NAM.card}
+
+This is the TRAINING house — step ${step} of 4. The player was asked to: ${goal}
+
+YOUR JOB, in this order:
+1. Decide "dat" — did what they JUST said actually do that task? Judge the MEANING, not the wording.
+   · One word is fine if it is the right one ("delivery" alone → dat=true).
+   · Typos, mic mistakes, slang, half sentences → still true if the meaning is there.
+   · A DIFFERENT role than the one asked for (police, neighbour…), a question back, an insult,
+     an empty greeting, or gibberish → dat=false.
+   · DENYING the very thing asked for ("I'm not a delivery driver") → dat=false.
+   · Her mishearing is a JOKE for the dialogue only — never use it as a reason for dat=false.
+     If they got the meaning right, dat=true even while she pretends to hear another word.
+2. Write "dialogue":
+   · dat=true → react warmly to THEIR EXACT WORDS, repeat back a detail they said. Do NOT ask a new
+     question, do NOT invite them inside; the game says the next line itself.
+   · dat=false → grandma mishears or is confused. Nudge them toward the task — WITHOUT saying the
+     sentence for them. Funny and kind, never angry, never insulting.
+Two lines she has really said (copy the rhythm, never word-for-word):
+· ${pick[0]}
+· ${pick[1]}
+
+HOW SHE TALKS (read last, obey first): ${BA_NAM.tic_en}. Register: ${BA_NAM.pronoun_en}.
+One or two sentences. No profanity.`
+    : `Bạn đang đóng vai Bà Năm trong game hài Việt Nam. Viết TIẾNG VIỆT CÓ ĐẦY ĐỦ DẤU, không chêm tiếng Anh.
+${BA_NAM.card}
+
+Đây là NHÀ TẬP — bước ${step}/4. Người chơi được yêu cầu: ${goal}
+
+VIỆC CỦA BẠN, theo đúng thứ tự:
+1. Chấm "dat" — câu họ VỪA NÓI có làm được việc đó không? Xét theo Ý, không xét đúng từng chữ.
+   · Nói đúng MỘT chữ mà trúng ý thì vẫn true (chỉ nói "shipper" → dat=true).
+   · Sai chính tả, mic nghe nhầm, tiếng lóng, nói cụt lủn → vẫn true nếu đúng ý.
+   · Xưng một VAI KHÁC với vai được yêu cầu (công an, hàng xóm…), hỏi ngược lại, nói bậy,
+     chào suông không có nội dung, hoặc gõ linh tinh → dat=false.
+   · PHỦ ĐỊNH đúng thứ được yêu cầu ("con không phải shipper đâu") → dat=false.
+   · Chuyện bà NGHE NHẦM chỉ để gây cười trong lời thoại — TUYỆT ĐỐI không lấy nó làm lý do
+     chấm dat=false. Họ nói đúng ý là dat=true, dù bà có giả bộ nghe ra chữ khác.
+2. Viết "dialogue":
+   · dat=true → phản ứng ấm áp và NHẮC LẠI một chi tiết trong đúng câu họ vừa nói. KHÔNG hỏi câu mới,
+     KHÔNG mời vào nhà — câu tiếp theo đã có game lo.
+   · dat=false → bà nghe nhầm hoặc chưa hiểu, hối họ làm đúng việc đó NHƯNG KHÔNG nói hộ câu trả lời.
+     Vẫn hài, vẫn hiền, tuyệt đối không cáu, không xúc phạm.
+Hai câu bà từng nói thật (bắt chước NHỊP câu, cấm chép nguyên văn):
+· ${pick[0]}
+· ${pick[1]}
+
+CÁCH BÀ NÓI (đọc sau cùng, làm theo trước tiên): ${BA_NAM.tic}. Xưng hô: ${BA_NAM.pronoun}.
+Chỉ một tới hai câu. Cấm chửi thề.`;
+
+  const messages = [{ role: 'user', content: `Người lạ vừa nói: "${said}"` }];
+  // v0.8 B1 — cùng một cửa với ba nhà kia: hết tiền một nhà thì bà Năm vẫn nói được.
+  const res = await askBrain(env, system, messages, TUTOR_TOOL, { maxTokens: 260, temperature: 0.9 })
+    .catch(() => null);
+  if (!res || !res.input || !res.input.dialogue) return null;
+  // Thiếu ô "dat" (não trả phiếu thiếu) → KHÔNG được coi là "chưa đạt": như vậy chặn oan mọi
+  // câu đúng (đo được 0/14 hôm 2026-08-10). Trả null để máy khách rơi về luật từ khoá.
+  const dat = typeof res.input.dat === "boolean" ? res.input.dat : null;
+  return { dat, line: String(res.input.dialogue), brain: res.brain };
+}
+const TUTOR_SCHEMA_NOTE = '\n\nTRẢ LỜI: CHỈ một JSON object, không markdown: {"dat":true hoặc false,"dialogue":"thoại 1-2 câu tiếng Việt đủ dấu"}';
 
 const REPLY_SCHEMA_NOTE = `\n\nTRẢ LỜI: CHỈ một JSON object, không markdown, đúng dạng:
-{"dialogue":"lời thoại 1-3 câu tiếng Việt đủ dấu","emotion":"neutral|interested|amused|suspicious|angry|chan|nguong|cam_dong|phan_khich|buc_minh","verdict":"lo_lieu|kha_nghi|thuong|hop_ly|danh_trung","thought":"suy nghĩ thầm 1 câu ngắn, không số điểm","convo_state":"listening|thinking|doubting|trusting|rejecting","final_test":true/false,"invite_intent":true/false,"contradiction":true/false,"corroboration":true/false (đồ đang mặc CHỐNG LƯNG lời khai; không bao giờ true cùng contradiction),"shutdown":true/false,"player_claim":"người lạ hiện TỰ XƯNG là ai/vai gì, tối đa 10 từ; họ chưa tự xưng vai nào thì để \\"\\" — KHÔNG mô tả ngoại hình/quần áo thay cho lời tự xưng"}`;
+{"dialogue":"lời thoại 1-3 câu tiếng Việt đủ dấu","emotion":"neutral|interested|amused|suspicious|angry|chan|nguong|cam_dong|phan_khich|buc_minh","verdict":"lo_lieu|kha_nghi|thuong|hop_ly|danh_trung","thought":"suy nghĩ thầm 1 câu ngắn, không số điểm","convo_state":"listening|thinking|doubting|trusting|rejecting","final_test":true/false,"invite_intent":true/false,"contradiction":true/false,"corroboration":true/false (đồ đang mặc CHỐNG LƯNG lời khai; không bao giờ true cùng contradiction),"shutdown":true/false,"player_claim":"người lạ hiện TỰ XƯNG là ai/vai gì, tối đa 10 từ; họ chưa tự xưng vai nào thì để \\"\\" — KHÔNG mô tả ngoại hình/quần áo thay cho lời tự xưng","mission_signal":"tín hiệu nhiệm vụ: chỉ dùng khi khối [NHIỆM VỤ]/[ĐỒ CỦA TÍ]/[VIỆC VẶT] cho phép, một trong manh_moi_1|manh_moi_2|ro_chuyen|dong_y_cho_muon|nhan_viec_vat, ngoài ra LUÔN để \\"\\""}`;
 
-async function tryDeepSeek(env, system, messages, schemaNote = REPLY_SCHEMA_NOTE, kind = 'reply') {
-  if (!env.DEEPSEEK_API_KEY) return null;
-  const r = await fetch('https://api.deepseek.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + env.DEEPSEEK_API_KEY, 'Content-Type': 'application/json' },
-    signal: AbortSignal.timeout(30000),
-    body: JSON.stringify({
-      model: 'deepseek-chat',
-      max_tokens: 500,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: system + schemaNote },
-        ...messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }))
-      ]
-    })
-  });
-  if (!r.ok) {
-    console.log('deepseek error', r.status, (await r.text()).slice(0, 300));
-    return null;
-  }
-  const data = await r.json();
-  const raw = data.choices && data.choices[0] && data.choices[0].message.content;
-  if (!raw) return null;
-  let i;
-  try { i = JSON.parse(raw); } catch { return null; }
-  if (!i.dialogue) return null;
-  return shapeReply(i, 'deepseek', data.usage, kind);
-}
+// (v0.8: tryHaiku + tryDeepSeek đã bị xoá — cả hai nhà giờ nằm trong chuỗi ở _brain.js.)
 
 // v0.3 B7 — "lời nói dối buồn cười nhất": AI chỉ được CHỌN trong danh sách câu người chơi
 // đã nói (đánh số), không được bịa câu mới.
@@ -472,33 +558,23 @@ const FUNNY_TOOL = {
     required: ['index', 'comment']
   }
 };
+const FUNNY_SCHEMA_NOTE = '\n\nTRẢ LỜI: CHỈ một JSON object, không markdown: {"index":số thứ tự câu được chọn,"comment":"một dòng bình luận hài ngắn"}';
+
+// v0.8 B4 — TRƯỚC ĐÂY gọi thẳng Anthropic → hết tiền là bảng tổng kết mất mục này. Giờ đi chung một cửa.
 async function tryFunniest(env, body) {
   const lines = (Array.isArray(body.lines) ? body.lines : [])
     .map(s => String(s || '').slice(0, 200)).filter(Boolean).slice(-24);
-  if (!lines.length || !env.ANTHROPIC_API_KEY) return null;
+  if (!lines.length) return null;
   const en = body.lang === 'en';
   const listed = lines.map((l, i) => `${i}. ${l}`).join('\n');
-  const r = await fetch('https://gateway.ai.cloudflare.com/v1/56e3175ef4d0c606c465a116c3939d5d/xom-dom-hong/anthropic/v1/messages', {
-    method: 'POST',
-    headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    signal: AbortSignal.timeout(10000),
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5',
-      max_tokens: 200,
-      tools: [FUNNY_TOOL],
-      tool_choice: { type: 'tool', name: 'pick_funniest' },
-      system: en
-        ? 'You are the narrator of a Vietnamese neighbourhood comedy game. From the list of lines the player said today while trying to beg for a meal, pick the funniest / most outrageous one and add ONE short witty line about it in ENGLISH. Never invent a new line.'
-        : 'Bạn là người dẫn chuyện của một game hài xóm Việt. Trong danh sách câu người chơi đã nói hôm nay lúc đi xin ăn, hãy chọn CÂU BUỒN CƯỜI / LÁO NHẤT và bình đúng MỘT dòng ngắn, hài, tiếng Việt đủ dấu. Tuyệt đối không bịa câu mới.',
-      messages: [{ role: 'user', content: listed }]
-    })
-  });
-  if (!r.ok) return null;
-  const data = await r.json();
-  const use = (data.content || []).find(c => c.type === 'tool_use');
-  if (!use) return null;
-  const idx = Math.max(0, Math.min(lines.length - 1, Number(use.input.index) || 0));
-  return { quote: lines[idx], comment: String(use.input.comment || '').slice(0, 200) };
+  const system = en
+    ? 'You are the narrator of a Vietnamese neighbourhood comedy game. From the list of lines the player said today while trying to beg for a meal, pick the funniest / most outrageous one and add ONE short witty line about it in ENGLISH. Never invent a new line.'
+    : 'Bạn là người dẫn chuyện của một game hài xóm Việt. Trong danh sách câu người chơi đã nói hôm nay lúc đi xin ăn, hãy chọn CÂU BUỒN CƯỜI / LÁO NHẤT và bình đúng MỘT dòng ngắn, hài, tiếng Việt đủ dấu. Tuyệt đối không bịa câu mới.';
+  const res = await askBrain(env, system, [{ role: 'user', content: listed }], FUNNY_TOOL,
+    { maxTokens: 200, temperature: 0.9 });
+  if (!res || !res.input) return null;
+  const idx = Math.max(0, Math.min(lines.length - 1, Number(res.input.index) || 0));
+  return { quote: lines[idx], comment: String(res.input.comment || '').slice(0, 200), brain: res.brain };
 }
 
 const VERDICTS = ['lo_lieu', 'kha_nghi', 'thuong', 'hop_ly', 'danh_trung'];
@@ -507,10 +583,8 @@ const CONVO_STATES = ['listening', 'thinking', 'doubting', 'trusting', 'rejectin
 const OUTCOMES = ['tien', 'do_an', 'ca_hai', 'moi_com', 'viec_vat', 'tu_choi', 'quay_lai_sau'];
 
 function shapeReply(i, brain, usage, kind = 'reply') {
-  const meta = {
-    ok: true, scripted: false, brain,
-    usage: usage ? { in: usage.input_tokens || usage.prompt_tokens, out: usage.output_tokens || usage.completion_tokens } : undefined
-  };
+  // v0.8: _brain.js đã quy đổi cách đếm chữ của từng nhà về cùng một dạng { in, out }.
+  const meta = { ok: true, scripted: false, brain, usage: usage || undefined };
   // v0.3 "màn xin": chỉ cần thoại + LOẠI kết quả; số tiền do code phía client cầm.
   if (kind === 'outcome') {
     return {
@@ -538,7 +612,37 @@ function shapeReply(i, brain, usage, kind = 'reply') {
       // v0.6 F3.2 — chốt chặn cuối: hai cờ không bao giờ được cùng bật. Mâu thuẫn thắng.
       corroboration: !!i.corroboration && !i.contradiction,
       shutdown: !!i.shutdown,
-      player_claim: String(i.player_claim || '').slice(0, 120)
+      player_claim: String(i.player_claim || '').slice(0, 120),
+      // v1.0 — nhãn lạ → '' (không vỡ game), giá trị hợp lệ còn phải qua gateMission phía sau
+      mission_signal: MISSION_SIGNALS.includes(i.mission_signal) ? i.mission_signal : ''
     }
   };
+}
+
+const MISSION_SIGNALS = ['manh_moi_1', 'manh_moi_2', 'ro_chuyen', 'dong_y_cho_muon', 'nhan_viec_vat'];
+
+// v1.0 — CHỐT CHẶN LỚP SERVER (bài học "đồng ý mồm" 08-09: prompt không đủ, code phải giữ cửa).
+// Client (missions.js) còn một lớp nữa với núm chỉnh trong config.js; hai con số 60/55 ở đây
+// là bản sao cứng của XDH.MISSION_CFG.INTEREST_GATE / TI_LEND_TRUST — đổi thì đổi CẢ HAI chỗ.
+export function gateMission(sig, body, state) {
+  if (!sig) return '';
+  const m = body.mission;
+  if (!m || body.mode === 'ket_tien') return '';
+  if (['manh_moi_1', 'manh_moi_2', 'ro_chuyen'].includes(sig)) {
+    if (body.npcId !== 'gen_z') return '';
+    if ((Number(state.interest) || 0) < 60) return '';   // chưa đủ quan tâm → Ly CẤM khai
+    // Não yếu hay LẶP LẠI manh mối cũ (đo thật 08-13: Qwen bắn manh_moi_1 sáu lượt liền).
+    // CODE cầm nhịp: tín hiệu manh mối nào cũng được nắn về manh mối KẾ TIẾP theo sổ client.
+    const clues = Number(m.clues) || 0;
+    return clues === 0 ? 'manh_moi_1' : clues === 1 ? 'manh_moi_2' : 'ro_chuyen';
+  }
+  if (sig === 'dong_y_cho_muon') {
+    if (body.npcId !== 'sinh_vien' || m.stage !== 'da_nhan') return '';
+    if ((Number(state.trust) || 0) < 55) return '';      // Tí nói "cho mượn" mà chưa đủ tin → coi như chưa
+    return sig;
+  }
+  if (sig === 'nhan_viec_vat') {
+    return (m.stage === 'da_nhan' || m.stage === 'co_do') ? sig : '';
+  }
+  return '';
 }

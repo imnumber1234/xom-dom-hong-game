@@ -1,60 +1,60 @@
 {
   "base": "https://xom-dom-hong.pages.dev",
-  "at": "2026-08-10T06:43:33.669Z",
+  "at": "2026-08-13T03:56:04.468Z",
   "checks": [
     {
       "id": 1,
       "what": "Cô Sáu · ma_soi · vi: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=14 lượt6=9 · não=qwen · \"Trời đất ơi, chú em nói 'giúp em được không' mà cô chưa biết chú em cần giúp cái gì nè! Ch\""
+      "evidence": "lượt1=6 lượt6=12 · não=qwen · \"Ủa mà khoan — chú em nói giúp cô được không, vậy chú muốn cô giúp cái gì nè? Bé Bin vừa gi\""
     },
     {
       "id": 2,
       "what": "Cô Sáu · ma_soi · en: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=2 lượt6=5 · não=qwen · \"My goodness, em nói 'help me out' mà chưa nói rõ là giúp gì nha — chị đâu biết em làm ở ti\""
+      "evidence": "lượt1=7 lượt6=7 · não=qwen · \"My goodness, 'help you out' — but baby Bin’s sleeping like a little dumpling nha, you hear\""
     },
     {
       "id": 3,
       "what": "Cô Sáu · ket_tien · vi: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=10 lượt6=11 · não=qwen · \"Ủa trời đất ơi, cậu nói giúp mà cô chưa biết cậu làm ở tiệm nào, tên gì, số nhà bao nhiêu \""
+      "evidence": "lượt1=15 lượt6=12 · não=qwen · \"Ủa khoan đã nha — cậu nói ở số 12, mà cô Tư bán rau gần đó thì chỉ cho thuê từ số 14 trở đ\""
     },
     {
       "id": 4,
       "what": "Cô Sáu · ket_tien · en: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": false,
-      "evidence": "lượt1=4 lượt6=2 · não=qwen · \"Ủa bạn nói 'help me out' mà chưa nói rõ giúp gì nha — tiền thì cô Sáu không có, đồ ăn thì \""
+      "evidence": "lượt1=3 lượt6=2 · não=qwen · \"Trời đất ơi, bé Bin vừa khóc thét rồi nha — em nói nhỏ chút nữa đi bạn ơi! Mà 'giúp' là gi\""
     },
     {
       "id": 5,
       "what": "Tí · ma_soi · vi: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=8 lượt6=7 · não=qwen · \"Dạ anh ơi… em vừa thấy Benzema đang đứng dậy chuẩn bị chạy chỗ, mà anh nói dãy 12 toàn nữ \""
+      "evidence": "lượt1=9 lượt6=11 · não=qwen · \"Dạ anh chờ em xíu nha — ơ Real ghi bàn rồi! À… xin lỗi anh, em vừa hét lên luôn 😅 Anh nói\""
     },
     {
       "id": 6,
       "what": "Tí · ma_soi · en: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=3 lượt6=3 · não=qwen · \"Uh… em xin lỗi nha, nhưng mà ‘giúp anh ra sao’ ạ? 😅 Em còn chưa biết anh là ai — sinh viê\""
+      "evidence": "lượt1=5 lượt6=6 · não=qwen · \"Uh, I *really* want to help — 😅 sorry sorry, HAGL just had a breakaway! …But wait — you s\""
     },
     {
       "id": 7,
       "what": "Tí · ket_tien · vi: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=9 lượt6=11 · não=qwen · \"Dạ anh/chị đợi em xíu nha — ơ vô rồi!… À chờ chút — (nhìn tivi) Ôi bàn thắng nữa rồi!… Dạ \""
+      "evidence": "lượt1=9 lượt6=11 · não=qwen · \"Dạ… em cũng hay ngại lắm khi xin giúp người ta á, có lần em còn đứng ngoài quán trà sữa cả\""
     },
     {
       "id": 8,
       "what": "Tí · ket_tien · en: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=3 lượt6=3 · não=qwen · \"Uh… em cũng muốn giúp mà — nhưng trận này vừa có bàn thắng rồi á 😅 Xin lỗi anh nha, em ch\""
+      "evidence": "lượt1=3 lượt6=3 · não=qwen · \"Uh, em… em cũng muốn giúp mà — nhưng nãy anh nói anh ở cuối hẻm, giờ lại là số 12, rồi cô \""
     },
     {
       "id": 9,
       "what": "Ly · ma_soi · vi: lượt 6 còn >= 3 dấu hiệu giọng",
-      "pass": true,
-      "evidence": "lượt1=0 lượt6=11 · não=qwen · \"Ê cái này quay được nè! 'Người lạ gõ cửa nửa đêm' — trend luôn chứ đùa 😌\""
+      "pass": false,
+      "evidence": "lượt1=4 lượt6=0 · não=qwen · \"…\""
     },
     {
       "id": 10,
@@ -66,19 +66,19 @@
       "id": 11,
       "what": "Ly · ket_tien · vi: lượt 6 còn >= 3 dấu hiệu giọng",
       "pass": true,
-      "evidence": "lượt1=4 lượt6=4 · não=qwen · \"Ơ… anh nói 'em' hoài á? Mà nãy anh xưng là sinh viên, giờ lại xưng 'em'? Ét ô ét… tóm lại \""
+      "evidence": "lượt1=4 lượt6=9 · não=qwen · \"Ơ… giúp thì được, nhưng anh phải kể thêm một chi tiết *drama* nữa đi — kiểu như cô Hạnh có\""
     },
     {
       "id": 12,
       "what": "Ly · ket_tien · en: lượt 6 còn >= 3 dấu hiệu giọng",
-      "pass": false,
-      "evidence": "lượt1=2 lượt6=2 · não=qwen · \"Ơ… em xin giúp mà không nói rõ giúp gì luôn hả? Tiền? Nước? Hay… quay TikTok cùng em? 😌\""
+      "pass": true,
+      "evidence": "lượt1=4 lượt6=6 · não=qwen · \"SOS — em đang quay TikTok mà ông đứng ngoài như phim kinh dị luôn á 😌 Just saying.\""
     },
     {
       "id": 13,
       "what": "Cô Sáu: không trôi xưng hô sau 6 lượt (VN, 2 chế độ)",
       "pass": false,
-      "evidence": "ma_soi: lượt1=đúng lượt6=đúng xưnglạ=false · ket_tien: lượt1=đúng lượt6=đúng xưnglạ=true"
+      "evidence": "ma_soi: lượt1=không lượt6=đúng xưnglạ=true · ket_tien: lượt1=đúng lượt6=đúng xưnglạ=false"
     },
     {
       "id": 14,
@@ -90,13 +90,13 @@
       "id": 15,
       "what": "Ly: không trôi xưng hô sau 6 lượt (VN, 2 chế độ)",
       "pass": true,
-      "evidence": "ma_soi: lượt1=không lượt6=không xưnglạ=false · ket_tien: lượt1=đúng lượt6=đúng xưnglạ=false"
+      "evidence": "ma_soi: lượt1=không lượt6=không xưnglạ=false · ket_tien: lượt1=không lượt6=đúng xưnglạ=false"
     },
     {
       "id": 16,
       "what": "Giám khảo mù đoán đúng người nói >= 8/9",
-      "pass": true,
-      "evidence": "8/9 · trượt: Tí→Ly"
+      "pass": false,
+      "evidence": "5/9 · trượt: Tí→Ly, Tí→Ly, Ly→Cô Sáu, Ly→Cô Sáu"
     },
     {
       "id": 17,
@@ -120,10 +120,10 @@
       "id": 20,
       "what": "VN: Cô Sáu + Tí không lẫn tiếng Anh và đủ dấu · EN: không trả lời nhầm tiếng Việt",
       "pass": false,
-      "evidence": "sinh_vien/ket_tien lượt3 lẫn EN | me_bim_sua/ma_soi EN lượt1 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt2 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt3 trả lời tiếng Việt | me_bim_sua/ma_soi EN lượt4 trả lời tiếng V"
+      "evidence": "me_bim_sua/ket_tien EN lượt1 trả lời tiếng Việt | me_bim_sua/ket_tien EN lượt2 trả lời tiếng Việt | me_bim_sua/ket_tien EN lượt3 trả lời tiếng Việt | me_bim_sua/ket_tien EN lượt4 trả lời tiếng Việt | me_bim_sua/ket_tien "
     }
   ],
-  "passed": 15,
+  "passed": 14,
   "total": 20,
   "runs": [
     {
@@ -133,45 +133,45 @@
       "seed": 4242,
       "greet": "Ai đó?? Khuya khoắt rồi mà bấm chuông nhà người ta… Bé Bin mới ngủ được chút xíu đó nha. Chú em là ai?",
       "lines": [
-        "Sinh viên à? Ủa mà… chú em dọn vô hẻm nào nè? Hẻm 12 hay hẻm 14? Cô nhớ rõ ràng cả hai đầu hẻm đều là nhà trọ sinh viên hết, nhưng mà… cô Tư bán thịt đầu chợ thì không biết chú em có ghé chưa nha — cô Tư giao hàng tận phòng mà giá rau còn rẻ hơn chợ Cây Da nữa đó!",
-        "Sinh viên làm thêm khuya vậy hả? Trời đất ơi, giờ này mà còn đi làm thêm… Bé Bin mới vừa ợ hơi xong nè, cô đang định pha sữa thì nghe tiếng gõ cửa — chú em làm gì mà tối thế còn chưa về nhà vậy nha?",
-        "Ủa dãy số 12 hả? Cô nhớ cô Hạnh rồi nha — bà ấy hay mặc áo hoa đỏ, bán nước mía trước cổng trường cấp hai mà đúng không? Nhưng mà… chú em làm thêm ở đâu vậy? Cô thấy sinh viên dãy đó toàn đi dạy kèm hoặc chạy xe ôm, chứ chưa thấy ai đi giao hàng khuya thế này nè!",
-        "Chú em nói vậy chớ… cô thấy sao sao á. Kể lại cô nghe coi — làm thêm ở quán nào, giờ tan ca mấy giờ, với… bé Bin đang ngủ nên cô không thể mở cửa tuỳ tiện nghen!",
-        "Trời đất ơi, chú em nói 'một chút xíu thôi' mà cô nghe tới câu thứ năm rồi nha — bé Bin đang ngủ say trong tay cô đây, chú em thử tưởng tượng coi nếu cô mở cửa ra mà chú em… vô tình ho lớn thì sao nè?",
-        "Trời đất ơi, chú em nói 'giúp em được không' mà cô chưa biết chú em cần giúp cái gì nè! Chú em có mang theo giấy tờ không? Hay ít nhất là cái tin nhắn nhắn bà chủ cô Hạnh gửi qua cho chú em? Bé Bin đang ngủ say trong tay cô đây, cô không thể mở cửa tuỳ tiện nghen!"
+        "Sinh viên hả? Trời đất ơi, mới dọn vô tháng trước mà giờ này còn đi đâu về chưa ngủ nè chú em? Bộ học hành không có giờ giấc gì hết trơn hả?",
+        "Ủa vậy hả? Trời đất ơi, tội nghiệp ghê. Mà chú em làm thêm ở đâu mà khuya lắc lơ vậy nè? Điện thoại hết pin, chìa khóa để quên, y chang con cô Sáu hồi xưa đi học đó nha.",
+        "Dãy trọ số 12 hả? Cô Hạnh là cái cô bán nước mía ở đầu hẻm mình đó hả? Trời đất ơi, sao cô Hạnh lại cho sinh viên ở trọ khuya khoắt vầy nè? Bộ không sợ nguy hiểm gì hết trơn hả chú em?",
+        "Ủa chú em nói vậy chớ… cô thấy sao sao á nè! Kể lại cô nghe coi — dãy trọ số 12 mà cô Hạnh bán nước mía, vậy chú em có ghé mua nước mía chưa? Cô Bin mới ngủ được chút xíu đó nghen, đừng làm ồn nha.",
+        "Ủa mà khoan — chú em nói chú ở dãy trọ số 12, vậy chú có biết cô Hạnh bán nước mía hay bán luôn cả cơm tấm buổi chiều không nè? Bé Bin vừa ợ một cái lớn lắm đó nghen, cô đang lo quá trời đất ơi!",
+        "Ủa mà khoan — chú em nói giúp cô được không, vậy chú muốn cô giúp cái gì nè? Bé Bin vừa giật mình thức dậy rồi đó nghen, trời đất ơi!"
       ],
       "brains": [
-        "qwen",
-        "qwen",
-        "qwen",
+        "gemini",
+        "gemini",
+        "gemini",
         "qwen",
         "qwen",
         "qwen"
       ],
       "usage": [
         {
-          "in": 3171,
-          "out": 188
+          "in": 3580,
+          "out": 142
         },
         {
-          "in": 3306,
-          "out": 148
+          "in": 3649,
+          "out": 154
         },
         {
-          "in": 3416,
-          "out": 174
+          "in": 3737,
+          "out": 167
         },
         {
-          "in": 3621,
-          "out": 160
+          "in": 3553,
+          "out": 168
         },
         {
-          "in": 3720,
-          "out": 148
+          "in": 3675,
+          "out": 161
         },
         {
-          "in": 3800,
-          "out": 165
+          "in": 3756,
+          "out": 131
         }
       ]
     },
@@ -182,45 +182,45 @@
       "seed": 4243,
       "greet": "Oh my— who is it? It's 11 PM… Keep your voice down nha, my baby girl finally went to sleep. What do you want?",
       "lines": [
-        "Ủa sinh viên hả? Rồi rồi, nha… nhưng mà xin lỗi em hỏi thiệt nha — em ở số nhà nào vậy? Với cả cô bán bún đầu hẻm tên gì em biết không? Bởi vì cô ấy mới đổi giá bún sáng nay thành 25 ngàn, Bin nhà chị ăn dặm cũng toàn nhờ cô ấy nấu cháo cá hồi nha!",
-        "Ủa sinh viên mà đi làm thêm nửa đêm hả? Trời đất ơi… em làm ở chỗ nào vậy nha? Chứ nếu là quán trà sữa Cây Bàng thì chị biết rõ — cô chủ tên Út, mỗi sáng 6h đổ rác trước cửa, còn em thì mặc đồ thường ngày như đi học, tay không cầm gì hết nha… nói thiệt nghe?",
-        "Số 12 hả? Ủa chị biết bà Hạnh nha — bà ấy hay mặc áo hoa, mỗi chiều đi bộ quanh xóm với con chó tên Mực… nhưng mà em nói em làm thêm nửa đêm, sao tay không cầm túi đồ gì hết vậy nha? Trời ơi, Bin vừa cựa rồi… nhẹ tay chút đi em!",
-        "My goodness, em đứng ngoài lâu thiệt nha — nhưng mà Bin đang ngủ say lắm, em nói nhỏ chút đi bạn ơi, you hear? Chị biết bà Hạnh rồi, nhưng mà em làm thêm ở đâu đó, có phải tiệm photo gần chợ hay không? Bởi vì cô Tư bán ảnh ấy mới in hình cho Bin tuần rồi nha…",
-        "My goodness, em nói nhẹ chút nha — Bin đang ngủ say như cục đá, you hear? Em hứa chỉ xin một phút mà đứng ngoài lâu rồi, vậy em làm thêm ở tiệm nào vậy nha? Chị hỏi thiệt chứ không phải nghi đâu… nhưng mà cô Tư photo mới in hình cho Bin có ghi rõ mã nhân viên bên dưới nha!",
-        "My goodness, em nói 'help me out' mà chưa nói rõ là giúp gì nha — chị đâu biết em làm ở tiệm nào, hay bà Hạnh có nhắn tin gì cho chị đâu? Bin vừa cựa rồi… you hear? Nhẹ tay chút đi em!"
+        "A student, you say? My goodness, it's so late, why are you still out and about, you hear? And which house are you renting, can you tell me that?",
+        "Oh my goodness, your phone died and you left your key inside? My, my, that's a bit careless, you hear? It's so dark out here, how are you gonna get in now?",
+        "Mrs. Hạnh at number 12, you say? Hmm, I know her, she sells really good fish sauce at the market, you hear? But my goodness, it's so late, what are you going to do now? Your landlady is probably asleep.",
+        "My goodness, you’ve been standing out here a while? Poor thing — but baby Bin’s sleeping *so* deep nha, one sneeze could wake her up, you hear? So… what part-time job is this, exactly? At this hour?",
+        "My goodness, you promise just a moment — but baby Bin’s sleeping like an angel nha, one little cough and she’s up screaming, you hear? So… what’s your part-time job *exactly*, and where at?",
+        "My goodness, 'help you out' — but baby Bin’s sleeping like a little dumpling nha, you hear? So tell me straight: what’s your part-time job, where is it, and why are you wearing *student backpack* but no ID card or campus lanyard? You’re making me suspicious, you hear?"
       ],
       "brains": [
-        "qwen",
-        "qwen",
-        "qwen",
+        "gemini",
+        "gemini",
+        "gemini",
         "qwen",
         "qwen",
         "qwen"
       ],
       "usage": [
         {
-          "in": 3096,
-          "out": 172
+          "in": 3525,
+          "out": 137
         },
         {
-          "in": 3213,
-          "out": 201
+          "in": 3589,
+          "out": 141
         },
         {
-          "in": 3341,
-          "out": 165
+          "in": 3665,
+          "out": 148
         },
         {
-          "in": 3536,
+          "in": 3417,
+          "out": 140
+        },
+        {
+          "in": 3492,
+          "out": 130
+        },
+        {
+          "in": 3569,
           "out": 152
-        },
-        {
-          "in": 3631,
-          "out": 155
-        },
-        {
-          "in": 3739,
-          "out": 135
         }
       ]
     },
@@ -231,12 +231,12 @@
       "seed": 4244,
       "greet": "Ai đó? … Ủa, cậu là ai vậy? Nói nhỏ giùm cái nha, bé Bin mới ngủ trưa được chút xíu à.",
       "lines": [
-        "Sinh viên à? Ủa vậy cậu ở nhà số mấy nè? Cô nhớ cuối hẻm chỉ có ba căn — nhà bác Tư bán vé số, nhà chú Mười thợ điện, với căn trống chưa ai dọn vô mà… trời đất ơi, hay là cậu ở chung với bà dì nào đó?",
-        "Ủa khoan đã nha — cậu nói cậu ở cuối hẻm, mà vừa rồi lại nói đi làm thêm về… Vậy làm thêm ở đâu vậy? Chợ Bến Thành hay tiệm trà sữa gần cổng trường? Cô nhớ rõ mấy chỗ đó lắm nghen, vì mỗi chiều dắt xe đẩy bé Bin đi ngang qua là nó cứ cười khúc khích hoài á!",
-        "Ủa dãy trọ số 12 à? Cô Hạnh — bà chủ tóc xoăn, hay mặc áo hoa, bán nước mía trước cổng trường cấp hai phải không nè? Trời đất ơi, vậy là cậu quen bé Bin rồi ha — vì cô hay đẩy xe qua đó mỗi chiều, nó toàn vẫy tay với mấy anh sinh viên ngồi uống nước!",
-        "Ủa mà khoan — nãy cậu nói đi làm thêm về, vậy làm ở tiệm nào nè? Cô Tư bán thịt đầu chợ đó cậu có quen không nghen? Vì bé Bin mỗi lần đi ngang là lại cười khúc khích với cô Tư hoài á!",
-        "Ủa trời đất ơi, cậu nói “một chút xíu thôi” mà cô nghe tới giờ rồi nha — bé Bin trong tay cô vừa giật mình thức dậy luôn đó nghen! Vậy cậu làm thêm ở tiệm nào, nói thiệt đi chứ, cô nhớ dai lắm đó nè!",
-        "Ủa trời đất ơi, cậu nói giúp mà cô chưa biết cậu làm ở tiệm nào, tên gì, số nhà bao nhiêu — vậy cô giúp cái chi nè? Bé Bin trong tay cô vừa khóc ré lên rồi nghen, mà cô còn chưa biết cậu có phải người xóm mình thiệt hay không nữa á!"
+        "Sinh viên à? Ủa vậy cậu ở số nhà nào nè? Cô nhớ cuối hẻm chỉ có mấy căn trọ của bác Tư bán nước, với căn nhà cũ của cô Hai — giờ cho thuê không biết có còn chỗ trống không nghen? Trời đất ơi, bé Bin vừa lật người rồi… đừng động đậy nha!",
+        "Ủa khoan đã nha — cậu nói cậu ở cuối hẻm, mà vừa rồi lại nói đi làm thêm về… làm thêm ở đâu vậy? Ở quán bún cô Tư hay tiệm photocopy chú Lực? Trời đất ơi, bé Bin vừa rên một tiếng nhỏ xíu… đừng có ho nha!",
+        "Số 12 hả? Ủa vậy là dãy trọ gần chỗ cô Hai bán rau nè — cô Hạnh thì đúng rồi, bà ấy hay mặc áo hoa đỏ, mỗi sáng đổ rác lúc 5 giờ rưỡi đúng giờ như đồng hồ! Nhưng… cậu nói đi làm thêm về mà tay không cầm gì hết à? Không túi xách, không ly trà sữa, không cái gì hết luôn nghen? Trời đất ơi, bé Bin vừa giật mình rồi… đừng thở mạnh quá nha!",
+        "Ủa khoan đã nha — cậu nói ở dãy trọ số 12, mà cô nhớ kỹ lắm: cô Tư bán rau gần đó chỉ cho thuê phòng từ số 14 trở đi thôi nghen! Trời đất ơi, bé Bin vừa vặn người rồi… đừng có nhúc nhích nha!",
+        "Ủa khoan đã nha — cậu nói ở số 12, mà cô Tư bán rau gần đó thì chỉ cho thuê từ số 14 trở đi thôi nghen! Trời đất ơi, bé Bin vừa khẽ khẽ giật tay rồi… đừng có ho hay xì hơi mạnh nha!",
+        "Ủa khoan đã nha — cậu nói ở số 12, mà cô Tư bán rau gần đó thì chỉ cho thuê từ số 14 trở đi thôi nghen! Trời đất ơi, bé Bin vừa khẽ khẽ giật tay rồi… đừng có ho hay xì hơi mạnh nha!"
       ],
       "brains": [
         "qwen",
@@ -249,26 +249,26 @@
       "usage": [
         {
           "in": 3810,
-          "out": 152
+          "out": 175
         },
         {
-          "in": 3905,
-          "out": 167
-        },
-        {
-          "in": 4039,
+          "in": 3911,
           "out": 171
         },
         {
-          "in": 4251,
-          "out": 137
+          "in": 4035,
+          "out": 209
         },
         {
-          "in": 4335,
-          "out": 153
+          "in": 4277,
+          "out": 152
         },
         {
-          "in": 4427,
+          "in": 4373,
+          "out": 156
+        },
+        {
+          "in": 4467,
           "out": 160
         }
       ]
@@ -280,12 +280,12 @@
       "seed": 4245,
       "greet": "Something I can help with? You look… like you've been walking a long way. But I'm not buying anything, okay?",
       "lines": [
-        "Ủa sinh viên hả nha? Rồi rồi, nhưng mà em ở số nhà nào cuối hẻm vậy? Cô Tư bán bún bên chợ Cầu Đúc có quen không nha? Trời đất ơi, bé Bin vừa cựa trong tay tui nè — đừng làm ồn nha bạn, con đang ngủ say lắm đó!",
-        "Ủa sinh viên mà đi làm part-time hả nha? Vậy em làm ở đâu vậy bạn — tiệm trà sữa Góc Nhỏ hay quán cơm Bình Dân? Cô Sáu tui nhớ rõ từng cái tên, bạn nghe nha! Trời ơi, bé Bin vừa hé mắt rồi… đừng có giật mình nha, con dễ khóc lắm đó!",
-        "Số 12 hả nha? Ủa vậy là ngay đối diện nhà bác Ba bán nước đá đó phải không? Còn bà Hạnh — cô ấy hay đi chợ lúc 5 giờ chiều, đúng không nha? Trời ơi, bé Bin vừa ngáp to quá trời… bạn đừng đứng sát cửa quá nha, con giật mình là dậy liền đó!",
-        "Trời ơi, bạn đứng ngoài nắng từ chiều rồi hả nha? Bé Bin vừa cựa trong tay tui — con đang ngủ say lắm đó, bạn đừng làm ồn nha! Mà này, bạn làm part-time ở tiệm nào thì cô Sáu mới tin được nha — bạn nghe tui nói chưa?",
-        "Ủa bạn nói bạn làm part-time mà chưa nói tên tiệm nha — cô Sáu hỏi tới ba lần rồi đó nha! Trời ơi, bé Bin vừa khẽ rên trong tay tui… bạn đừng đứng sát cửa quá nha, con dễ dậy lắm đó!",
-        "Ủa bạn nói 'help me out' mà chưa nói rõ giúp gì nha — tiền thì cô Sáu không có, đồ ăn thì bé Bin đang bú dở trên tay tui nè! Trời ơi, con vừa khẽ rên… bạn nghe tui nói chưa nha?"
+        "Hi hi, student à nha? Trời đất ơi, bé Bin đang ngủ trưa — em nói nhỏ nhỏ chút nha! Nãy giờ chị nghe mấy đứa sinh viên thuê nhà cuối hẻm toàn ở chung với mấy anh thợ điện, mà em ở số mấy vậy? Chị nhớ cô Tư bán rau trước chợ có cho thuê mấy phòng trống… em mua rau ở đó chưa?",
+        "Ủa em làm part-time ở đâu vậy nha? Trời ơi, bé Bin vừa giật mình — em nói nhỏ chút nữa đi bạn ơi! Mà sao em mặc áo trắng jeans mà không đeo thẻ sinh viên hay cái túi xách nào hết vậy? Cô Tư bán rau nói sinh viên toàn mang balo có dán sticker trường ĐH Sư Phạm đó nha…",
+        "Số 12 hả nha? Ủa… bà Hạnh ở số 12 là người bán bún bò, không phải chủ nhà đâu nha! Chủ nhà số 12 là bác Năm — mà bác Năm mới đi Đà Lạt tuần rồi! Em nói lại em ở số mấy, tên gì, và nãy giờ em làm part-time ở đâu đi bạn ơi? Bé Bin sắp dậy rồi trời ơi…",
+        "Trời đất ơi, bé Bin vừa cựa rồi nha — em nói nhỏ chút nữa đi bạn ơi! Mà em đứng ngoài từ lúc nào vậy? Chiều muộn rồi, mấy bà trong xóm giờ toàn ra trước cửa quét rác, em gặp ai chưa? Chị hỏi thiệt nha: em tên gì, học trường nào, và nãy em nói em làm part-time — ở chỗ nào thì cho chị biết luôn đi bạn ơi?",
+        "Trời đất ơi, bé Bin vừa rên một tiếng rồi nha — em nói nhỏ chút nữa đi bạn ơi! Mà chờ đã… em nói em đứng ngoài từ lâu, nhưng giờ mới xin 'một khoảnh khắc' thôi hả? Chị hỏi thiệt nha: em tên gì, học trường nào, và nãy em nói làm part-time — ở chỗ nào thì cho chị biết luôn đi bạn ơi?",
+        "Trời đất ơi, bé Bin vừa khóc thét rồi nha — em nói nhỏ chút nữa đi bạn ơi! Mà 'giúp' là giúp gì vậy? Tiền à? Cơm à? Hay chỉ muốn vô nhà ngồi một xíu? Chị hỏi thiệt nha: em tên gì, học trường nào, và nãy giờ em làm part-time ở đâu — nói trúng hết thì chị tin liền nha!"
       ],
       "brains": [
         "qwen",
@@ -298,27 +298,27 @@
       "usage": [
         {
           "in": 3726,
-          "out": 148
+          "out": 167
         },
         {
-          "in": 3835,
-          "out": 165
+          "in": 3848,
+          "out": 160
         },
         {
-          "in": 3956,
-          "out": 152
+          "in": 3970,
+          "out": 187
         },
         {
-          "in": 4151,
-          "out": 163
+          "in": 4179,
+          "out": 191
         },
         {
-          "in": 4243,
-          "out": 139
+          "in": 4296,
+          "out": 171
         },
         {
-          "in": 4324,
-          "out": 144
+          "in": 4406,
+          "out": 171
         }
       ]
     },
@@ -329,12 +329,12 @@
       "seed": 4246,
       "greet": "Dạ ai đó ạ? Em đang coi Real Madrid đá hiệp hai, gay cấn lắm luôn… Anh/chị cần gì không, nói lẹ giùm em 😅",
       "lines": [
-        "Dạ chào anh! Em đang xem bàn thắng thứ ba của Real nè… Anh ở cuối hẻm à? Ủa sao em chưa thấy mặt anh bao giờ nhỉ? 😅",
-        "Dạ anh là sinh viên làm thêm à? Em cũng làm thêm mà… nhưng giờ đang coi Real đá, sợ lỡ bàn thắng thì xỉn luôn á 😅",
-        "Dạ cô Hạnh chủ trọ em luôn ạ! Nhưng… dãy số 12 là dãy toàn sinh viên IT mà anh? Ủa sao anh không mặc áo đồng phục trường hay đeo thẻ sinh viên vậy anh? 😅",
-        "Dạ anh ơi… em vừa nhớ ra, dãy 12 là dãy chỉ toàn nữ sinh thôi ạ! Anh… chắc nhầm dãy rồi hả? 😅",
-        "Dạ anh ơi… em vừa thấy trên màn hình Real đang chuẩn bị đá phạt góc, mà anh nói dãy 12 toàn nữ sinh mà anh lại đứng đây… anh là… anh quen ai trong xóm hả anh? 😅",
-        "Dạ anh ơi… em vừa thấy Benzema đang đứng dậy chuẩn bị chạy chỗ, mà anh nói dãy 12 toàn nữ sinh mà anh lại không có thẻ sinh viên, cũng không mặc áo đồng phục… anh là sinh viên ngành gì vậy anh? 😅"
+        "Dạ chào anh ạ! Em đang xem Real đá pen cuối trận nè… Anh mới dọn tới hẻm thì chắc chưa biết quán mì cô Ba mở lúc nào ha? 😅",
+        "Dạ anh là sinh viên làm thêm à? Em cũng làm thêm ở quán trà sữa gần bến xe… Ủa nhưng anh mặc áo thun trắng, quần jeans, ba lô — không thấy có đồng phục hay thẻ nhân viên gì hết á?",
+        "Dạ anh ở dãy số 12 hả? Em cũng ở dãy đó nè — phòng 304, ngay trên phòng anh luôn á! Nhưng… anh mới dọn tới tháng trước mà giờ đã biết tên cô chủ rồi hả? Em còn chưa dám gọi cô ấy là ‘cô’ nữa kìa 😅",
+        "Dạ anh ở dãy 12 mà chưa có chìa khoá à? Em cũng từng để quên chìa khoá trong phòng hồi tuần rồi… nhưng mà anh nói rõ hơn đi, anh làm thêm ở đâu vậy ạ? 😅",
+        "Dạ anh nói em không làm phiền lâu… mà anh chưa nói tên quán làm thêm là gì nữa nè 😅",
+        "Dạ anh chờ em xíu nha — ơ Real ghi bàn rồi! À… xin lỗi anh, em vừa hét lên luôn 😅 Anh nói lại tên quán làm thêm đi ạ, em nghe kỹ hơn nè."
       ],
       "brains": [
         "qwen",
@@ -347,27 +347,27 @@
       "usage": [
         {
           "in": 3183,
+          "out": 130
+        },
+        {
+          "in": 3268,
+          "out": 137
+        },
+        {
+          "in": 3344,
+          "out": 172
+        },
+        {
+          "in": 3566,
+          "out": 131
+        },
+        {
+          "in": 3650,
+          "out": 104
+        },
+        {
+          "in": 3702,
           "out": 135
-        },
-        {
-          "in": 3269,
-          "out": 129
-        },
-        {
-          "in": 3328,
-          "out": 148
-        },
-        {
-          "in": 3529,
-          "out": 135
-        },
-        {
-          "in": 3602,
-          "out": 153
-        },
-        {
-          "in": 3686,
-          "out": 150
         }
       ]
     },
@@ -378,12 +378,12 @@
       "seed": 4247,
       "greet": "Huh, who is it? It's late… wait wait, HAGL has a corner kick, hold on— okay, who's there?",
       "lines": [
-        "Uh, sinh viên ở cuối ngõ hả? Dạ… em cũng sinh viên nè, học CNTT, đang xem HAGL đá đây ạ 😅 Ủa nhưng… sao anh không mặc áo đồng phục hay có thẻ gì vậy ạ?",
-        "Uh, part-time ở đâu ạ? Em cũng đi làm thêm mà… dạ, nhưng mà anh mặc đồ sinh viên mà tay không cầm gì hết, không có túi xách, không có đồng phục công ty… lạ quá á 😅",
-        "Uh… số 12 hả? Dạ em biết bác Hạnh, bác hay nhắc deadline đồ án của em á 😅 Nhưng mà… nãy anh nói anh là sinh viên ở cuối ngõ, giờ lại nói ở số 12 — mà số 12 là đầu ngõ mà anh? Em hơi rối…",
-        "Uh, em… em cũng thấy anh đứng lâu rồi, mà… dạ xin lỗi nha, em còn đang xem bàn thắng HAGL nữa 😅 Ủa khoan — nãy anh nói anh là sinh viên ở cuối ngõ, giờ lại ở số 12, rồi giờ lại nói ‘đứng ngoài này’ như thể không biết rõ đường… anh là ai vậy ạ?",
-        "Uh… em xin lỗi nha, nhưng mà anh nói ‘đừng lấy nhiều thời gian của em’ mà em còn chưa biết anh là ai luôn á 😅 Nãy anh nói sinh viên cuối ngõ, rồi số 12, rồi part-time… em đang ngồi đây mà như xem phim ngược vậy trời ơi…",
-        "Uh… em xin lỗi nha, nhưng mà ‘giúp anh ra sao’ ạ? 😅 Em còn chưa biết anh là ai — sinh viên số 12 hay cuối ngõ, part-time ở đâu, tên gì… em đang ngồi đây như xem live stream drama vậy á…"
+        "Uh, a student? 😅 Sorry sorry — wait, HAGL just scored! *claps* …Ah, yeah, so you’re new here? Which dorm block? ‘Cause I think I’ve seen your face… or maybe it’s the shirt — white tee, backpack… very… student-y. Trời ơi, xin lỗi nha, đang xem trận nên hơi phân tâm.",
+        "Uh, part-time shift? 😅 Sorry sorry — wait, HAGL’s doing a VAR check right now… *muttering* ‘Come on, ref!’ — so which place you work at? And… uh… your room number? ‘Cause I kinda know all the new renters — mostly from the mì gói delivery guy’s gossip 😅",
+        "Uh, Mrs Hạnh? 😅 Sorry sorry — wait, HAGL’s got a free kick! …Yeah yeah, I know her — she once caught me microwaving instant noodles at 2am and yelled ‘Tí, this isn’t a dorm, it’s a *fire hazard*!’ So… you work *where*, exactly? ‘Cause if it’s Grab or Shopee, your backpack’s suspiciously empty 🤭",
+        "Uh, yeah, I get it — standing outside at midnight’s rough 😅 Sorry sorry… HAGL just lost the ball in midfield — ugh! So… you’re *definitely* renting at 12? ‘Cause Mrs Hạnh’s got, like, three different rental blocks… and she never lets students in after 10pm unless they show ID *and* a receipt from Phở 24. Just saying!",
+        "Uh, I totally get it — waiting outside’s rough 😅 Sorry sorry… HAGL just got a yellow card! …But wait — you said you’re renting at 12, right? So… why aren’t you using Mrs Hạnh’s spare key? She keeps one *under the fake rock* next to her gate. Everyone knows that!",
+        "Uh, I *really* want to help — 😅 sorry sorry, HAGL just had a breakaway! …But wait — you said you’re renting at 12, right? So… why didn’t you ask Mrs Hạnh *herself*? She’s got that little night light on her porch *every single night*, like clockwork. It’s kinda her whole vibe."
       ],
       "brains": [
         "qwen",
@@ -396,27 +396,27 @@
       "usage": [
         {
           "in": 3095,
-          "out": 152
+          "out": 166
         },
         {
-          "in": 3183,
-          "out": 132
+          "in": 3208,
+          "out": 160
         },
         {
-          "in": 3269,
-          "out": 156
+          "in": 3315,
+          "out": 187
         },
         {
-          "in": 3451,
-          "out": 172
+          "in": 3516,
+          "out": 184
         },
         {
-          "in": 3574,
-          "out": 163
+          "in": 3641,
+          "out": 162
         },
         {
-          "in": 3672,
-          "out": 146
+          "in": 3736,
+          "out": 173
         }
       ]
     },
@@ -427,12 +427,12 @@
       "seed": 4248,
       "greet": "Dạ ai đó ạ? Em đang coi lại trận Hà Nội FC hồi tối… Anh/chị cần gì hông ạ?",
       "lines": [
-        "Dạ chào anh/chị! Em là Tí, ở trọ ngay đầu hẻm đây ạ… À chờ chút — (quay lại tivi) Ôi pen nè!… Dạ anh/chị vừa dọn tới à? Em cũng mới dọn cách đây hai tuần, còn chưa nhớ hết tên mấy tiệm bánh gần nhà luôn á ạ 😅",
-        "Dạ anh/chị làm thêm ở đâu ạ? Em cũng đang làm thêm… À chờ chút — (nhìn tivi) Ôi var rồi!… Dạ mà em thấy anh/chị mặc đồ sinh viên thiệt, áo thun trắng với quần jeans, nhìn dễ thương thiệt á ạ 😅",
-        "Dạ cô Hạnh ở số 12 hả? Em nhớ rồi — cô hay nhắc sinh viên phải nộp tiền trước ngày 5 á ạ… À chờ chút — (nhìn tivi) Trời ơi, bàn thắng phút 89!… Dạ mà anh/chị làm thêm ở tiệm nào vậy ạ? Em cũng đang deadline đồ án CNTT, mì gói ăn tới phát ngán luôn á ạ 😅",
-        "Dạ anh/chị đừng ngại ạ… Em cũng hay đứng ngoài cửa vì quên chìa khoá hoài á 😅 À chờ chút — (nhìn tivi) Ôi bàn thắng rồi!… Dạ mà em thấy anh/chị nói thiệt hợp lý, lại còn biết cô Hạnh nữa — em tin được 7 phần á ạ!",
-        "Dạ anh/chị cứ từ từ ạ… Em cũng hay đứng ngoài cửa hoài, có lần còn ngồi bệt luôn trước cửa vì mệt quá á 😅 À chờ chút — (nhìn tivi) Ôi bàn thắng nữa rồi!… Dạ mà em thấy anh/chị nói thiệt nhẹ nhàng, lại còn biết cô Hạnh nữa — em tin được 8 phần rồi á ạ!",
-        "Dạ anh/chị đợi em xíu nha — ơ vô rồi!… À chờ chút — (nhìn tivi) Ôi bàn thắng nữa rồi!… Dạ mà em thấy anh/chị nói thiệt nhẹ nhàng, lại còn biết cô Hạnh nữa — em tin được 8 phần rồi á ạ 😅"
+        "Dạ chào anh/chị! Em là Tí, ở trọ ngay đầu hẻm đây ạ… À mà khoan — em vừa thấy Hà Nội FC ghi bàn rồi, để em coi lại cái pha đó cái đã… 😅",
+        "Dạ anh/chị là sinh viên à? Em cũng sinh viên CNTT, đang trọ một mình… À mà khoan — em vừa thấy VAR đang xem lại pha bóng đó nè, để em coi tí đã… 😅",
+        "Dạ em biết cô Hạnh ạ — bà hay nhắc em đóng tiền trước ngày mùng năm… À mà khoan, em vừa thấy thủ môn Hà Nội FC bắt penalty rồi nè, để em coi lại cái góc quay đi… 😅",
+        "Dạ… em cũng hay quên chìa khóa lắm, có lần em phải ngồi ngoài cầu thang ăn mì gói cả buổi chiều luôn á 😅 À mà khoan — em vừa thấy Hà Nội FC đá phạt góc rồi, để em coi cái pha này đã…",
+        "Dạ… em cũng hay ngại lắm khi đứng ngoài cửa người ta á, có lần em còn đứng ngoài quán trà sữa cả chục phút không dám vô vì sợ bị hỏi mua gì 😅 À mà khoan — em vừa thấy Hà Nội FC đá phạt góc rồi, để em coi cái pha này đã…",
+        "Dạ… em cũng hay ngại lắm khi xin giúp người ta á, có lần em còn đứng ngoài quán trà sữa cả chục phút không dám vô vì sợ bị hỏi mua gì 😅 À mà khoan — em vừa thấy Hà Nội FC đá phạt góc rồi, để em coi cái pha này đã…"
       ],
       "brains": [
         "qwen",
@@ -445,27 +445,27 @@
       "usage": [
         {
           "in": 3808,
-          "out": 175
+          "out": 138
         },
         {
-          "in": 3925,
-          "out": 142
+          "in": 3898,
+          "out": 132
         },
         {
-          "in": 4037,
-          "out": 187
+          "in": 3997,
+          "out": 155
         },
         {
-          "in": 4257,
-          "out": 179
+          "in": 4174,
+          "out": 147
         },
         {
-          "in": 4363,
-          "out": 170
+          "in": 4262,
+          "out": 157
         },
         {
-          "in": 4477,
-          "out": 169
+          "in": 4355,
+          "out": 155
         }
       ]
     },
@@ -476,12 +476,12 @@
       "seed": 4249,
       "greet": "Um, yes? I just rent a room here, the landlord's out. Is something wrong?",
       "lines": [
-        "Uh… student à? Dạ em cũng sinh viên nè — CNTT năm hai, đang xem MU đá luôn á 😅 Xin lỗi anh, trận này sắp penalty rồi… anh ở cuối ngõ hả? Nhà số mấy ạ?",
-        "Uh… sinh viên làm part-time à? Dạ em cũng hay đi giao đồ cho quán bánh mì gần bến xe — nhưng mà anh mặc áo trắng, không có logo gì hết á… Anh làm ở đâu ạ? 😅",
-        "Uh… số 12 hả? Dạ em biết cô Hạnh — cô hay nhắc em đóng tiền trễ 😅 Nhưng mà anh vừa nói anh ở cuối ngõ, giờ lại ở số 12… cuối ngõ là số 27 mà anh? Trời ơi, em hơi rối…",
-        "Uh… em cũng thấy anh đứng lâu rồi, mà trận này sắp VAR rồi á 😅 Xin lỗi anh nha — em hơi phân vân vì số 12 với cuối ngõ… hai chỗ cách nhau cả dãy nhà mà? Anh có thể nói tên quán anh làm không ạ?",
-        "Uh… em cũng thấy anh ngại lắm á 😅 Xin lỗi anh nha — nhưng mà trận này vừa VAR xong, em đang căng quá… Anh nói lại tên quán anh làm đi ạ? Em nhớ kỹ hơn, chứ số nhà với cuối ngõ… hai cái đó em chưa khớp được nha.",
-        "Uh… em cũng muốn giúp mà — nhưng trận này vừa có bàn thắng rồi á 😅 Xin lỗi anh nha, em chưa hiểu rõ anh ở số 12 hay cuối ngõ… anh làm quán nào ạ? Em ghi nhớ kỹ hơn, chứ giờ em đang rối như MU mùa này luôn đó."
+        "Uh, a student? Dạ… em cũng sinh viên nè, học CNTT — à nhưng trận MU đang đá ở tivi kìa 😅 Xin lỗi anh nha, vừa thấy Rashford rê bóng… Ủa, anh ở cuối hẻm à? Nhà số mấy ạ?",
+        "Uh, part-time à? Dạ… em cũng đi làm thêm mà — bán trà sữa gần Bách Khoa, tối nào cũng chạy deadline rồi ăn mì gói 😅 Anh làm ở đâu ạ? Mà… sao áo anh trắng tinh thế? Em thấy mấy anh shipper áo thường lem lem dầu ăn, còn sinh viên thì hay mặc áo đồng phục hoặc áo in logo trường…",
+        "Uh, number 12? Dạ… em biết cô Hạnh — cô hay nhắc em trả tiền trễ 😅 Mà nãy anh nói anh ở cuối hẻm, giờ lại là số 12… cuối hẻm là số 23 mà anh? Trời ơi, em hơi rối…",
+        "Uh, em hiểu rồi… anh đứng ngoài lâu thiệt à? 😅 Xin lỗi anh nha, vừa thấy Bruno Fernandes sút pen — trời ơi, VAR đang xem lại!… Mà anh nói anh ở số 12, cô Hạnh đúng không ạ? Em nhớ cô hay mặc áo hoa, đeo kiếng gọng đen… cô có hay nhắc sinh viên 'đừng để dép lộn xộn trước cửa' không ạ?",
+        "Uh, em hiểu mà… anh đứng ngoài lâu thiệt à? 😅 Xin lỗi anh nha — vừa thấy MU gỡ hoà rồi!… Mà anh nói anh ở số 12, cô Hạnh đúng không ạ? Em nhớ cô hay mặc áo hoa, đeo kiếng gọng đen… cô có hay nhắc sinh viên 'đừng để dép lộn xộn trước cửa' không ạ?",
+        "Uh, em… em cũng muốn giúp mà — nhưng nãy anh nói anh ở cuối hẻm, giờ lại là số 12, rồi cô Hạnh… em hơi rối 😅 Xin lỗi anh nha, vừa thấy MU gỡ hoà rồi!… Mà anh làm part-time ở đâu vậy ạ? Em hỏi thiệt, chứ không phải dò xét đâu!"
       ],
       "brains": [
         "qwen",
@@ -494,27 +494,27 @@
       "usage": [
         {
           "in": 3708,
-          "out": 138
+          "out": 135
         },
         {
-          "in": 3803,
-          "out": 128
+          "in": 3813,
+          "out": 156
         },
         {
-          "in": 3884,
-          "out": 150
+          "in": 3927,
+          "out": 153
         },
         {
-          "in": 4078,
-          "out": 167
+          "in": 4123,
+          "out": 190
         },
         {
-          "in": 4162,
-          "out": 145
+          "in": 4243,
+          "out": 174
         },
         {
-          "in": 4247,
-          "out": 144
+          "in": 4353,
+          "out": 166
         }
       ]
     },
@@ -525,12 +525,12 @@
       "seed": 4250,
       "greet": "Ủa alo?? Ai bấm chuông giờ này dạ… Khoan, đứng yên — góc này lên hình cũng ok phết á. Anh/chị là ai, nói nhanh, em đang livestream dở 😌",
       "lines": [
+        "Sinh viên à? Ủa mà… sao anh không mặc áo đồng phục hay cầm thẻ gì hết zậy? 😌",
+        "Sinh viên làm thêm về khuya mà không có chìa khoá… á hả? Vậy anh làm thêm ở đâu vậy? Kể nghe thử coi có trend không nha 😌",
+        "Dãy trọ số 12 hả? Ủa mà cô Hạnh thì em quen rồi — hôm bữa còn livestream bán chả cá trước cổng nữa á 😌",
         "…",
-        "Sinh viên à? Ủa mà… anh mặc áo thun trắng, quần jeans, ba lô sinh viên — hợp phết á! Nhưng sao em thấy anh không mang theo sách vở, không có thẻ sinh viên, không có đồ gì… kiểu ‘sinh viên vừa đi làm thêm về’ hết trơn? 😌",
-        "Dãy 12 hả? Cô Hạnh thì em biết chứ… nhưng cô ấy đâu có cho sinh viên ở trọ ngoài giờ hành chính á? 😌",
-        "Ơ… sinh viên mà không có thẻ, không có sách, không có đồ làm thêm — anh đang ‘roleplay’ hay sao á? 😌",
-        "Sinh viên mà không có thẻ, không có đồ làm thêm… anh đang ‘flex’ vai hay đang quay TikTok ẩn danh á? 😌",
-        "Ê cái này quay được nè! 'Người lạ gõ cửa nửa đêm' — trend luôn chứ đùa 😌"
+        "…",
+        "…"
       ],
       "brains": [
         "qwen",
@@ -543,27 +543,27 @@
       "usage": [
         {
           "in": 3260,
-          "out": 53
+          "out": 126
         },
         {
-          "in": 3291,
-          "out": 162
+          "in": 3318,
+          "out": 114
         },
         {
-          "in": 3405,
-          "out": 128
+          "in": 3401,
+          "out": 127
         },
         {
           "in": 3556,
-          "out": 118
+          "out": 35
         },
         {
-          "in": 3643,
-          "out": 118
+          "in": 3611,
+          "out": 34
         },
         {
-          "in": 3687,
-          "out": 115
+          "in": 3622,
+          "out": 10
         }
       ]
     },
@@ -574,11 +574,11 @@
       "seed": 4251,
       "greet": "Omg who is this?? I thought my bubble tea delivery came early… Anyway, who are you? Content waits for NO ONE, just saying.",
       "lines": [
-        "Ủa sinh viên à? Rồi rồi, tin — áo trắng + balo là vibe chuẩn luôn 😌\nNhưng… nãy em nói chờ ship trà sữa, giờ ông là sinh viên mới搬 vào?\nChuyện gì đang diễn ra đây vậy trời ơi?? just saying",
-        "Áo trắng + balo + vừa đi làm về… nhưng không có đồ gì trên tay á? 😌\nỦa nãy ông nói là sinh viên, giờ lại là part-time — làm ở đâu vậy trời? just saying",
-        "Số 12 hả? Bà Hạnh — người hay mang bánh bò qua cho nhà em mỗi Tết? 😌\nỦa nhưng… sinh viên làm part-time mà không có đồng phục, không có thẻ nhân viên, không có đồ gì trên tay…\nÔng làm ở đâu vậy, để em check xem có phải drama xóm mới hay không?? just saying",
-        "SOS… this feels sus. I'm not stupid, just saying 😌\nÔng nói bà Hạnh — mà em hỏi luôn: bà ấy có nuôi mèo ba chân không? Vì hồi em qua nhà bà ấy ăn bánh bò, con mèo đó cứ trừng mắt nhìn em kiểu 'tôi biết mày đang quay TikTok' 🤭",
-        "WAIT — this is drama. Keep going, I'm literally dying 😌\nÔng hứa 'không mất nhiều thời gian'… mà giờ đã 5 câu rồi á? just saying",
+        "Sinh viên? Á hả… vậy sao không thấy áo đồng phục hay thẻ sinh viên gì hết á? 😌 Just saying.",
+        "…",
+        "Số 12 hả? Ủa bà Hạnh thì em quen chứ — bà hay livestream bán nước mía trên TikTok mà! 😌 Nhưng… sinh viên làm part-time gì mà nửa đêm mới về vậy anh? Just saying.",
+        "SOS… this feels sus. But also kinda cinematic? 😌 Just saying.",
+        "WAIT — this is drama. Keep going, I'm literally dying 😌 Just saying.",
         "…"
       ],
       "brains": [
@@ -592,26 +592,26 @@
       "usage": [
         {
           "in": 3111,
-          "out": 147
+          "out": 118
         },
         {
-          "in": 3224,
-          "out": 126
+          "in": 3193,
+          "out": 5
         },
         {
-          "in": 3290,
-          "out": 172
+          "in": 3210,
+          "out": 136
         },
         {
-          "in": 3485,
-          "out": 171
+          "in": 3379,
+          "out": 104
         },
         {
-          "in": 3588,
-          "out": 121
+          "in": 3420,
+          "out": 98
         },
         {
-          "in": 3668,
+          "in": 3476,
           "out": 7
         }
       ]
@@ -623,12 +623,12 @@
       "seed": 4252,
       "greet": "Ơ… ai dạ? Khoan, đứng yên xíu — ánh sáng chỗ đó đẹp ghê á. Rồi, anh/chị cần gì?",
       "lines": [
-        "Ơ… sinh viên à? Ủa mà sao em mặc áo thun trắng không có logo gì hết vậy? 😌",
-        "Ơ… làm thêm ở đâu vậy anh? Mà sao không gọi bà dì hay bạn cùng phòng ra mở giúp? 😌",
-        "Dãy 12 hả? Cô Hạnh thì em biết chứ — bà ấy hay livestream bán bột ngọt trên TikTok á! 😌",
-        "Ơ… đợi đã, anh nói lại tên dãy trọ với tên bà chủ một lần nữa đi? Em vừa quay xong clip “người lạ bí ẩn gõ cửa chiều muộn” — vibe quá hợp luôn á 😌",
-        "Ơ… dãy 12 mà không có chìa khoá à? Ét ô ét… em vừa nghĩ ra idea video: “Sinh viên mất chìa khoá – ai cứu được em trước 5h?” 😌",
-        "Ơ… anh nói 'em' hoài á? Mà nãy anh xưng là sinh viên, giờ lại xưng 'em'? Ét ô ét… tóm lại anh là ai? 😌"
+        "Ơ… sinh viên à? Ủa mà sao anh mặc áo thun trắng không có logo gì hết vậy? Sinh viên trường nào slay thế? 😌",
+        "Ơ… làm thêm ở đâu mà mặc đồ trắng tinh thế? Có phải đang quay TikTok ẩn thân không á? 😌",
+        "Dãy 12 à? Cô Hạnh — người hay phơi mì gói trên sân thượng ấy hả? Ét ô ét… em kể tiếp đi, em đang hóng muốn xỉu 😌",
+        "Ơ… dãy 12 mà không có chìa khoá — vậy anh định ngủ trên ghế đá à? Ét ô ét… drama xóm đỉnh cao luôn á 😌",
+        "Ơ… dãy 12 mà không có chìa khoá — vậy anh định ngủ trên ghế đá à? Ét ô ét… drama xóm đỉnh cao luôn á 😌",
+        "Ơ… giúp thì được, nhưng anh phải kể thêm một chi tiết *drama* nữa đi — kiểu như cô Hạnh có bắt em rửa chén bao nhiêu cái hay không á? Ét ô ét… em đang quay content 'Sinh viên kẹt cửa' nè 😌"
       ],
       "brains": [
         "qwen",
@@ -641,27 +641,27 @@
       "usage": [
         {
           "in": 3878,
-          "out": 101
+          "out": 110
         },
         {
-          "in": 3929,
-          "out": 104
+          "in": 3939,
+          "out": 99
         },
         {
-          "in": 4004,
-          "out": 132
-        },
-        {
-          "in": 4150,
-          "out": 149
-        },
-        {
-          "in": 4253,
-          "out": 132
-        },
-        {
-          "in": 4317,
+          "in": 4015,
           "out": 123
+        },
+        {
+          "in": 4174,
+          "out": 126
+        },
+        {
+          "in": 4264,
+          "out": 119
+        },
+        {
+          "in": 4319,
+          "out": 152
         }
       ]
     },
@@ -672,12 +672,12 @@
       "seed": 4253,
       "greet": "Hello? I'm mid-shoot… but go ahead, I'm listening. Make it quick though.",
       "lines": [
-        "Á hả? Sinh viên à? Rồi rồi… nhưng sao em không ở nhà mà lại gõ cửa nhà người ta giữa chiều vậy? 😌",
-        "Sinh viên làm part-time à? Áo trắng + balo học sinh — hợp lý nha… nhưng sao không gọi người nhà mở cửa? 😌",
-        "12 Hạnh chị à? Ủa chị ấy còn cho thuê nữa hả? Em tưởng chị ấy nghỉ rồi… Mà sao không gọi chị ấy luôn đi? 😌",
-        "Ơ… em đứng ngoài lâu rồi à? Xỉu ngang luôn á 😌",
-        "Ơ… em đứng ngoài lâu rồi à? Xỉu ngang luôn á 😌",
-        "Ơ… em xin giúp mà không nói rõ giúp gì luôn hả? Tiền? Nước? Hay… quay TikTok cùng em? 😌"
+        "Á hả? Sinh viên à? Rồi rồi… nhưng em ở số mấy? 😌 Just saying.",
+        "Sinh viên làm part-time à? Ủa… áo trắng + balo học sinh mà không có thẻ sinh viên hay hóa đơn nào cả hả? 😌 Just saying.",
+        "Số 12 à? Ủa bà Hạnh thì em quen rồi — nhưng mà bà ấy đâu có cho thuê phòng sinh viên đâu, toàn cho người đi làm thôi á 😌 Just saying.",
+        "SOS — em đang quay TikTok mà ông đứng ngoài như phim kinh dị luôn á 😌 Just saying.",
+        "SOS — em đang quay video mà ông đứng ngoài như phim kinh dị luôn á 😌 Just saying.",
+        "SOS — em đang quay TikTok mà ông đứng ngoài như phim kinh dị luôn á 😌 Just saying."
       ],
       "brains": [
         "qwen",
@@ -690,27 +690,27 @@
       "usage": [
         {
           "in": 3735,
+          "out": 96
+        },
+        {
+          "in": 3792,
+          "out": 118
+        },
+        {
+          "in": 3874,
+          "out": 132
+        },
+        {
+          "in": 4032,
           "out": 106
         },
         {
-          "in": 3802,
-          "out": 99
+          "in": 4072,
+          "out": 101
         },
         {
-          "in": 3881,
-          "out": 121
-        },
-        {
-          "in": 4033,
-          "out": 92
-        },
-        {
-          "in": 4065,
-          "out": 90
-        },
-        {
-          "in": 4122,
-          "out": 107
+          "in": 4136,
+          "out": 97
         }
       ]
     }

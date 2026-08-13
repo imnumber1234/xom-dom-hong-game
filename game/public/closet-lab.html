@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tủ đồ 8-bit — bản thí nghiệm kiểu Gather</title>
+<style>
+  :root{
+    --panel:#2e3459; --panel2:#383f6d; --tile:#4b5389; --tile2:#565f9c;
+    --ink:#eef0ff; --dim:#a7adcf; --ok:#2ee6a8; --line:#4a5490;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:#151a33; color:var(--ink); font:15px/1.45 "Segoe UI",system-ui,sans-serif;
+       min-height:100vh; display:flex; align-items:center; justify-content:center; padding:18px;}
+  #closet{width:560px; max-width:100%; background:var(--panel2); border-radius:14px;
+          overflow:hidden; box-shadow:0 22px 60px rgba(0,0,0,.55);}
+
+  /* ---- phần trên: tên + gương ---- */
+  #top{background:var(--panel); padding:14px 16px 10px; position:relative;}
+  #nametag{display:inline-block; background:#131735; color:#fff; font-weight:700;
+           padding:9px 14px; border-radius:9px; font-size:16px;}
+  #btn-x{position:absolute; top:14px; right:16px; background:none; border:0; color:#cfd4f5;
+         font-size:26px; cursor:pointer; line-height:1;}
+  #stage{display:flex; flex-direction:column; align-items:center; padding:6px 0 4px;}
+  #mirror-wrap{position:relative; width:150px; height:150px; display:flex; align-items:flex-end; justify-content:center;}
+  #shadow{position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+          width:104px; height:34px; border-radius:50%; background:rgba(15,18,44,.55);}
+  #mirror{position:relative; width:150px; height:150px; image-rendering:pixelated;}
+  #mirror.flash{animation:fl .4s ease-out;}
+  @keyframes fl{0%{filter:brightness(1)}30%{filter:brightness(1.9) saturate(1.3)}100%{filter:brightness(1)}}
+  #turn{display:flex; gap:8px; margin-top:2px;}
+  #turn button{background:#242a4f; border:1px solid var(--line); color:var(--dim);
+               border-radius:8px; padding:4px 12px; cursor:pointer; font-size:13px;}
+  #turn button:hover{color:#fff; border-color:#7d88d6;}
+
+  /* ---- tab chính ---- */
+  #tabs{display:flex; gap:8px; padding:0 16px; border-bottom:1px solid rgba(255,255,255,.13);}
+  .tab{background:none; border:0; color:var(--dim); font-size:16px; font-weight:600;
+       padding:14px 10px 12px; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-1px;}
+  .tab.on{color:#fff; border-bottom-color:#fff;}
+  .tab:disabled{opacity:.45; cursor:not-allowed;}
+
+  /* ---- tab phụ dạng viên thuốc ---- */
+  #subs{display:flex; gap:8px; flex-wrap:wrap; padding:14px 16px 0;}
+  .pill{background:none; border:0; color:var(--dim); font-size:14px; font-weight:600;
+        padding:8px 16px; border-radius:20px; cursor:pointer;}
+  .pill.on{background:var(--tile); color:#fff;}
+
+  /* ---- hàng màu ---- */
+  #colors{display:flex; gap:9px; flex-wrap:wrap; padding:14px 16px 2px;}
+  .sw{width:26px; height:26px; border-radius:50%; border:2px solid transparent; cursor:pointer; padding:0;}
+  .sw.on{box-shadow:0 0 0 2px #fff;}
+  #colors.off{display:none;}
+
+  /* ---- lưới món đồ ---- */
+  #grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:14px 16px;
+        max-height:250px; overflow-y:auto;}
+  #grid::-webkit-scrollbar{width:8px;} #grid::-webkit-scrollbar-thumb{background:#5b64a5; border-radius:4px;}
+  .cell{background:var(--tile); border:2px solid transparent; border-radius:9px; padding:0;
+        cursor:pointer; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;
+        position:relative; overflow:hidden;}
+  .cell:hover{background:var(--tile2);}
+  .cell.on{border-color:#fff;}
+  .cell canvas{width:100%; height:100%; image-rendering:pixelated;}
+  .cell .lock{position:absolute; inset:0; background:rgba(12,15,36,.62); color:#ffd76a;
+              display:flex; align-items:center; justify-content:center; font-size:20px;}
+  .cell .nm{position:absolute; bottom:0; left:0; right:0; font-size:9px; color:#dfe3ff;
+            background:rgba(12,15,36,.62); padding:1px 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+  /* ---- chân ---- */
+  #say{padding:2px 16px 0; font-size:12.5px; font-style:italic; color:var(--dim); min-height:20px;}
+  #foot{display:flex; gap:14px; justify-content:center; padding:14px 16px 18px;}
+  #foot button{border:0; border-radius:9px; padding:13px 26px; font-size:15px; font-weight:700; cursor:pointer;}
+  #btn-back{background:var(--tile); color:#fff;}
+  #btn-done{background:var(--ok); color:#0d2b22;}
+  #note{width:560px; max-width:100%; margin-top:14px; font-size:12px; color:#7f88b8; text-align:center;}
+</style>
+</head>
+<body>
+<div>
+<div id="closet">
+  <div id="top">
+    <span id="nametag">Sói Xóm Đóm</span>
+    <button id="btn-x" title="Đóng">×</button>
+    <div id="stage">
+      <div id="mirror-wrap">
+        <div id="shadow"></div>
+        <canvas id="mirror" width="64" height="64"></canvas>
+      </div>
+      <div id="turn">
+        <button id="t-left">◀ xoay</button>
+        <button id="t-dice">🎲 ngẫu nhiên</button>
+        <button id="t-right">xoay ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tabs"></div>
+  <div id="subs"></div>
+  <div id="colors"></div>
+  <div id="grid"></div>
+  <div id="say"></div>
+  <div id="foot">
+    <button id="btn-back">Quay lại</button>
+    <button id="btn-done">Mặc xong</button>
+  </div>
+</div>
+<div id="note">Bản THÍ NGHIỆM — không đụng vào game thật. Màu là do code nhuộm lại ảnh gốc (0đ, không tốn credit vẽ).</div>
+</div>
+
+<script>
+/* ============================================================================
+   TỦ ĐỒ 8-BIT kiểu Gather — bản thí nghiệm (2026-08-12)
+   Cách làm (nghiên cứu từ Gather + bộ dựng nhân vật LPC):
+     1. NGƯỜI GIẤY (paper doll): thân là 1 ảnh, mỗi món đồ là 1 ảnh trong suốt đè lên.
+     2. NHUỘM MÀU GIỮ BÓNG (palette-preserving recolor): giữ nguyên độ sáng/tối từng
+        điểm ảnh, chỉ thay màu gốc → 1 món đồ đẻ ra 16 màu, không cần vẽ thêm.
+     Nhờ (2) mà lưới đồ đầy như Gather dù PixelLab đã hết credit.
+   ==========================================================================*/
+
+const S = 'assets/art/sprites/';
+const L = S + 'layers/';
+const DIRS = ['south','east','north','west'];
+
+/* 16 màu — lấy tinh thần bảng màu Gather (đỏ→cam→vàng→lục→lam→tím→hồng→nâu→trắng→xám→đen) */
+const PALETTE = ['#e8433a','#f2913d','#f5cf3f','#7c9440','#3fae5a','#2f8f7d','#39b7ef','#5566e8',
+                 '#a86fd0','#ee52c0','#f2799c','#b0703c','#e2cba8','#ffffff','#9aa0b0','#3a3a44'];
+
+/* Mỗi món khai báo cách nhuộm:
+     hue  = nhuộm theo VÙNG MÀU gốc (áo xanh lá → mọi điểm xanh lá đổi màu)
+     grey = nhuộm phần XÁM/ĐEN theo dải sáng-tối (bộ vest, áo trắng)
+   'crop' = khung cắt để làm hình nhỏ trong lưới (giống Gather cắt riêng thân/đầu). */
+const REC = {
+  shirt_grab:      { mode:'hue',  key:105, tol:34 },
+  shirt_sinhvien:  { mode:'grey', key:[0.10,0.46] },
+  hat_baohiem:     { mode:'hue',  key:105, tol:40 },
+  hat_nonla:       { mode:'hue',  key:25,  tol:34 },
+  item_trasua:     { mode:'hue',  key:28,  tol:44 },
+  item_bo_rau:     { mode:'hue',  key:100, tol:40 },
+  item_thesv:      { mode:'hue',  key:215, tol:44 },
+  item_donhang:    { mode:'grey', key:[0.55,0.98] },
+  item_tinnhan:    { mode:'grey', key:[0.55,0.98] }
+};
+/* Ảnh của bản NGƯỜI vẽ yếu hơn bản SÓI (áo Grab gần như trắng kem), nên cần khoá màu riêng.
+   Phát hiện khi thử: bản người chỉ nhuộm được ~67 điểm ảnh, bản sói 171. */
+const REC_CHAR = { human: { shirt_grab: { mode:'hue', key:60, tol:55 } } };
+function ruleFor(ch, k){ return (REC_CHAR[ch] && REC_CHAR[ch][k]) || REC[k]; }
+const CROP = { shirt:[14,26,36,26], hat:[14,0,36,26], item:[24,26,40,30], body:[8,2,48,60] };
+
+/* Danh mục — đúng kiểu Gather: 4 tab lớn, mỗi tab vài tab nhỏ */
+const CAT = {
+  base: { label:'Cơ bản', subs:[
+      { id:'char', label:'Nhân vật', color:false, crop:'body', opts:[
+          {id:'wolf',  label:'Sói'},
+          {id:'human', label:'Người'} ]},
+      { id:'fur',  label:'Màu lông / da', color:true, crop:'body', recolorBody:true, opts:[
+          {id:'body', label:'Thân'} ]}
+  ]},
+  clothing: { label:'Quần áo', subs:[
+      { id:'shirt', label:'Áo', color:true, crop:'shirt', slot:'shirt', opts:[
+          {id:'none',     label:'Đồ thường'},
+          {id:'grab',     label:'Áo Grab'},
+          {id:'sinhvien', label:'Áo vest'} ]}
+  ]},
+  acc: { label:'Phụ kiện', subs:[
+      { id:'hat',  label:'Nón', color:true, crop:'hat', slot:'hat', opts:[
+          {id:'none',     label:'Đầu trần'},
+          {id:'baohiem',  label:'Nón bảo hiểm'},
+          {id:'nonla',    label:'Nón lá'} ]},
+      { id:'item', label:'Cầm tay', color:true, crop:'item', slot:'item', opts:[
+          {id:'none',     label:'Tay không'},
+          {id:'trasua',   label:'Trà sữa'},
+          {id:'bo_rau',   label:'Bó rau'} ]}
+  ]},
+  special: { label:'Đặc biệt', subs:[
+      { id:'giay', label:'Giấy tờ', color:true, crop:'item', slot:'item', opts:[
+          {id:'none',     label:'Không cầm'},
+          {id:'thesv',    label:'Thẻ SV',    lock:true},
+          {id:'donhang',  label:'Đơn hàng',  lock:true},
+          {id:'tinnhan',  label:'Ảnh tin nhắn', lock:true} ]}
+  ]}
+};
+
+const DESC = { grab:'áo khoác tài xế công nghệ', sinhvien:'bộ vest chỉnh tề',
+  baohiem:'nón bảo hiểm', nonla:'nón lá đi chợ', trasua:'túi trà sữa như đang giao hàng',
+  bo_rau:'bó rau vừa đi chợ về', thesv:'thẻ sinh viên', donhang:'đơn giao hàng',
+  tinnhan:'ảnh chụp tin nhắn hẹn trước' };
+
+/* trạng thái */
+const st = {
+  char:'wolf', dir:0, tab:'base', sub:'char',
+  outfit:{ shirt:'none', hat:'none', item:'none' },
+  color:{ shirt:null, hat:null, item:null, body:null },   // null = giữ màu gốc
+  unlocked:[]                                             // món 'lock' phải lượm mới có
+};
+
+/* ---------- nạp ảnh ---------- */
+const IMG = {};
+function load(src){
+  return new Promise(res=>{ const i = new Image(); i.onload=()=>res(i); i.onerror=()=>res(null); i.src=src; });
+}
+async function preload(){
+  const jobs = [];
+  ['wolf','human'].forEach(ch=>DIRS.forEach(d=>jobs.push(['base_'+ch+'_'+d, S+ch+'_'+d+'.png'])));
+  ['wolf','human'].forEach(ch=>{
+    [['shirt',['grab','sinhvien']],['hat',['baohiem','nonla']],
+     ['item',['trasua','bo_rau','thesv','donhang','tinnhan']]].forEach(([slot,ids])=>
+      ids.forEach(id=>DIRS.forEach(d=>
+        jobs.push(['lay_'+ch+'_'+slot+'_'+id+'_'+d, L+ch+'_'+slot+'_'+id+'_'+d+'.png']))));
+  });
+  await Promise.all(jobs.map(async ([k,src])=>{ const im = await load(src); if (im) IMG[k]=im; }));
+}
+
+/* ---------- nhuộm màu giữ bóng ---------- */
+function rgb2hsl(r,g,b){
+  r/=255; g/=255; b/=255;
+  const mx=Math.max(r,g,b), mn=Math.min(r,g,b), l=(mx+mn)/2;
+  if (mx===mn) return [0,0,l];
+  const d=mx-mn, s = l>0.5 ? d/(2-mx-mn) : d/(mx+mn);
+  let h;
+  if (mx===r) h=((g-b)/d + (g<b?6:0));
+  else if (mx===g) h=((b-r)/d + 2);
+  else h=((r-g)/d + 4);
+  return [h*60, s, l];
+}
+function hsl2rgb(h,s,l){
+  h=((h%360)+360)%360/360;
+  if (s===0){ const v=Math.round(l*255); return [v,v,v]; }
+  const q = l<0.5 ? l*(1+s) : l+s-l*s, p = 2*l-q;
+  const f = t=>{ t=(t+1)%1;
+    if (t<1/6) return p+(q-p)*6*t;
+    if (t<1/2) return q;
+    if (t<2/3) return p+(q-p)*(2/3-t)*6;
+    return p; };
+  return [Math.round(f(h+1/3)*255), Math.round(f(h)*255), Math.round(f(h-1/3)*255)];
+}
+const _cache = {};
+/** trả về canvas 64×64 của ảnh đã nhuộm (có nhớ tạm để không tính lại) */
+function tinted(img, rule, hex, ck){
+  if (!img) return null;
+  if (!hex || !rule) return img;
+  const key = ck+'|'+hex;
+  if (_cache[key]) return _cache[key];
+  const c = document.createElement('canvas'); c.width=64; c.height=64;
+  const x = c.getContext('2d'); x.imageSmoothingEnabled=false;
+  x.drawImage(img,0,0,64,64);
+  const d = x.getImageData(0,0,64,64), p = d.data;
+  const [tr,tg,tb] = [1,3,5].map(i=>parseInt(hex.substr(i,2),16));
+  const [th,ts] = rgb2hsl(tr,tg,tb), tl = rgb2hsl(tr,tg,tb)[2];
+  for (let i=0;i<p.length;i+=4){
+    if (p[i+3] < 40) continue;
+    const [h,s,l] = rgb2hsl(p[i],p[i+1],p[i+2]);
+    let hit = false, nl = l, ns = ts;
+    if (rule.mode === 'hue'){
+      let dh = Math.abs(((h - rule.key + 180) % 360) - 180);
+      hit = s > 0.16 && dh <= (rule.tol||30);
+      ns = Math.max(ts*0.95, 0.22);
+    } else {
+      hit = s < 0.28 && l >= rule.key[0] && l <= rule.key[1];
+      nl = Math.min(0.95, l*0.55 + tl*0.75);
+      ns = ts*0.9;
+    }
+    if (!hit) continue;
+    const [nr,ng,nb] = hsl2rgb(th, ns, nl);
+    p[i]=nr; p[i+1]=ng; p[i+2]=nb;
+  }
+  x.putImageData(d,0,0);
+  _cache[key] = c;
+  return c;
+}
+
+/* ---------- vẽ nhân vật (thân + các lớp đồ) ---------- */
+function paint(ctx, dir, w, h){
+  ctx.imageSmoothingEnabled = false;
+  ctx.clearRect(0,0,w,h);
+  const ch = st.char;
+  const body = IMG['base_'+ch+'_'+dir];
+  if (body){
+    const bRule = ch==='wolf' ? {mode:'grey', key:[0.18,0.80]} : {mode:'hue', key:22, tol:34};
+    ctx.drawImage(tinted(body, bRule, st.color.body, 'body_'+ch+'_'+dir), 0,0,64,64, 0,0,w,h);
+  }
+  ['shirt','hat','item'].forEach(slot=>{
+    const id = st.outfit[slot];
+    if (id === 'none') return;
+    const im = IMG['lay_'+ch+'_'+slot+'_'+id+'_'+dir];
+    if (!im) return;
+    ctx.drawImage(tinted(im, ruleFor(ch, slot+'_'+id), st.color[slot], slot+'_'+id+'_'+ch+'_'+dir), 0,0,64,64, 0,0,w,h);
+  });
+}
+function drawMirror(){
+  const c = document.getElementById('mirror');
+  paint(c.getContext('2d'), DIRS[st.dir], 64, 64);
+  c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash');
+}
+
+/* ---------- hình nhỏ trong lưới (cắt vùng như Gather) ---------- */
+function thumb(sub, opt){
+  const c = document.createElement('canvas'); c.width=64; c.height=64;
+  const x = c.getContext('2d'); x.imageSmoothingEnabled=false;
+  const ch  = sub.id === 'char' ? opt.id : st.char;
+  const [cx,cy,cw,chh] = CROP[sub.crop] || CROP.body;
+  const body = IMG['base_'+ch+'_south'];
+  const tmp = document.createElement('canvas'); tmp.width=64; tmp.height=64;
+  const t = tmp.getContext('2d'); t.imageSmoothingEnabled=false;
+  if (body){
+    const bRule = ch==='wolf' ? {mode:'grey', key:[0.18,0.80]} : {mode:'hue', key:22, tol:34};
+    const bcol  = sub.recolorBody ? st.color.body : st.color.body;
+    t.drawImage(tinted(body, bRule, bcol, 'body_'+ch+'_south'), 0, 0);
+  }
+  if (sub.slot && opt.id !== 'none'){
+    const im = IMG['lay_'+ch+'_'+sub.slot+'_'+opt.id+'_south'];
+    if (im) t.drawImage(tinted(im, ruleFor(ch, sub.slot+'_'+opt.id), st.color[sub.slot],
+                               sub.slot+'_'+opt.id+'_'+ch+'_south'), 0, 0);
+  }
+  x.drawImage(tmp, cx, cy, cw, chh, 0, 0, 64, 64);
+  return c;
+}
+
+/* ---------- dựng giao diện ---------- */
+const $ = id => document.getElementById(id);
+function curSub(){ return CAT[st.tab].subs.find(s=>s.id===st.sub) || CAT[st.tab].subs[0]; }
+
+function renderTabs(){
+  const box = $('tabs'); box.innerHTML='';
+  Object.entries(CAT).forEach(([k,v])=>{
+    const b = document.createElement('button');
+    b.className = 'tab' + (k===st.tab ? ' on' : '');
+    b.textContent = v.label;
+    b.onclick = ()=>{ st.tab=k; st.sub=CAT[k].subs[0].id; renderAll(); };
+    box.appendChild(b);
+  });
+}
+function renderSubs(){
+  const box = $('subs'); box.innerHTML='';
+  CAT[st.tab].subs.forEach(s=>{
+    const b = document.createElement('button');
+    b.className = 'pill' + (s.id===st.sub ? ' on' : '');
+    b.textContent = s.label;
+    b.onclick = ()=>{ st.sub=s.id; renderSubs(); renderColors(); renderGrid(); };
+    box.appendChild(b);
+  });
+}
+function renderColors(){
+  const sub = curSub(), box = $('colors');
+  box.className = sub.color ? '' : 'off';
+  box.innerHTML = '';
+  const slot = sub.recolorBody ? 'body' : sub.slot;
+  if (!sub.color) return;
+  const none = document.createElement('button');
+  none.className = 'sw' + (st.color[slot]==null ? ' on' : '');
+  none.style.background = 'repeating-linear-gradient(45deg,#5b64a5 0 5px,#39406e 5px 10px)';
+  none.title = 'màu gốc';
+  none.onclick = ()=>{ st.color[slot]=null; renderColors(); renderGrid(); drawMirror(); };
+  box.appendChild(none);
+  PALETTE.forEach(hex=>{
+    const b = document.createElement('button');
+    b.className = 'sw' + (st.color[slot]===hex ? ' on' : '');
+    b.style.background = hex;
+    b.onclick = ()=>{ st.color[slot]=hex; renderColors(); renderGrid(); drawMirror(); };
+    box.appendChild(b);
+  });
+}
+function renderGrid(){
+  const sub = curSub(), box = $('grid'); box.innerHTML='';
+  sub.opts.forEach(opt=>{
+    const locked = opt.lock && !st.unlocked.includes(opt.id);
+    const on = sub.id==='char' ? st.char===opt.id
+             : sub.slot ? st.outfit[sub.slot]===opt.id : false;
+    const b = document.createElement('button');
+    b.className = 'cell' + (on ? ' on' : '');
+    b.appendChild(thumb(sub, opt));
+    const nm = document.createElement('span'); nm.className='nm'; nm.textContent = opt.label;
+    b.appendChild(nm);
+    if (locked){ const lk=document.createElement('span'); lk.className='lock'; lk.textContent='🔒'; b.appendChild(lk); }
+    b.onclick = ()=>{
+      if (locked) return;
+      if (sub.id==='char'){ st.char = opt.id; }
+      else if (sub.slot){ st.outfit[sub.slot] = opt.id; }
+      renderGrid(); drawMirror(); saySomething();
+    };
+    box.appendChild(b);
+  });
+}
+function saySomething(){
+  const bits = ['shirt','hat','item'].map(s=>DESC[st.outfit[s]]).filter(Boolean);
+  $('say').textContent = bits.length
+    ? '👀 Hàng xóm sẽ thấy: ' + bits.join(' · ')
+    : '👀 Hàng xóm thấy: một người bình thường, không có gì đặc biệt…';
+}
+function renderAll(){ renderTabs(); renderSubs(); renderColors(); renderGrid(); drawMirror(); saySomething(); }
+
+/* ---------- nút ---------- */
+$('t-left').onclick  = ()=>{ st.dir = (st.dir+3)%4; drawMirror(); };
+$('t-right').onclick = ()=>{ st.dir = (st.dir+1)%4; drawMirror(); };
+$('t-dice').onclick  = ()=>{
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  st.outfit.shirt = pick(['none','grab','sinhvien']);
+  st.outfit.hat   = pick(['none','baohiem','nonla']);
+  st.outfit.item  = pick(['none','trasua','bo_rau']);
+  ['shirt','hat','item','body'].forEach(s=> st.color[s] = Math.random()<0.6 ? pick(PALETTE) : null);
+  renderAll();
+};
+$('btn-done').onclick = ()=>{
+  $('say').textContent = '✅ Đã mặc: ' + JSON.stringify(st.outfit) + ' · màu ' + JSON.stringify(st.color);
+};
+$('btn-back').onclick = ()=>{ history.length>1 ? history.back() : location.reload(); };
+$('btn-x').onclick    = ()=>{ document.getElementById('closet').style.opacity = .25; };
+
+/* mở khoá thử bằng ?unlock=1 để xem món "Đặc biệt" khi đã lượm được */
+if (new URLSearchParams(location.search).get('unlock') === '1')
+  st.unlocked = ['thesv','donhang','tinnhan'];
+
+preload().then(renderAll);
+</script>
+</body>
+</html>

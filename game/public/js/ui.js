@@ -22,6 +22,7 @@ XDH.UI = (function () {
     };
     // v0.6 F3.1 Q4 = A: tặng sẵn 1 món ngẫu nhiên ngay đêm/ngày 1 — không ai bắt đầu tay trắng.
     for (let i = 0; i < XDH.WARDROBE_LOCK.NIGHT1_FREE; i++) XDH.unlockRandomPiece();
+    if (XDH.Mission) XDH.Mission.initRun();                     // v1.0: máy trạng thái nhiệm vụ + túi đồ
     if (XDH.isKetTien()) XDH.KetTien.startDay(1);               // bốc món ăn hôm nay + reset ngày
     refreshHud();
   }
@@ -34,6 +35,7 @@ XDH.UI = (function () {
     r.night = n; r.enteredTonight = 0; r.dawnHandled = false;
     r.houses.forEach(h => { h.won = false; h.failedOutfits = []; h.saved = null; });   // đêm mới = hội thoại quên, SỔ thì nhớ
     r.nightStart = Date.now();
+    if (XDH.Mission) XDH.Mission.newNight();   // v1.0: thùng rác + trần việc vặt reset theo đêm
     refreshHud();
   }
 
@@ -56,6 +58,10 @@ XDH.UI = (function () {
       $('hud-money').textContent = `💰 ${r.money}k`;
       $('hud-meal').style.display = 'none';
     }
+    // v1.0 — ô 🎯 nhiệm vụ (đáp án 6, nhân bản hud-meal): chỉ hiện từ lúc NHẬN nhiệm vụ
+    const mTxt = XDH.Mission ? XDH.Mission.hudText() : null;
+    $('hud-mission').style.display = mTxt ? 'block' : 'none';
+    if (mTxt) $('hud-mission').textContent = mTxt;
     $('hud-outfit').textContent = '👕 ' + XDH.outfitLabel(XDH.run.outfit);
   }
 
@@ -103,16 +109,22 @@ XDH.UI = (function () {
       : 'Giữ nút 🎙️ để nói (tiếng Việt), thả ra để gửi.';
   }
 
-  // ---- avatar mirror (Q-J): live preview + tabs Mặt/Tóc/Da/Đồ + dice ----
+  // ---- v0.9 TỦ ĐỒ THẬT (Lucas chốt 08-12: A · icon · bỏ 3 tab Mặt/Tóc/Da · hiệu ứng) ----
+  // Gương soi ĐÚNG nhân vật PixelLab đang mặc đồ, xoay 4 hướng; món đồ có hình icon 8-bit.
+  const MIRROR_DIRS = ['south', 'east', 'north', 'west'];
+  let mirrorDir = 0;
+
   function buildWardrobe() {
     ['shirt', 'hat', 'item'].forEach(slot => {
       const box = $('w-' + (slot === 'item' ? 'item' : slot));
       box.innerHTML = '';
       XDH.WARDROBE[slot].forEach(opt => {
         const b = document.createElement('button');
-        const open = XDH.isUnlocked(slot, opt.id);          // v0.6 F3.1: chưa loot ra thì còn khoá
-        b.className = 'ward-opt' + (open ? '' : ' locked');
-        b.textContent = open ? opt.label : '🔒 ' + opt.label;
+        const open = XDH.isUnlocked(slot, opt.id);          // Q5=B: 3 món giấy tờ vẫn phải loot
+        const icon = opt.id !== 'none';
+        b.className = 'ward-opt' + (icon ? ' iconed' : '') + (open ? '' : ' locked');
+        b.innerHTML = (icon ? `<img src="assets/art/icons/${opt.id}.png" alt="">` : '') +
+          `<span>${open ? '' : '🔒 '}${opt.label}</span>`;
         b.dataset.id = opt.id;
         b.disabled = !open;
         if (!open) b.title = XDH.lang === 'en'
@@ -123,8 +135,12 @@ XDH.UI = (function () {
           XDH.run.outfit[slot] = opt.id;
           [...box.children].forEach(c => c.classList.toggle('sel', c === b));
           refreshHud();
-          drawWolfPreview();
-          if (XDH.applyAvatar) XDH.applyAvatar();
+          if (XDH.applyAvatar) XDH.applyAvatar();   // vẽ lại lớp đồ trên bản đồ TRƯỚC…
+          drawMirror();                              // …rồi mới soi gương cho khớp
+          updateWardDesc();
+          XDH.Blips.jingle('equip');                 // Q4: tiếng "ting" khi mặc
+          const c = $('av-preview');
+          c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash');
         };
         if (XDH.run.outfit[slot] === opt.id) b.classList.add('sel');
         box.appendChild(b);
@@ -132,25 +148,31 @@ XDH.UI = (function () {
     });
   }
 
-  let avTab = 'do';
+  // Dòng "hàng xóm sẽ thấy" — ghép từ mô tả các món đang mặc
+  function updateWardDesc() {
+    const o = XDH.run.outfit;
+    const en = XDH.lang === 'en';
+    const part = (slot) => {
+      const opt = XDH.WARDROBE[slot].find(x => x.id === o[slot]);
+      return opt && opt.id !== 'none' ? opt.desc : null;
+    };
+    const bits = XDH.SLOTS.map(part).filter(Boolean);
+    $('ward-desc').textContent = bits.length
+      ? (en ? '👀 Neighbors will see: ' : '👀 Hàng xóm sẽ thấy: ') + bits.join(' · ')
+      : (en ? '👀 Neighbors see: just a regular person, nothing special…'
+            : '👀 Hàng xóm thấy: một người bình thường, không có gì đặc biệt…');
+  }
+
+  function drawMirror() {
+    const c = $('av-preview'); if (!c) return;
+    if (XDH.renderMirror && XDH.renderMirror(c, MIRROR_DIRS[mirrorDir])) return;
+    drawWolfPreview();                               // ảnh PixelLab không nạp được thì về bản vẽ khối
+  }
+
   function buildAvatarMenu() {
-    document.querySelectorAll('#av-tabs button').forEach(b => b.classList.toggle('sel', b.dataset.t === avTab));
-    const box = $('av-opts');
-    box.innerHTML = '';
-    if (avTab === 'do') {
-      $('av-do-groups').style.display = 'block';
-      buildWardrobe();
-    } else {
-      $('av-do-groups').style.display = 'none';
-      XDH.AVATAR[avTab].forEach(o => {
-        const b = document.createElement('button');
-        b.className = 'ward-opt'; b.textContent = o.label;
-        if (XDH.avatar[avTab] === o.id) b.classList.add('sel');
-        b.onclick = () => { XDH.avatar[avTab] = o.id; XDH.saveAvatar(); buildAvatarMenu(); };
-        box.appendChild(b);
-      });
-    }
-    drawWolfPreview();
+    buildWardrobe();
+    drawMirror();
+    updateWardDesc();
   }
 
   // 16×16 pixel wolf, drawn big — mirrors the in-game sprite (cosmetics + outfit).
@@ -161,18 +183,22 @@ XDH.UI = (function () {
     g.imageSmoothingEnabled = false;
     g.fillStyle = '#241e35'; g.fillRect(0, 0, c.width, c.height);
     const P = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x * S, y * S, w * S, h * S); };
+    // v0.9 (Lucas 08-12): Kẹt Tiền soi gương thấy NGƯỜI THƯỜNG, không phải sói
+    const human = XDH.isKetTien();
     const skinOpt = XDH.AVATAR.skin.find(o => o.id === XDH.avatar.skin) || XDH.AVATAR.skin[0];
-    const fur = '#' + skinOpt.color.toString(16).padStart(6, '0');
-    P(4, 3, 2, 2, fur); P(10, 3, 2, 2, fur);         // ears
+    const fur = human ? '#eab98a' : '#' + skinOpt.color.toString(16).padStart(6, '0');
+    if (!human) { P(4, 3, 2, 2, fur); P(10, 3, 2, 2, fur); }   // ears (chỉ sói)
     P(4, 5, 8, 8, fur);                              // head
     const hairCol = '#3a3150';
     if (XDH.avatar.hair === 'xu') { P(4, 4, 1, 1, hairCol); P(6, 3, 1, 2, hairCol); P(8, 4, 1, 1, hairCol); P(10, 4, 1, 1, hairCol); }
     else if (XDH.avatar.hair === 'muot') { P(4, 4, 8, 1, hairCol); }
     else { P(7, 1, 2, 4, '#ff5dd2'); }               // mohawk
+    if (human) P(4, 4, 8, 1, hairCol);               // người: thêm mái tóc
     if (XDH.avatar.face === 'ngau') { P(4, 7, 8, 2, '#151520'); P(5, 7, 2, 1, '#3fd4d4'); P(9, 7, 2, 1, '#3fd4d4'); }
-    else if (XDH.avatar.face === 'lem') { P(5, 7, 2, 2, '#f9e076'); P(9, 8, 2, 1, '#f9e076'); }
-    else { P(5, 7, 2, 2, '#f9e076'); P(9, 7, 2, 2, '#f9e076'); }
-    P(7, 10, 2, 2, '#5d6275');                       // snout
+    else if (XDH.avatar.face === 'lem') { P(5, 7, 2, 2, human ? '#221a12' : '#f9e076'); P(9, 8, 2, 1, human ? '#221a12' : '#f9e076'); }
+    else { P(5, 7, 2, 2, human ? '#221a12' : '#f9e076'); P(9, 7, 2, 2, human ? '#221a12' : '#f9e076'); }
+    if (human) P(7, 11, 2, 1, '#8a4a3b');            // miệng người
+    else P(7, 10, 2, 2, '#5d6275');                  // mõm sói
     const o = XDH.run.outfit;
     P(4, 13, 8, 3, o.shirt === 'grab' ? '#2fae5a' : o.shirt === 'sinhvien' ? '#3f6fe0' : '#e2718f');
     if (o.hat === 'baohiem') { P(3, 4, 10, 2, '#2fae5a'); P(4, 3, 8, 1, '#2fae5a'); }
@@ -186,6 +212,51 @@ XDH.UI = (function () {
   }
 
   function openWardrobe() { buildAvatarMenu(); $('ov-wardrobe').classList.add('show'); }
+
+  // ---- 🚔 v0.9: màn kết "về đồn" (Lucas 2026-08-12) — cảnh trong đồn vẽ 8-bit bằng code ----
+  function drawStation() {
+    const c = $('station-scene'); if (!c) return;
+    const g = c.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    const P = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x, y, w, h); };
+    P(0, 0, 240, 110, '#2b2438');                                  // tường
+    P(0, 110, 240, 40, '#3a3150');                                 // sàn
+    for (let x = 0; x < 240; x += 24) P(x, 108, 22, 2, '#241e35'); // chân tường
+    P(16, 18, 56, 40, '#0e1a2e');                                  // cửa sổ đêm
+    for (let i = 0; i < 4; i++) P(22 + i * 13, 18, 3, 40, '#8a8fa8'); // song sắt
+    P(14, 14, 60, 4, '#4a3f6b'); P(14, 58, 60, 4, '#4a3f6b');      // khung cửa sổ
+    P(96, 8, 74, 16, '#1d3a8f');                                   // bảng "CÔNG AN"
+    g.fillStyle = '#ffdf3a'; g.font = 'bold 10px monospace'; g.textAlign = 'center';
+    g.fillText('CÔNG AN', 133, 20);
+    P(140, 70, 76, 34, '#6b4a2b'); P(138, 66, 80, 6, '#8a6a4b');   // bàn làm việc
+    P(150, 34, 20, 20, '#eab98a');                                 // công an: mặt
+    P(148, 30, 24, 6, '#1d3a8f'); P(152, 26, 16, 5, '#1d3a8f');    // mũ kê pi
+    P(154, 40, 3, 3, '#221a12'); P(163, 40, 3, 3, '#221a12');      // mắt nghiêm
+    P(153, 48, 14, 2, '#221a12');                                  // miệng thẳng
+    P(146, 54, 28, 14, '#2b4fd9');                                 // áo xanh
+    P(158, 57, 4, 4, '#ffdf3a');                                   // phù hiệu
+    P(44, 62, 40, 10, '#4a3f6b');                                  // ghế sói
+    P(50, 30, 26, 26, '#8a8fa8');                                  // sói: đầu cúi
+    P(50, 26, 7, 8, '#8a8fa8'); P(69, 26, 7, 8, '#8a8fa8');        // tai CỤP
+    P(56, 40, 4, 3, '#221a12'); P(66, 40, 4, 3, '#221a12');        // mắt buồn
+    P(58, 49, 10, 4, '#5d6275');                                   // mõm xị
+    P(48, 56, 30, 16, '#e2718f');                                  // áo
+    P(30, 74, 3, 10, '#8a8fa8'); P(93, 74, 3, 10, '#8a8fa8');      // còng số 8 hai bên (gợi ý)
+    P(28, 80, 70, 3, '#5d6275');
+    g.fillStyle = '#ffe9a8'; g.beginPath();                        // vệt đèn thẩm vấn
+    g.moveTo(60, 0); g.lineTo(84, 0); g.lineTo(100, 30); g.lineTo(44, 30); g.closePath();
+    g.globalAlpha = 0.10; g.fill(); g.globalAlpha = 1;
+  }
+  function showStation() {
+    drawStation();
+    const en = XDH.lang === 'en';
+    $('station-title').textContent = en ? '🚔 CAUGHT — TAKEN TO THE STATION' : '🚔 BỊ TÓM VỀ ĐỒN';
+    $('station-line').textContent = en
+      ? 'A night at the station — tonight is a total loss…'
+      : 'Ngồi đồn tới sáng — đêm nay mất trắng…';
+    $('btn-station-next').textContent = en ? 'See tonight 📋' : 'Xem lại đêm nay 📋';
+    $('ov-station').classList.add('show');
+  }
 
   // ---- §2 economy: shop at the bánh mì cart · kill loot · night flow ----
   function openShop() {
@@ -215,6 +286,24 @@ XDH.UI = (function () {
         XDH.KetTien.showBoard(true);
       };
       box.appendChild(m);
+    }
+
+    // v1.0 — đường giải 💰: nhận nhiệm vụ rồi thì xe bánh mì có bán GẬY SELFIE (đáp án 3, mục 3)
+    if (XDH.Mission && XDH.Mission.canBuyStick()) {
+      const price = XDH.MISSION_CFG.STICK_PRICE;
+      const s = document.createElement('button');
+      s.className = 'shop-item';
+      s.style.borderColor = r.money >= price ? 'var(--ok)' : 'var(--line)';
+      s.innerHTML = `<b>🤳 ${en ? 'Selfie stick (for Ly)' : 'Gậy selfie (cho Ly)'}</b> <span class="price">${price}k</span>` +
+        `<span class="desc">${en ? 'Brand new, still in the box — exactly what Ly needs.' : 'Mới tinh còn trong hộp — đúng thứ Ly đang cần.'}</span>`;
+      s.disabled = r.money < price;
+      s.onclick = () => {
+        if (!XDH.Mission.buyStick()) return;
+        XDH.Blips.jingle('win');
+        refreshHud();
+        openShop();
+      };
+      box.appendChild(s);
     }
 
     XDH.SHOP.forEach(item => {
@@ -288,8 +377,21 @@ XDH.UI = (function () {
   }
 
   function dawnFail() {
+    if (XDH.isKetTien()) { XDH.Blips.jingle('lose'); XDH.KetTien.showBoard(false); return; }   // hoàng hôn = hết ngày, chưa được ăn
+    // v1.0 §4 — hai lối chơi: đêm 0 CÚ CẮN không còn là thua.
+    // · 0 cắn + nhiệm vụ Ly xong → màn kết SÓI HIỀN (lưới đỡ — thường đã hiện ngay lúc trả đồ).
+    // · 0 cắn + nhiệm vụ chưa xong → đêm trôi bình thường, qua đêm mới.
+    // · Có cắn mà thiếu chỉ tiêu → thua như bản cũ (lối Sói Dữ không đổi một chữ).
+    const r = XDH.run;
+    if (r.enteredTonight === 0) {
+      if (XDH.Mission && XDH.Mission.hienEligible()) { XDH.Mission.showHien(); return; }
+      toast(XDH.lang === 'en'
+        ? '🌅 Sunrise — you bit nobody tonight. The block sleeps in peace. A new night begins…'
+        : '🌅 Trời sáng — đêm nay bạn không cắn ai. Xóm vẫn bình yên. Một đêm mới bắt đầu…', 5200);
+      newNight(r.night + 1);
+      return;
+    }
     XDH.Blips.jingle('lose');
-    if (XDH.isKetTien()) { XDH.KetTien.showBoard(false); return; }   // hoàng hôn = hết ngày, chưa được ăn
     showScore(false);
   }
 
@@ -340,6 +442,7 @@ XDH.UI = (function () {
     $('tut-hint').style.display = 'none';
     $('btn-tut-skip').style.display = 'none';
     $('btn-kill').style.display = 'none';
+    $('btn-give-stick').style.display = 'none';   // v1.0: convo.js bật lại nếu có gậy + đang gặp Ly
     $('convo').classList.add('show');
     $('stt-hint').textContent = sttHintText();   // v0.6.1 G1: trong Zalo thì nói thẳng là mic không chạy
     $('convo-lang').textContent = XDH.lang === 'en' ? '🇬🇧 EN' : '🇻🇳 VN';
@@ -644,7 +747,9 @@ XDH.UI = (function () {
     const r = XDH.run;
     const s = r.score;
     $('score-title').textContent = won
-      ? '🌕 THẮNG CẢ 3 ĐÊM! Ma sói lịch sự nhất xóm!'
+      ? (r.hienWin
+        ? (XDH.lang === 'en' ? '😇 GENTLE WOLF — adopted by the block!' : '😇 SÓI HIỀN — xóm nhận nuôi, không tốn một cú cắn!')
+        : '🌕 THẮNG CẢ 3 ĐÊM! Ma sói lịch sự nhất xóm!')
       : r.policeCaught
         ? '🚔 BỊ CÔNG AN TÓM giữa xóm — đêm nay coi như xong…'
         : `🌅 Trời sáng — đêm ${r.night} cần ${r.night} nhà, mới vào được ${r.enteredTonight}…`;
@@ -695,6 +800,68 @@ XDH.UI = (function () {
       `<span style="display:block;font-size:17px;color:var(--ink);font-style:italic;margin-bottom:10px">${c.hook}</span>` +
       c.steps.map(s => `<span style="display:block;font-size:16px;color:var(--ink);margin:5px 0">· ${s}</span>`).join('');
     $('btn-start').textContent = en ? 'START ▶' : 'BẮT ĐẦU ▶';
+    if ($('title-sub')) $('title-sub').textContent = en
+      ? 'Lie well enough to get INVITED in'
+      : 'Nói dối cho hay — để được mời vào nhà';
+  }
+
+  // ---- v0.9 THÍ NGHIỆM: truyện mở 4 khung (chờ Lucas chốt Q1-Q7 trong plan-v0.9-mo-dau.md) ----
+  // Nguyên tắc nghiên cứu: ngắn (~15s) · bấm-để-qua · Bỏ qua luôn có · CHỈ hiện lần đầu.
+  // Trả lời đúng câu "vì sao tôi phải gõ cửa?". Xem lại: thêm ?story=1 vào link.
+  const STORY = {
+    ma_soi: {
+      vi: [
+        { bg: 'assets/art/bg/sky.png', ico: '🌕', cap: 'Trăng tròn rồi. Và bạn… vừa mọc đuôi.' },
+        { bg: '', ico: '🐺', cap: 'Sói thì đói cồn cào. Mà tủ lạnh nhà sói thì trống trơn.' },
+        { bg: 'assets/art/bg/house0.png', ico: '🚪', cap: 'Khổ nỗi luật xóm này lạ lắm: KHÔNG được MỜI thì sói không bước qua cửa được.' },
+        { bg: '', ico: '🎽', cap: 'Vậy thì… mặc đồ giả dạng, gõ cửa, và NÓI cho thiệt hay. Đêm nay phải vào được nhà!' }
+      ],
+      en: [
+        { bg: 'assets/art/bg/sky.png', ico: '🌕', cap: 'Full moon. And you… just grew a tail.' },
+        { bg: '', ico: '🐺', cap: 'A wolf gets hungry. And your fridge is completely empty.' },
+        { bg: 'assets/art/bg/house0.png', ico: '🚪', cap: 'One weird rule in this neighborhood: no INVITE, no entry.' },
+        { bg: '', ico: '🎽', cap: 'So: dress up, knock, and TALK your way in. Tonight you must get inside!' }
+      ]
+    },
+    ket_tien: {
+      vi: [
+        { bg: 'assets/art/bg/sky.png', ico: '☀️', cap: 'Sáng sớm. Ví của bạn: đúng 0 đồng.' },
+        { bg: '', ico: '🙇', cap: 'Bụng thì đói. Điện thoại hết pin. Người quen: không có ai.' },
+        { bg: 'assets/art/bg/house0.png', ico: '🚪', cap: 'Chỉ còn một đường: đi gõ cửa từng nhà trong xóm.' },
+        { bg: '', ico: '🎙️', cap: 'Kể chuyện cho khéo để người ta chịu giúp — đủ tiền một bữa ăn là thắng.' }
+      ],
+      en: [
+        { bg: 'assets/art/bg/sky.png', ico: '☀️', cap: 'Early morning. Your wallet: exactly zero.' },
+        { bg: '', ico: '🙇', cap: 'You are hungry, your phone is dead, and you know nobody here.' },
+        { bg: 'assets/art/bg/house0.png', ico: '🚪', cap: 'One way out: knock on every door in this neighborhood.' },
+        { bg: '', ico: '🎙️', cap: 'Tell your story well enough that people help — earn one meal and you win.' }
+      ]
+    }
+  };
+  function showStory(mode, done) {
+    const en = XDH.lang === 'en';
+    const slides = (STORY[mode] || STORY.ma_soi)[en ? 'en' : 'vi'];
+    const ov = $('ov-story');
+    let i = 0;
+    $('story-skip').textContent = en ? '⏭️ Skip' : '⏭️ Bỏ qua';
+    $('story-hint').textContent = en ? 'click to continue ▶' : 'bấm để tiếp ▶';
+    const draw = () => {
+      const s = slides[i];
+      $('story-stage').style.backgroundImage = s.bg ? `url(${s.bg})` : 'none';
+      $('story-ico').textContent = s.ico;
+      $('story-cap').textContent = s.cap;
+      $('story-dots').innerHTML = slides.map((_, k) => `<span${k <= i ? ' class="on"' : ''}></span>`).join('');
+    };
+    const finish = () => {
+      ov.classList.remove('show');
+      ov.onclick = null;
+      localStorage.setItem('xdh_intro_seen', '1');
+      done();
+    };
+    ov.onclick = () => { i++; if (i < slides.length) draw(); else finish(); };
+    $('story-skip').onclick = (e) => { e.stopPropagation(); finish(); };
+    draw();
+    ov.classList.add('show');
   }
 
   function wire() {
@@ -707,7 +874,11 @@ XDH.UI = (function () {
       XDH.setLang(l);
       localStorage.setItem('xdh_lang_picked', '1');
       $('ov-lang').classList.remove('show');
+      XDH.Music.play('nen');           // cú bấm đầu tiên → được phép phát nhạc màn tựa
     };
+    // v0.9 nút 🔊/🔇 — nhớ lựa chọn qua các lần chơi
+    XDH.Music.setMuted(XDH.Music.isMuted());
+    $('btn-mute').onclick = () => XDH.Music.toggle();
     $('pick-vi').onclick = () => pickLang('vi');
     $('pick-en').onclick = () => pickLang('en');
     if (!localStorage.getItem('xdh_lang_picked')) $('ov-lang').classList.add('show');
@@ -728,11 +899,22 @@ XDH.UI = (function () {
       };
     });
 
+    // v0.9 THÍ NGHIỆM: ô mật khẩu đang TẮT nên ẨN khỏi màn đầu (bật lại bằng ?pass=1)
+    if (!/[?&]pass=1/.test(location.search)) $('pass-in').style.display = 'none';
+
     $('btn-start').onclick = () => {
+      XDH.Blips.unlock();                       // user gesture unlocks WebAudio — phải nằm ở cú bấm
+      XDH.Music.play('nen');                    // ai đã chọn ngôn ngữ từ lần trước thì nhạc vào đây
+      const force = /[?&]story=1/.test(location.search);
+      if (force || !localStorage.getItem('xdh_intro_seen')) {
+        $('ov-intro').classList.remove('show');
+        showStory(pickedMode, reallyStart);      // lần đầu: kể VÌ SAO phải gõ cửa, rồi mới vào xóm
+      } else reallyStart();
+    };
+    const reallyStart = () => {
       const pass = $('pass-in').value.trim();
       newRun(pickedMode);                       // chốt chế độ + bốc bữa ăn nếu là Kẹt Tiền
       XDH.run.pass = pass;
-      XDH.Blips.unlock();                       // user gesture unlocks WebAudio
       if (XDH.restartScene) XDH.restartScene();  // dựng lại xóm theo chế độ vừa chọn
       $('ov-intro').classList.remove('show');
       // Lucas chốt phương án A (2026-08-09): người MỚI vào thẳng hướng dẫn 4 bước ở nhà Bà Năm,
@@ -766,9 +948,16 @@ XDH.UI = (function () {
         : '🎙️ Giữ nút mic để nói — hoặc gõ chữ cũng được.';
       $('convo-lang').textContent = en ? '🇬🇧 EN' : '🇻🇳 VN';   // G2: nút đổi ngôn ngữ trong hội thoại
       applyWebviewWarn();                                        // G1: dải băng đổi theo ngôn ngữ
+      // v0.9 THÍ NGHIỆM: nút chế độ → THẺ có hình + 1 dòng nói rõ chơi để làm gì
+      const MODE_DESC = {
+        ma_soi:   { vi: 'Lừa để được MỜI vào nhà',  en: 'Talk your way to an INVITE' },
+        ket_tien: { vi: 'Xin đủ tiền một bữa ăn',   en: 'Beg your way to one meal' }
+      };
       document.querySelectorAll('#mode-pick button').forEach(b => {
         const m = XDH.MODES[b.dataset.m];
-        b.innerHTML = `${m.emoji} <b>${en ? m.name_en : m.name}</b>`;
+        const d = MODE_DESC[b.dataset.m];
+        b.innerHTML = `<span class="mc-ico">${m.emoji}</span><b>${en ? m.name_en : m.name}</b>` +
+          (d ? `<small>${en ? d.en : d.vi}</small>` : '');
       });
       $('text-in').placeholder = en ? '…or type your lie and press Enter' : '…hoặc gõ lời nói dối của bạn rồi Enter';
       $('btn-leave').textContent = en ? '🚪 Walk away' : '🚪 Rút lui';
@@ -779,26 +968,25 @@ XDH.UI = (function () {
     $('lang-en').onclick = () => XDH.setLang('en');
     XDH.applyLang();
 
-    // Avatar tabs + dice
-    document.querySelectorAll('#av-tabs button').forEach(b => {
-      b.onclick = () => { avTab = b.dataset.t; buildAvatarMenu(); };
-    });
+    // v0.9: xúc xắc chỉ bốc ĐỒ (3 tab Mặt/Tóc/Da đã bỏ theo Lucas 08-12), vẫn chỉ trong món ĐÃ MỞ
     $('btn-av-dice').onclick = () => {
       const rnd = (arr) => arr[Math.floor(Math.random() * arr.length)].id;
-      XDH.avatar.face = rnd(XDH.AVATAR.face);
-      XDH.avatar.hair = rnd(XDH.AVATAR.hair);
-      XDH.avatar.skin = rnd(XDH.AVATAR.skin);
-      // v0.6 F3.1: xúc xắc chỉ được bốc trong những món ĐÃ MỞ
       XDH.SLOTS.forEach(slot => {
         XDH.run.outfit[slot] = rnd(XDH.WARDROBE[slot].filter(o => XDH.isUnlocked(slot, o.id)));
       });
-      XDH.saveAvatar();
       refreshHud();
+      if (XDH.applyAvatar) XDH.applyAvatar();
       buildAvatarMenu();
+      XDH.Blips.jingle('equip');
     };
+    // xoay gương 4 hướng
+    $('mirror-left').onclick = () => { mirrorDir = (mirrorDir + 3) % 4; drawMirror(); };
+    $('mirror-right').onclick = () => { mirrorDir = (mirrorDir + 1) % 4; drawMirror(); };
     $('btn-wardrobe').onclick = () => { if (!XDH.Convo.isActive()) openWardrobe(); };
     $('btn-ward-done').onclick = () => $('ov-wardrobe').classList.remove('show');
     $('btn-shop-done').onclick = () => $('ov-shop').classList.remove('show');
+    // 🚔 v0.9: màn "về đồn" → bấm mới qua bảng tổng kết thua đêm
+    $('btn-station-next').onclick = () => { $('ov-station').classList.remove('show'); showScore(false); };
     $('btn-again').onclick = () => { $('ov-score').classList.remove('show'); newRun(); };
     $('btn-leave').onclick = () => (XDH.Tut && XDH.Tut.isActive()) ? XDH.Tut.end() : XDH.Convo.leave();
     $('btn-tut-skip').onclick = () => XDH.Tut.end();
@@ -889,7 +1077,7 @@ XDH.UI = (function () {
   document.addEventListener('DOMContentLoaded', () => { newRun(); wire(); });
 
   return {
-    newRun, newNight, refreshHud, toast, openWardrobe, openShop,
+    newRun, newNight, refreshHud, toast, openWardrobe, openShop, showStation,
     afterHouseWon, showNightDone, dawnFail, renderConvoItems, showHint, playKillScene,
     openConvo, closeConvo, setMeters, setTimer, echoPlayer,
     typeNpcLine, setBusy, endConvo, showScore, debugTurn,

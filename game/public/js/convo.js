@@ -249,6 +249,9 @@ XDH.Convo = (function () {
       active.resumed = true;
     }
     XDH.UI.openConvo(npc, active.state);
+    // v1.0 C4 — có gậy + đứng trước cửa Ly → nút 🤳 ĐƯA GẬY SELFIE hiện ra
+    document.getElementById('btn-give-stick').style.display =
+      (XDH.Mission && XDH.Mission.canGive(npc.id)) ? 'block' : 'none';
     if (!saved) XDH.UI.floatNums(startPops);   // v0.6 F1: quay lại giữa đêm thì không cộng lại → không hiện lại
     tickTimer();
     active.timerId = setInterval(tickTimer, 1000);
@@ -311,7 +314,9 @@ XDH.Convo = (function () {
           ...(active.gossip.length ? { gossip: active.gossip.slice(0, 8) } : {}),
           // v0.4 T6: nhà cũ — trí nhớ đêm trước đi kèm mọi lượt (kể cả greet)
           ...(active.nightMemory ? { nightMemory: active.nightMemory, pastClaim: active.pastClaim } : {}),
-          ...modeContext()          // v0.3: mode + giờ (B6) + số nhà đã gõ (B5) + ngày (B8)
+          ...modeContext(),         // v0.3: mode + giờ (B6) + số nhà đã gõ (B5) + ngày (B8)
+          // v1.0 hệ nhiệm vụ: chỉ mode ma sói mới gửi (missions.js tự gác cửa)
+          ...(XDH.Mission ? XDH.Mission.convoContext() : {})
         })
       });
       res = await r.json();
@@ -415,6 +420,12 @@ XDH.Convo = (function () {
     if (!active) return;                       // rút lui / hết giờ ngay trong lúc gõ chữ
     if (active.pendingMeme) { XDH.UI.showMeme(active.pendingMeme); active.pendingMeme = null; }
     XDH.UI.setConvoState(ai.convo_state);
+    // v1.0 — tín hiệu nhiệm vụ từ AI: CODE trong missions.js xét ngưỡng quan tâm + nhịp manh mối
+    // rồi mới cho máy trạng thái nhích (AI không cầm game). Đặt SAU khi gõ xong chữ → popup 📱
+    // hiện đúng lúc người chơi vừa đọc xong câu "rõ chuyện".
+    if (!isGreeting && ai.mission_signal && XDH.Mission) {
+      XDH.Mission.onSignal(ai.mission_signal, active.npc.id, st, { turns: active.turns, houseId: active.houseId });
+    }
     // v0.6 F5.1 — bong bóng 💭 RÒ RỈ Ý ĐỊNH trước 1 lượt. CODE quyết, không nhờ AI.
     const leak = leakThought();
     if (leak) XDH.UI.setThought(leak);
@@ -512,7 +523,9 @@ XDH.Convo = (function () {
       XDH.UI.setBusy(false);
       XDH.UI.refreshHud();
       if (won) XDH.UI.afterHouseWon();   // §2: loot → night-quota check → next night / win
-      else if (police && XDH.startPoliceChase) XDH.startPoliceChase(houseId);   // 🚓 chạy 10 giây!
+      // 🚓 v0.9 (Lucas 2026-08-12): ma sói THUA NHÀ NÀO là công an tới nhà đó — cửa vừa đóng
+      // là xe ò í e vào, rượt 20 giây. (Kẹt Tiền không bị: xin không được đâu phải tội.)
+      else if (!XDH.isKetTien() && XDH.startPoliceChase) XDH.startPoliceChase(houseId);
       else if (XDH.curtainPeek) XDH.curtainPeek(houseId);   // §2 fail visual: eyes behind the curtain
       if (regret) XDH.UI.showRegret(regret);                // v0.6 F5.2: hiện cùng lúc "mắt sau rèm"
     });
@@ -597,6 +610,44 @@ XDH.Convo = (function () {
       : '🚪✨ "MỜI VÀO!" — bạn lịch sự lau chân rồi bước vào. Một con ma sói có giáo dục.');
   }
 
+  // ===== v1.0 C4 — nút 🤳 ĐƯA GẬY SELFIE: kịch bản thuần code (0đ, chạy được cả khi não chết) =====
+  // Trả đồ → cảnh vui mừng (khuôn cảm xúc phan_khich sẵn có) → CODE trả +50k + tin (đáp án 7).
+  async function giveStick() {
+    if (!active || busy || !XDH.Mission || !XDH.Mission.canGive(active.npc.id)) return;
+    busy = true; XDH.UI.setBusy(true);
+    document.getElementById('btn-give-stick').style.display = 'none';
+    const en = XDH.lang === 'en';
+    XDH.UI.echoPlayer(en ? '(hands Ly a brand-new selfie stick) 🤳' : '(lấy cây gậy selfie mới tinh ra đưa cho Ly) 🤳');
+    active.history.push({ role: 'player', text: '(Người lạ đưa cho Ly một cây gậy selfie mới tinh.)' });
+    const line = XDH.Mission.thankLine();
+    active.history.push({ role: 'npc', text: line, brain: 'kịch bản', verdict: null });
+    await XDH.UI.typeNpcLine(line, 'phan_khich', active.npc);
+    if (!active) return;
+    XDH.Mission.reward(active.state);          // máy trạng thái → xong; số thưởng nằm ở config
+    XDH.Blips.jingle('win');
+    XDH.UI.setMeters(active.state);
+    XDH.UI.setDoorStage(doorStage(active.state, diffOf(active.npc)));
+    // 😇 Sói Hiền: 0 cú cắn cả ván + nhiệm vụ xong → màn kết riêng, hiện ngay (khỏi chờ bình minh;
+    // bình minh vẫn là lưới đỡ trong ui.js dawnFail nếu sau này muốn đổi nhịp)
+    if (XDH.Mission.hienEligible()) {
+      XDH.UI.setBusy(true);                    // giữ khoá ô nhập trong lúc chờ màn kết
+      setTimeout(() => {
+        if (!active) return;
+        clearInterval(active.timerId);
+        XDH.run.transcripts.push({
+          npc: active.npc.name, won: true, elapsed: Math.round((Date.now() - active.startedAt) / 1000),
+          outfit: XDH.outfitLabel(XDH.run.outfit), lines: active.history.slice()
+        });
+        active = null; busy = false;
+        XDH.UI.setBusy(false);
+        XDH.UI.closeConvo();
+        XDH.Mission.showHien();
+      }, 2200);
+      return;
+    }
+    busy = false; XDH.UI.setBusy(false);
+  }
+
   // §2 powerups — bought at the cart, used mid-conversation. All effects code-owned.
   async function useItem(id) {
     if (!active || busy) return;
@@ -669,5 +720,6 @@ XDH.Convo = (function () {
   }
 
   return { start, playerSays, leave, canKnock, useItem, kill, isActive: () => !!active,
+           giveStick,               // v1.0 hệ nhiệm vụ
            compressNightMemory };   // v0.4 T5
 })();

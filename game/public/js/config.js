@@ -41,7 +41,12 @@ XDH.POP_EVENT = {
   memory_bad:    { vi: '🌙 Nhà này nhớ tội cũ',     en: '🌙 They remember your mess',  cls: 'warn' },
   house_seen:    { vi: '👀 Xóm đã thấy mặt bạn',    en: '👀 The block has seen you',   cls: 'warn' },
   final_fail:    { vi: '❓ Trả lời hụt câu hỏi chốt', en: '❓ Fumbled the final question', cls: 'bad' },
-  invite_nudge:  { vi: '🚪 Họ đang muốn mời',       en: '🚪 They want to invite you',  cls: 'good' }
+  invite_nudge:  { vi: '🚪 Họ đang muốn mời',       en: '🚪 They want to invite you',  cls: 'good' },
+  // v1.0 hệ nhiệm vụ (plan-v1.0 §C2): toast bay khi nhận việc / có đồ / trả đồ / việc vặt
+  mission_new:   { vi: '📱 Nhiệm vụ mới!',           en: '📱 New mission!',             cls: 'hit'  },
+  mission_item:  { vi: '🤳 Có gậy selfie rồi!',      en: '🤳 Got the selfie stick!',    cls: 'hit'  },
+  mission_done:  { vi: '💖 Trả đồ xong — Ly vui xỉu', en: '💖 Mission done — Ly is thrilled', cls: 'hit' },
+  chore_pay:     { vi: '🧹 Công việc vặt',           en: '🧹 Odd-job pay',              cls: 'good' }
 };
 
 // ====== v0.6.1 G1 — DÒ TRÌNH DUYỆT NHÚNG (Zalo · Facebook · Instagram · TikTok…) ======
@@ -234,11 +239,19 @@ XDH.WARDROBE = {
     { id: 'tinnhan', label: 'Ảnh tin nhắn in ra',desc: 'tờ giấy in ảnh chụp màn hình một tin nhắn hẹn trước' }
   ]
 };
-XDH.WARDROBE_LOCK = { NIGHT1_FREE: 1, LOOT_MONEY_IF_FULL_K: 25 };
+// Lucas chốt Q5=B (2026-08-12): tủ đồ MỞ HẾT từ đầu, TRỪ 3 món "giấy tờ" xịn — mấy món đó
+// vẫn phải loot từ nhà (giữ lại chút cảm giác sưu tầm của v0.6 F3.1). NIGHT1_FREE=0 vì
+// giờ ai cũng khởi đầu với đầy đồ, món giấy tờ phải TỰ kiếm. Hết đồ để mở → loot đền tiền.
+XDH.WARDROBE_LOCK = { ALL_OPEN: true, LOOT_ONLY: ['thesv', 'donhang', 'tinnhan'], NIGHT1_FREE: 0, LOOT_MONEY_IF_FULL_K: 25 };
 XDH.SLOTS = ['shirt', 'hat', 'item'];
+
+// 🚓 Mini-game "bị công an dí" (Lucas 2026-08-12): thua nhà nào là xe ò í e tới nhà đó,
+// rượt 20 giây, TỐC ĐỘ CÔNG AN = TỐC ĐỘ NGƯỜI CHƠI (bẻ cua mà sống). Núm chỉnh nằm đây.
+XDH.CHASE = { MS: 20000, COP_SPEED: 220, PLAYER_SPEED: 220 };
 
 XDH.isUnlocked = function (slot, id) {
   if (id === 'none') return true;
+  if (XDH.WARDROBE_LOCK.ALL_OPEN && !XDH.WARDROBE_LOCK.LOOT_ONLY.includes(id)) return true;
   const u = XDH.run && XDH.run.unlocked;
   return !!(u && u[slot] && u[slot].includes(id));
 };
@@ -349,6 +362,43 @@ XDH.REGRET = {
       vi: 'Tự tin lên xíu coi… run run vậy ai mà vibe nổi.',
       en: "Bring some confidence… all that nervousness, no vibe at all." }
   ]
+};
+
+// ====== v1.0 — HỆ NHIỆM VỤ (plan-v1.0-nhiem-vu.md) ======
+// AI chỉ PHÁT TÍN HIỆU (mission_signal); CODE ở đây + missions.js cầm toàn bộ luật, tiền, đồ.
+// Mọi con số cân bằng của hệ nhiệm vụ nằm Ở ĐÂY, một chỗ duy nhất.
+XDH.MISSION_CFG = {
+  INTEREST_GATE: 60,       // Ly chỉ khai manh mối khi hứng thú >= mức này (chốt chặn 2 lớp với prompt)
+  CLUE_GAP_TURNS: 2,       // mỗi manh mối cách nhau >= 2 lượt nói
+  STICK_PRICE: 80,         // 🤳 gậy selfie ở xe bánh mì
+  REWARD_K: 50,            // thưởng khi trả đồ cho Ly (đáp án 7)
+  REWARD_TRUST: 12,        // + tin của Ly khi trả đồ
+  TI_LEND_TRUST: 55,       // Tí cho mượn gậy khi tin >= ngưỡng này (CODE xét, AI chỉ phát tín hiệu)
+  CHORE: { MIN_K: 20, MAX_K: 40, PER_HOUSE: 2, NIGHT_CAP_K: 120 }  // việc vặt ma sói (mục 3 + rủi ro cân bằng)
+};
+// Máy trạng thái: chua_biet → da_goi (đã lộ manh mối) → da_mo_popup (đã hỏi, kể cả bị từ chối)
+// → da_nhan (thế giới đổi) → co_do (có gậy trong túi) → xong (đã trả + nhận thưởng).
+XDH.MISSION_STAGES = ['chua_biet', 'da_goi', 'da_mo_popup', 'da_nhan', 'co_do', 'xong'];
+// 🗑️ 3 thùng rác (chỉ mode ma sói, chỉ hiện SAU khi nhận nhiệm vụ — "nhận thì thế giới đổi").
+// Mỗi thùng lục 1 lần/đêm. Bảng loot cộng dồn đúng 100% — hệ rác dùng lại được cho nhiệm vụ sau.
+XDH.TRASH = {
+  BINS: [[420, 560], [860, 560], [1330, 560]],
+  LOOT: [
+    { p: 50, type: 'junk' },
+    { p: 30, type: 'coins', min: 5, max: 10 },
+    { p: 15, type: 'food' },
+    { p: 5,  type: 'stick' }
+  ],
+  JUNK: {
+    vi: ['một chiếc dép trái — chỉ MỘT chiếc', 'tờ vé số… của tuần trước', 'con gấu bông cụt một tai',
+         'cuốn lịch năm ngoái còn mới tinh', 'cái remote tivi không biết của nhà ai'],
+    en: ['one single flip-flop — just the ONE', "last week's lottery ticket", 'a teddy bear missing an ear',
+         "last year's calendar, barely used", 'a TV remote from who knows whose house']
+  },
+  FOOD: {
+    vi: ['ổ bánh mì còn nguyên bao — ai đó chê không ăn', 'hộp xôi mới ăn một góc', 'gói mì tôm còn hạn'],
+    en: ['a bánh mì still in its bag — someone was picky', 'a barely-touched box of sticky rice', 'unexpired instant noodles']
+  }
 };
 
 // §0 #8-9 avatar menu — face/hair/skin are COSMETIC ONLY (never sent to the AI);
