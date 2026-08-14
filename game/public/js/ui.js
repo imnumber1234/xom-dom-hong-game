@@ -1041,9 +1041,16 @@ XDH.UI = (function () {
       });
     };
     const stopMic = () => { if (XDH.Speech.isListening()) XDH.Speech.stop(); };
-    mic.addEventListener('pointerdown', startMic);
-    mic.addEventListener('pointerup', stopMic);
+    // 2026-08-14: điện thoại huỷ cú chạm (pointercancel) khi hiểu nhầm là vuốt → mic KẸT ở
+    // trạng thái đang nghe, không gửi được câu. Bắt thêm pointercancel + nhả tay ngoài nút.
+    mic.addEventListener('pointerdown', e => {
+      try { mic.setPointerCapture(e.pointerId); } catch (_) {}
+      startMic();
+    });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => mic.addEventListener(ev, stopMic));
     mic.addEventListener('pointerleave', stopMic);
+    mic.addEventListener('contextmenu', e => e.preventDefault());
+    window.addEventListener('pointerup', stopMic);
 
     // ?pacing=1 — Lucas feel-tests 3 presets (Q-F), pick is saved for every future session.
     if (/[?&]pacing=1/.test(location.search)) {

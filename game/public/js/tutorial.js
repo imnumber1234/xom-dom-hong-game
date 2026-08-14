@@ -367,8 +367,8 @@ XDH.Tut = (function () {
     XDH.UI.setBusy(false);
     XDH.UI.closeConvo();
     XDH.UI.toast(XDH.lang === 'en'
-      ? '👉 Now go knock on a real house. Walk up to a door and press E.'
-      : '👉 Giờ ra gõ nhà thật đi. Đi tới trước cửa rồi bấm E.', 5200);
+      ? '👉 Now go knock on a real house. Walk up to a door and tap the yellow bar.'
+      : '👉 Giờ ra gõ nhà thật đi. Đi tới trước cửa rồi chạm vào bảng vàng.', 5200);
   }
 
   // _gate lộ ra chỉ để bài kiểm gọi được luật từ khoá — game không dùng trực tiếp.

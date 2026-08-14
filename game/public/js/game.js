@@ -3,6 +3,9 @@
   // W = khung nhìn (đúng bằng màn hình). WW = XÓM THẬT, rộng gấp rưỡi — người chơi đi tới đâu
   // máy quay chạy theo tới đó, nên xóm có cảm giác ĐI ĐƯỢC chứ không phải một tấm ảnh đứng yên.
   const W = 960, H = 640, WW = 1440;
+  // 2026-08-14: máy cảm ứng không có phím E — bảng nhắc phải ghi "chạm", vì chính bảng đó
+  // chạm được (this.prompt bắt pointerdown). Máy tính giữ nguyên chữ E.
+  const KEY = (window.matchMedia && matchMedia('(pointer:coarse)').matches) ? 'chạm' : 'E';
   const HX = [230, 700, 1180];              // 3 nhà, trải đều theo chiều rộng mới
   const POS = { shed: [170, 500], cart: [1250, 500], hut: [700, 505] };
 
@@ -297,12 +300,37 @@
       // or they can never be typed into the chat <input> (W/A/S/D/E/Space were eaten).
       this.keys = this.input.keyboard.addKeys('W,A,S,D,UP,LEFT,DOWN,RIGHT,E,SPACE', false);
       this.touch = { up: 0, down: 0, left: 0, right: 0 };
+      // 2026-08-14 SỬA LỖI ĐIỆN THOẠI: trước đây chỉ nghe pointerup/pointerleave. Điện thoại
+      // huỷ cú chạm (pointercancel) khi hiểu nhầm là vuốt, hoặc nhả tay ngoài rìa nút → phím
+      // KẸT ở trạng thái đang giữ, sói tự đi mãi. Giờ: bắt thêm pointercancel + một cú nhả tay
+      // ở BẤT KỲ đâu trên màn hình cũng thả hết phím. Giữ nút cũng không bôi đen được nữa (CSS).
+      const release = (dir) => { this.touch[dir] = 0; };
       document.querySelectorAll('#touchpad button').forEach(b => {
         const dir = b.dataset.dir;
-        b.addEventListener('pointerdown', e => { e.preventDefault(); this.touch[dir] = 1; });
-        b.addEventListener('pointerup', () => this.touch[dir] = 0);
-        b.addEventListener('pointerleave', () => this.touch[dir] = 0);
+        b.addEventListener('pointerdown', e => {
+          e.preventDefault();
+          this.touch[dir] = 1;
+          try { b.setPointerCapture(e.pointerId); } catch (_) {}   // ngón trượt nhẹ vẫn giữ phím
+        });
+        ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev =>
+          b.addEventListener(ev, () => release(dir)));
+        b.addEventListener('contextmenu', e => e.preventDefault());   // chặn menu giữ-lâu
       });
+      // scene.restart() chạy lại create() → chỉ gắn tay nghe toàn màn hình ĐÚNG MỘT LẦN.
+      XDH._touchRelease = () => { this.touch.up = this.touch.down = this.touch.left = this.touch.right = 0; };
+      if (!window.__xdhTouchWired) {
+        window.__xdhTouchWired = 1;
+        const releaseAll = () => { XDH._touchRelease && XDH._touchRelease(); };
+        ['pointerup', 'pointercancel'].forEach(ev => window.addEventListener(ev, releaseAll));
+        document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
+      }
+
+      // Option B: lời nhắc xoay ngang — bấm ✕ là tắt hẳn cả phiên.
+      const rx = document.getElementById('rotate-hint-x');
+      if (rx && !rx.dataset.wired) {
+        rx.dataset.wired = '1';
+        rx.addEventListener('click', () => document.body.classList.add('hide-rotate-hint'));
+      }
 
       // interaction prompt
       this.prompt = this.add.text(0, 0, '', {
@@ -669,19 +697,19 @@
           this.nearTarget = h;
           promptText = st.done ? '✅ Nhà này hôm nay xong rồi'
             : st.won ? '✅ Đã được mời vào'
-              : '🚪 Gõ cửa (E)';
+              : '🚪 Gõ cửa (' + KEY + ')';
           tx = h.x; ty = h.y + 60;
           break;
         }
       }
       if (!this.nearTarget && Phaser.Math.Distance.Between(px, py, POS.shed[0], POS.shed[1]) < 80) {
         this.nearTarget = 'wardrobe';
-        promptText = '🎽 Mở tủ đồ (E)';
+        promptText = '🎽 Mở tủ đồ (' + KEY + ')';
         tx = POS.shed[0]; ty = POS.shed[1] - 60;
       }
       if (!this.nearTarget && Phaser.Math.Distance.Between(px, py, POS.cart[0], POS.cart[1]) < 80) {
         this.nearTarget = 'shop';
-        promptText = XDH.isKetTien() ? '🍜 Quán bánh mì — ăn (E)' : '🍞 Quầy bánh mì (E)';
+        promptText = XDH.isKetTien() ? '🍜 Quán bánh mì — ăn (' + KEY + ')' : '🍞 Quầy bánh mì (' + KEY + ')';
         tx = POS.cart[0]; ty = POS.cart[1] - 60;
       }
       // v1.0 🗑️ lục thùng rác — mỗi thùng 1 lần/đêm (missions.js cầm luật + bảng loot)
@@ -690,7 +718,7 @@
           if (Phaser.Math.Distance.Between(px, py, b.x, b.y) < 60) {
             this.nearTarget = { type: 'trash', id: b.id };
             promptText = XDH.run.trashLooted && XDH.run.trashLooted.includes(b.id)
-              ? '🗑️ Lục rồi — mai có rác mới' : '🗑️ Lục thùng rác (E)';
+              ? '🗑️ Lục rồi — mai có rác mới' : '🗑️ Lục thùng rác (' + KEY + ')';
             tx = b.x; ty = b.y - 44;
             break;
           }
@@ -698,7 +726,7 @@
       }
       if (!this.nearTarget && this.hasTut && Phaser.Math.Distance.Between(px, py, POS.hut[0], POS.hut[1]) < 80) {
         this.nearTarget = 'tutorial';
-        promptText = '👵 Học nghề với Bà Năm (E)';
+        promptText = '👵 Học nghề với Bà Năm (' + KEY + ')';
         tx = POS.hut[0]; ty = POS.hut[1] - 60;
       }
       if (this.nearTarget) {
