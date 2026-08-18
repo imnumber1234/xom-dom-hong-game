@@ -611,3 +611,41 @@ Chỉ tiêu cân bằng của plan (dễ ≈ 4 câu, khó ≈ 7 câu) — **đ�
 > Tóm tắt: MVP 3 nhà + mic tiếng Việt + 3 não AI (Haiku→DeepSeek→kịch bản) + luật trong code — LIVE.
 > Vấn đề v0.1 đã xử lý trong v0.2: Anthropic 403 (→ AI Gateway, xong 08-06), câu rơi kịch bản (→ log não + timeout 6s/30s).
 > Còn treo từ v0.1: chân dung nano-banana (pending), iPhone/Zalo webview mic (dặn mở Chrome/Safari), GAME_PASS đang tắt (preview mở tự do).
+
+---
+
+## 2026-08-16 — v1.1 HỎI DỒN + v1.2 TÚI ĐỒ · MÁY QUAY SỐ · 2 MÓN MỚI → ĐÃ LÊN LINK CHÍNH
+
+**Link chính:** https://xom-dom-hong.pages.dev · **Bản thử đồ:** https://xom-dom-hong.pages.dev/?test=1
+(có sẵn 500k) · **Preview riêng vòng này:** https://hoi-doi.xom-dom-hong.pages.dev
+
+### Lucas chốt
+1 Yes (câu thúc do game tự viết, 0 đồng) · 2 Yes (nấc sau ngắn hơn nấc trước) · 3 Yes (im lặng mất kiên nhẫn) ·
+4-6 lấy mặc định đã đề xuất (im hết 3 nấc = đóng cửa · chạy cả 2 chế độ · lên preview trước rồi link chính) ·
+7 câu của v1.2 lấy mặc định đã đề xuất.
+
+### Làm được gì
+| Việc | Chi tiết |
+|---|---|
+| ⏳ Hàng xóm hỏi dồn | 3 nấc 18-30s → 12-18s → 10-12s, mỗi lần thúc **-4 kiên nhẫn**, im hết 3 nấc + 10 giây = **cửa đóng** (sổ ghi lý do `silence`, không có công an). Gõ một phím / giữ mic = đồng hồ đếm lại. Trả lời = về nấc 1. Màn dẫn dắt người mới KHÔNG bị thúc. |
+| 🎒 Túi đồ nghề | Nút 🎒 trong cuộc + trên HUD → bảng ô vuông (biểu tượng to, tên, "món này làm gì", số lượng) → bấm một ô hiện hộp **Dùng ngay / Huỷ**. Gậy selfie nhiệm vụ nằm chung túi nhưng chỉ đưa được trước cửa Ly. |
+| ✨ Nâng tầm đẹp trai (70k) | +10 tin ngay, và tới hết cuộc đó mỗi câu được chấm tốt **cộng thêm 4 tin**. |
+| 🧠 Máy đọc suy nghĩ (90k) | Tới hết cuộc đó, **lượt nào cũng** hiện bong bóng 💭 + nói thẳng hàng xóm đang thèm nghe chuyện gì (lấy từ bảng điểm yếu CÓ THẬT `XDH.REGRET`, AI không được bịa). |
+| 🎰 Thùng rác quay số | Đứng cạnh xe bánh mì. Cược 50k hoặc **TẤT TAY**. Thắng ăn gấp đôi (40%), 3 hình giống nhau (6%) ăn gấp đôi **+ tặng 1 món đồ nghề**. Thua mất tiền cược. Cháy túi vẫn gõ cửa kiếm lại được. |
+| 🎁 Hộp quà may mắn (30k) | Bán ở xe bánh mì, mở ngay tại quầy: tiền · đồ nghề · đồ mặc · hoặc rác cho vui. |
+| 🧪 Chế độ test | `?test=1` = vào ván có 500k + băng vàng "CHẾ ĐỘ TEST". Link chính vẫn 0k như cũ. |
+
+### Kiểm bằng máy
+`py game/tools/press-slot-check.py <link>` — **40/40 đạt**, chạy 3 lần: máy nhà · preview `hoi-doi` · **link chính**.
+0 lỗi console. Máy quay số quay **1000 lần**: thắng 40,1% (chốt 40%), trúng lớn 6,4% (chốt 6%).
+Chạy thật với não AI: chào → trả lời → ngồi im 4 giây → Ly tự thúc *"Ủa rồi sao?"* (-4 kiên nhẫn) → nói lại thì về nấc 1.
+Ảnh: `game/shots/v12_01_shop … v12_07_live_press.png`.
+
+### Nguyên tắc giữ nguyên
+CODE cầm mọi con số. AI **không hề biết** có món ✨ 🧠 hay máy quay số. Câu hỏi dồn lấy từ kho trong `config.js`
+(khuôn `LEAK_LINES`) nên **không tốn một đồng API** và chạy được cả khi não AI chết.
+
+### ⚠️ Việc mới nảy ra — cần Lucas quyết
+1. **Đẩy link chính lần này KÉO THEO v1.0 hệ nhiệm vụ** (gậy selfie của Ly) — trước đó v1.0 mới ở preview chờ Lucas gật. Giờ đã sống trên link chính.
+2. **Máy quay số đang bật ở CẢ chế độ Kẹt Tiền** — ở đó tiền là điều kiện thắng, tất tay thắng là mua được bữa ăn liền. Muốn tắt riêng cho Kẹt Tiền thì nói.
+3. Chưa commit vào git (chỉ nằm trên đĩa + đã lên link) — chờ Lucas gật mới commit.

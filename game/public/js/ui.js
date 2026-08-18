@@ -14,7 +14,9 @@ XDH.UI = (function () {
       unlocked: { shirt: [], hat: [], item: [] },
       houses: idx.map(i => ({ npcIdx: i, won: false, failedOutfits: [] })),
       night: 1, enteredTonight: 0, dawnHandled: false, policeCaught: false,          // §0 #2: 3-night run
-      money: 0, inv: { gift: 0, hourglass: 0, hint: 0, wardrobe: 0 },
+      // v1.2 — ?test=1 nạp sẵn tiền để thử hết đồ nghề (link chính vẫn 0k)
+      money: XDH.TEST ? XDH.TEST_MONEY : 0,
+      inv: { gift: 0, hourglass: 0, hint: 0, wardrobe: 0, glow: 0, mind: 0 },
       score: { entered: 0, fastest: Infinity, bestOutfit: '—', maxSuspDelta: -1, maxSuspQuote: '—', maxSuspNpc: '' },
       transcripts: [],
       nightStart: Date.now(),
@@ -63,6 +65,11 @@ XDH.UI = (function () {
     $('hud-mission').style.display = mTxt ? 'block' : 'none';
     if (mTxt) $('hud-mission').textContent = mTxt;
     $('hud-outfit').textContent = '👕 ' + XDH.outfitLabel(XDH.run.outfit);
+    // v1.2 — ô 🎒 trên HUD: xem túi đồ mọi lúc (dùng thì vẫn phải đứng trước cửa)
+    const hb = $('btn-bag-hud');
+    if (hb) hb.textContent = '🎒 ' + invCount();
+    const tb = $('test-badge');
+    if (tb) tb.style.display = XDH.TEST ? 'block' : 'none';
   }
 
   function toast(msg, ms = 3200) {
@@ -304,6 +311,20 @@ XDH.UI = (function () {
         openShop();
       };
       box.appendChild(s);
+    }
+
+    // v1.2 🎁 HỘP QUÀ MAY MẮN — mua là mở luôn tại quầy, không nằm trong túi đồ.
+    {
+      const L = XDH.LUCKY;
+      const g = document.createElement('button');
+      g.className = 'shop-item';
+      g.style.borderColor = r.money >= L.PRICE ? 'var(--ok)' : 'var(--line)';
+      g.innerHTML = `<b>🎁 ${en ? 'Lucky box' : 'Hộp quà may mắn'}</b> <span class="price">${L.PRICE}k</span>` +
+        `<span class="desc">${en ? 'Open it right here — money, gear, clothing… or pure junk.'
+                                 : 'Mở ngay tại quầy — có thể ra tiền, đồ nghề, đồ mặc… hoặc rác thiệt.'}</span>`;
+      g.disabled = r.money < L.PRICE;
+      g.onclick = () => { if (XDH.Casino) XDH.Casino.buyLucky(); };
+      box.appendChild(g);
     }
 
     XDH.SHOP.forEach(item => {
@@ -610,21 +631,86 @@ XDH.UI = (function () {
     regretTimer = setTimeout(() => r.classList.remove('show'), XDH.FEEL.REGRET_MS);
   }
 
-  // Powerup buttons inside the convo (only items you own show up)
-  const ITEM_EMOJI = { gift: '🧋', hourglass: '⏳', hint: '💡', wardrobe: '🎽' };
+  // ---- v1.2 TÚI ĐỒ NGHỀ (Lucas 08-16) ----
+  // Trước v1.2: mấy nút bé xíu "🧋×1", bấm là DÙNG LUÔN, không ai biết món đó làm gì.
+  // Nay: một nút 🎒 mở BẢNG Ô VUÔNG (tên + món này làm gì + số lượng), bấm một ô thì hỏi
+  // "Dùng ngay / Huỷ" — bấm nhầm không mất đồ nữa.
+  const ITEM_EMOJI = { gift: '🧋', hourglass: '⏳', hint: '💡', wardrobe: '🎽', glow: '✨', mind: '🧠' };
+  const invCount = () => Object.keys(ITEM_EMOJI).reduce((n, id) => n + ((XDH.run.inv || {})[id] || 0), 0);
+
   function renderConvoItems() {
     const box = $('convo-items');
     box.innerHTML = '';
+    const n = invCount();
+    const b = document.createElement('button');
+    b.className = 'btn ghost item-btn';
+    b.id = 'btn-bag';
+    b.textContent = `🎒 ${XDH.lang === 'en' ? 'Bag' : 'Túi đồ'} (${n})`;
+    b.onclick = () => openBag();
+    box.appendChild(b);
+    const hb = $('btn-bag-hud');
+    if (hb) hb.textContent = `🎒 ${n}`;
+  }
+
+  function openBag() {
+    const en = XDH.lang === 'en';
     const inv = XDH.run.inv || {};
+    const grid = $('bag-grid');
+    grid.innerHTML = '';
+    let any = false;
     Object.keys(ITEM_EMOJI).forEach(id => {
       if (!inv[id]) return;
-      const b = document.createElement('button');
-      b.className = 'btn ghost item-btn';
-      b.textContent = `${ITEM_EMOJI[id]}×${inv[id]}`;
-      b.title = (XDH.SHOP.find(s => s.id === id) || {}).desc || '';
-      b.onclick = () => XDH.Convo.useItem(id);
-      box.appendChild(b);
+      any = true;
+      const shop = XDH.SHOP.find(s => s.id === id) || {};
+      const cell = document.createElement('button');
+      cell.className = 'bag-cell';
+      cell.innerHTML = `<span class="bag-ico">${ITEM_EMOJI[id]}</span>` +
+        `<span class="bag-x">×${inv[id]}</span>` +
+        `<b>${(shop.label || id).replace(/^\S+\s/, '')}</b>` +
+        `<span class="bag-desc">${shop.desc || ''}</span>`;
+      cell.onclick = () => askUse(id, shop);
+      grid.appendChild(cell);
     });
+    // v1.0: đồ nhiệm vụ nằm chung túi cho dễ hiểu, nhưng KHÔNG bấm dùng ở đây được
+    if (XDH.Mission && XDH.Mission.hasStick && XDH.Mission.hasStick()) {
+      any = true;
+      const cell = document.createElement('button');
+      cell.className = 'bag-cell locked';
+      cell.innerHTML = '<span class="bag-ico">🤳</span><span class="bag-x">×1</span>' +
+        `<b>${en ? 'Selfie stick' : 'Gậy selfie'}</b><span class="bag-desc">` +
+        (en ? 'Hand it to Ly at her door (green button).' : 'Đứng trước cửa Ly rồi bấm nút xanh để đưa.') + '</span>';
+      cell.onclick = () => toast(en ? 'Bring it to Ly at her door 🤳' : 'Mang tới trước cửa nhà Ly rồi đưa nha 🤳');
+      grid.appendChild(cell);
+    }
+    $('bag-empty').style.display = any ? 'none' : 'block';
+    $('bag-empty').textContent = en
+      ? 'Bag is empty — buy gear at the bánh mì cart 🍞'
+      : 'Túi trống trơn — ra xe bánh mì sắm đồ nghề nha 🍞';
+    $('ov-bag').querySelector('h2').textContent = en ? '🎒 Your gear' : '🎒 Túi đồ nghề';
+    $('btn-bag-close').textContent = en ? 'Đóng' : 'Đóng túi';
+    $('ov-bag').classList.add('show');
+  }
+
+  // Hộp xác nhận "Dùng ngay / Huỷ" — đúng cái Lucas đặt.
+  function askUse(id, shop) {
+    const en = XDH.lang === 'en';
+    const inConvo = XDH.Convo.isActive();
+    $('use-ico').textContent = ITEM_EMOJI[id] || '🎒';
+    $('use-name').textContent = shop.label || id;
+    $('use-desc').textContent = shop.desc || '';
+    $('use-warn').style.display = inConvo ? 'none' : 'block';
+    $('use-warn').textContent = en
+      ? 'Gear only works while you are talking at a door.'
+      : 'Đồ nghề chỉ dùng được lúc đang đứng nói chuyện trước cửa.';
+    $('btn-use-yes').disabled = !inConvo;
+    $('btn-use-yes').textContent = en ? 'Use it now' : 'Dùng ngay';
+    $('btn-use-no').textContent = en ? 'Cancel' : 'Huỷ';
+    $('btn-use-yes').onclick = () => {
+      $('ov-use').classList.remove('show');
+      $('ov-bag').classList.remove('show');
+      XDH.Convo.useItem(id);
+    };
+    $('ov-use').classList.add('show');
   }
 
   function showHint(text) {
@@ -985,6 +1071,10 @@ XDH.UI = (function () {
     $('btn-wardrobe').onclick = () => { if (!XDH.Convo.isActive()) openWardrobe(); };
     $('btn-ward-done').onclick = () => $('ov-wardrobe').classList.remove('show');
     $('btn-shop-done').onclick = () => $('ov-shop').classList.remove('show');
+    // v1.2 túi đồ + hộp "Dùng ngay / Huỷ"
+    $('btn-bag-close').onclick = () => $('ov-bag').classList.remove('show');
+    $('btn-use-no').onclick = () => $('ov-use').classList.remove('show');
+    $('btn-bag-hud').onclick = () => { if (!document.querySelector('.overlay.show')) openBag(); };
     // 🚔 v0.9: màn "về đồn" → bấm mới qua bảng tổng kết thua đêm
     $('btn-station-next').onclick = () => { $('ov-station').classList.remove('show'); showScore(false); };
     $('btn-again').onclick = () => { $('ov-score').classList.remove('show'); newRun(); };
@@ -998,7 +1088,12 @@ XDH.UI = (function () {
       if (v) { $('text-in').value = ''; route(v); }
     };
     $('btn-send').onclick = send;
-    $('text-in').addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+    // v1.1 — GÕ MỘT PHÍM là đồng hồ im lặng đếm lại từ đầu: đang gõ dở câu dài thì
+    // không đáng bị thúc. (Enter vẫn gửi như cũ.)
+    $('text-in').addEventListener('keydown', e => {
+      if (e.key === 'Enter') send();
+      else if (XDH.Convo.pressPoke) XDH.Convo.pressPoke();
+    });
 
     // Hold-to-talk mic: transcript shows live, released → sent to the NPC.
     const mic = $('btn-mic');
@@ -1012,6 +1107,7 @@ XDH.UI = (function () {
         return;
       }
       if (XDH.Speech.isListening()) return;
+      if (XDH.Convo.pressCancel) XDH.Convo.pressCancel();   // v1.1: đang giữ mic KHÔNG phải im lặng
       mic.classList.add('listening');
       $('transcript-live').textContent = '🎙️ đang nghe…';
       XDH.Speech.start({
@@ -1020,11 +1116,15 @@ XDH.UI = (function () {
           mic.classList.remove('listening');
           $('transcript-live').textContent = '';
           if (t) route(t);
-          else toast('Không nghe rõ — thử lại hoặc gõ chữ nhé.');
+          else {
+            toast('Không nghe rõ — thử lại hoặc gõ chữ nhé.');
+            if (XDH.Convo.pressPoke) XDH.Convo.pressPoke();   // v1.1: nhả mic mà rỗng → đồng hồ chạy lại
+          }
         },
         onError: err => {
           mic.classList.remove('listening');
           $('transcript-live').textContent = '';
+          if (XDH.Convo.pressPoke) XDH.Convo.pressPoke();      // v1.1
           const en = XDH.lang === 'en';
           if (err === 'not-allowed') {
             // v0.6.1 G1 pass #2: KHÔNG im lặng — câu hướng dẫn ở LẠI trong khung, không tan như toast
@@ -1084,7 +1184,7 @@ XDH.UI = (function () {
   document.addEventListener('DOMContentLoaded', () => { newRun(); wire(); });
 
   return {
-    newRun, newNight, refreshHud, toast, openWardrobe, openShop, showStation,
+    newRun, newNight, refreshHud, toast, openWardrobe, openShop, openBag, showStation,
     afterHouseWon, showNightDone, dawnFail, renderConvoItems, showHint, playKillScene,
     openConvo, closeConvo, setMeters, setTimer, echoPlayer,
     typeNpcLine, setBusy, endConvo, showScore, debugTurn,

@@ -13,7 +13,7 @@ XDH.KetTien = (function () {
     r.meal = XDH.MEALS[Math.floor(Math.random() * XDH.MEALS.length)];
     // Ngày mới lại trắng tay — đúng tiền đề "kẹt tiền". Nếu để dành tiền hôm trước thì
     // ngày sau chỉ việc ra quán ăn, khỏi gõ cửa nhà nào (đồ nghề đã mua thì vẫn giữ).
-    r.money = 0;
+    r.money = XDH.TEST ? XDH.TEST_MONEY : 0;   // v1.2: ?test=1 thì ngày nào cũng có tiền để thử đồ
     r.food = 0;                            // đồ ăn xin được, quy ra k
     r.knocked = 0;                         // B5: số nhà đã gõ hôm nay
     r.gave = [];                           // ai cho gì — cho bảng tổng kết B7

@@ -46,7 +46,13 @@ XDH.POP_EVENT = {
   mission_new:   { vi: '📱 Nhiệm vụ mới!',           en: '📱 New mission!',             cls: 'hit'  },
   mission_item:  { vi: '🤳 Có gậy selfie rồi!',      en: '🤳 Got the selfie stick!',    cls: 'hit'  },
   mission_done:  { vi: '💖 Trả đồ xong — Ly vui xỉu', en: '💖 Mission done — Ly is thrilled', cls: 'hit' },
-  chore_pay:     { vi: '🧹 Công việc vặt',           en: '🧹 Odd-job pay',              cls: 'good' }
+  chore_pay:     { vi: '🧹 Công việc vặt',           en: '🧹 Odd-job pay',              cls: 'good' },
+  // v1.1 hàng xóm hỏi dồn: im lặng là mất kiên nhẫn — phải HIỆN SỐ, đừng để người chơi đoán
+  press:         { vi: '⏳ Đứng im hoài…',            en: '⏳ You just stood there…',     cls: 'warn' },
+  // v1.2 hai món mới
+  glow:          { vi: '✨ Nâng tầm đẹp trai',        en: '✨ Glow-up',                   cls: 'hit'  },
+  glow_bonus:    { vi: '✨ Đẹp trai nói gì cũng lọt', en: '✨ Handsome bonus',            cls: 'good' },
+  mind:          { vi: '🧠 Máy đọc suy nghĩ bật',     en: '🧠 Mind reader on',            cls: 'hit'  }
 };
 
 // ====== v0.6.1 G1 — DÒ TRÌNH DUYỆT NHÚNG (Zalo · Facebook · Instagram · TikTok…) ======
@@ -191,8 +197,28 @@ XDH.SHOP = [
   { id: 'gift',      label: '🧋 Trà sữa tặng hàng xóm', price: 40, desc: 'Tặng lúc đang nói chuyện — hàng xóm quý liền (1 lần).' },
   { id: 'hourglass', label: '⏳ Đồng hồ cát',            price: 60, desc: 'Thêm 45 giây cho cuộc nói chuyện đang dở.' },
   { id: 'hint',      label: '💡 Gợi ý của quân sư',      price: 50, desc: 'Quân sư mách nhỏ MỘT câu nên nói tiếp theo.' },
-  { id: 'wardrobe',  label: '🎽 Đổi đồ tại chỗ',         price: 30, desc: 'Mở tủ đồ ngay trước cửa, khỏi chạy về.' }
+  { id: 'wardrobe',  label: '🎽 Đổi đồ tại chỗ',         price: 30, desc: 'Mở tủ đồ ngay trước cửa, khỏi chạy về.' },
+  // v1.2 (Lucas 08-16) — hai món mới. Số cân bằng nằm ở XDH.GLOW / XDH.MIND bên dưới.
+  { id: 'glow',      label: '✨ Nâng tầm đẹp trai',       price: 70, desc: 'Đẹp trai lên liền: +10 tin, và tới hết cuộc này nói gì cũng dễ tin hơn.' },
+  { id: 'mind',      label: '🧠 Máy đọc suy nghĩ',        price: 90, desc: 'Tới hết cuộc này: lượt nào cũng thấy hàng xóm đang nghĩ gì + họ đang thèm nghe chuyện gì.' }
 ];
+// 🎁 Hộp quà may mắn — mua là mở luôn tại quầy (không nằm trong túi đồ).
+XDH.LUCKY = {
+  PRICE: 30,
+  PRIZES: [
+    { p: 28, type: 'coins', min: 10,  max: 40 },      // huề vốn hoặc lỗ nhẹ
+    { p: 14, type: 'coins', min: 60,  max: 120 },     // lời đậm
+    { p: 26, type: 'item' },                          // một món đồ nghề ngẫu nhiên
+    { p: 12, type: 'wear' },                          // một món đồ mặc còn khoá (hết đồ → đền tiền)
+    { p: 20, type: 'junk' }                           // rác cho vui — vẫn phải có cửa xui
+  ],
+  JUNK: {
+    vi: ['một cục pin con thỏ đã chảy nước', 'phiếu giảm giá hết hạn từ đời nào', 'nửa gói hạt dưa',
+         'tấm ảnh thẻ của người lạ', 'một chiếc vớ… vẫn chỉ MỘT chiếc'],
+    en: ['a leaky old battery', 'a coupon that expired ages ago', 'half a bag of melon seeds',
+         "a stranger's passport photo", 'a sock… still just the ONE']
+  }
+};
 XDH.GIFT_TRUST = 8;         // code-owned one-time boost when the milk-tea gift is used
 
 // §1b — AI judges (verdict), CODE scores. Same table for all 3 brains, so a mid-convo
@@ -440,4 +466,76 @@ XDH.outfitLabel = function (outfit) {
     .map(s => (w[s].find(o => o.id === outfit[s]) || w[s][0]))
     .filter(o => o.id !== 'none').map(o => o.label);
   return parts.length ? parts.join(' + ') : 'Đồ thường';
+};
+
+// ====== v1.1 — HÀNG XÓM HỎI DỒN (plan-v1.1-hoi-doi.md · Lucas chốt 16/08) ======
+// Người chơi im = trước đây game ĐỨNG HÌNH. Nay hàng xóm tự thúc, mỗi nấc một ngắn hơn,
+// im hết 3 nấc là đóng cửa. Câu do CODE cầm (khuôn LEAK_LINES) → 0 đồng, não AI chết vẫn chạy.
+XDH.PRESS = {
+  ON: true,
+  TIERS: [                      // nấc 1 → 3: chờ ngẫu nhiên trong khoảng, ngắn dần
+    { min: 18000, max: 30000 },
+    { min: 12000, max: 18000 },
+    { min: 10000, max: 12000 }
+  ],
+  GIVEUP_MS: 10000,             // im tiếp sau nấc 3 → cửa đóng
+  PATIENCE: -4                  // mỗi lần bị thúc: mất kiên nhẫn (CODE cầm, hiện số như luật F1)
+};
+// 3 nấc × 3 nhân vật × 2 thứ tiếng. Không lặp câu trong cùng một cuộc.
+XDH.PRESS_LINES = {
+  me_bim_sua: {
+    vi: [
+      ['Rồi sao nữa con?', 'Ủa, đứng thần ra vậy? Nói cô nghe coi.', 'Con nói gì đi chớ, cô còn vô ngó bé Bin.'],
+      ['Giờ rốt cuộc con muốn gì? Nói đại một câu đi.', 'Cô hỏi thiệt đó — con cần gì ở nhà cô?', 'Đứng im hoài cô sợ à nghen.'],
+      ['Không nói thì thôi nghen, cô đóng cửa đây.', 'Cô đếm tới ba đó… một… hai…', 'Thôi cô vô với bé Bin, con về đi.']
+    ],
+    en: [
+      ['So… then what?', 'You just froze up? Talk to me.', 'Say something, dear — I need to check on baby Bin.'],
+      ['What is it you actually want? Just say it.', "I'm asking seriously — what do you need from my house?", 'Standing there silent is scaring me.'],
+      ["If you won't talk, I'm closing this door.", "I'm counting to three… one… two…", "I'm going back to Bin. Off you go."]
+    ]
+  },
+  sinh_vien: {
+    vi: [
+      ['Ơ… rồi sao nữa anh?', 'Anh nói tiếp đi, em còn coi trận nữa nè.', 'Ủa im luôn hả anh?'],
+      ['Giờ rốt cuộc anh muốn gì vậy? Nói lẹ giùm em.', 'Anh đứng đây hoài em cũng ngại nữa.', 'Nói một câu thôi cũng được mà anh.'],
+      ['Thôi em vô coi nốt hiệp hai đây nha.', 'Không nói là em đóng cửa thiệt đó.', 'Em đóng cửa nha anh, kỳ lắm rồi.']
+    ],
+    en: [
+      ['Uh… then what?', "Keep going, I've still got a match on.", 'You went quiet on me?'],
+      ['What do you actually want? Make it quick.', 'You standing here this long is getting awkward.', 'One sentence, man, that\'s all.'],
+      ["Alright, I'm going back to the second half.", "Say something or I really am shutting this.", "I'm closing the door, this is too weird."]
+    ]
+  },
+  gen_z: {
+    vi: [
+      ['Ủa rồi sao?', 'Alo? Còn ở đó hông?', 'Nãy giờ im ru à, kể tiếp đi.'],
+      ['Rốt cuộc là muốn gì vậy trời? Nói đại đi.', 'Ét ô ét, im lâu quá em tụt mood rồi.', 'Nói lẹ giùm em, em còn quay clip.'],
+      ['Im nữa là em bơ luôn nha.', 'Thôi flop rồi, em đóng cửa đây.', 'Ba giây nữa em tắt máy à nghen.']
+    ],
+    en: [
+      ['So… anyway?', 'Hello? Still there?', "You've been silent this whole time, keep talking."],
+      ['What do you even want? Spit it out.', 'SOS, this silence killed my mood.', "Hurry up, I've got a clip to shoot."],
+      ["Stay quiet and I'm ghosting you.", 'This flopped. Closing the door.', "Three seconds and I'm out."]
+    ]
+  }
+};
+
+// ====== v1.2 — HAI MÓN MỚI · MÁY QUAY SỐ · CHẾ ĐỘ TEST (plan-v1.2-do-nghe-casino.md) ======
+// ?test=1 → vào ván có sẵn tiền để thử hết đồ nghề. Link chính KHÔNG đổi (vẫn 0k).
+XDH.TEST = /[?&]test=1/.test(location.search);
+XDH.TEST_MONEY = 500;
+
+XDH.GLOW = { TRUST_NOW: 10, BONUS_TRUST: 4 };   // ✨ +10 tin ngay, câu chấm tốt cộng thêm tới hết cuộc
+XDH.MIND = { CRAVE_EVERY: 1 };                  // 🧠 bật là lượt nào cũng lộ suy nghĩ + chỗ họ đang thèm nghe
+
+// 🎰 THÙNG RÁC QUAY SỐ — máy đánh bạc của xóm. CODE bốc KẾT QUẢ trước, ô quay chỉ diễn lại
+// cho khớp → tỉ lệ luôn đúng con số dưới đây và máy kiểm đếm được.
+XDH.SLOT = {
+  BET: 50,                 // cược thường
+  JACKPOT_P: 6,            // 3 hình giống nhau: ăn x2 + thêm MỘT món đồ nghề
+  WIN_P: 34,               // thắng thường: ăn x2 (nhận lại tiền cược + đúng bấy nhiêu nữa)
+  SYMBOLS: ['🍞', '🧋', '🤳', '🐺', '🗑️', '🌕'],
+  POS: [1080, 590],        // chỗ đứng trong xóm (cạnh xe bánh mì)
+  SPIN_MS: 900
 };

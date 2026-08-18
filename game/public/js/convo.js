@@ -67,6 +67,84 @@ XDH.Convo = (function () {
     return XDH.lang === 'en' ? w.en : w.vi;
   }
 
+  // v1.2 🧠 MÁY ĐỌC SUY NGHĨ — "họ đang thèm nghe chuyện gì". Dùng LẠI bảng XDH.REGRET
+  // (điểm yếu CÓ THẬT trong thẻ nhân vật, khớp _personas.js) nhưng nói ở thì hiện tại,
+  // và chỉ nhả chủ đề người chơi CHƯA chạm — AI không tham gia, cấm bịa đường không có.
+  function craveLine() {
+    if (!active) return '';
+    const list = XDH.REGRET[active.npc.id] || [];
+    if (!list.length) return '';
+    const said = active.history.filter(h => h.role === 'player')
+      .map(h => String(h.text || '').toLowerCase()).join(' ');
+    const untouched = list.filter(w => !w.keys.some(k => said.includes(k)));
+    const pool = untouched.length ? untouched : list;
+    const w = pool[Math.floor(Math.random() * pool.length)];
+    return XDH.lang === 'en' ? w.en : w.vi;
+  }
+
+  // ===== v1.1 — ĐỒNG HỒ IM LẶNG: hàng xóm HỎI DỒN (plan-v1.1-hoi-doi.md) =====
+  // Trước v1.1 người chơi im là game đứng hình. Nay: chờ hết giờ nấc 1 → thúc nhẹ,
+  // nấc 2 → sốt ruột, nấc 3 → tối hậu thư, im tiếp → ĐÓNG CỬA. Trả lời = về nấc 1.
+  // Câu do CODE cầm (khuôn LEAK_LINES) nên 0 đồng và chạy được cả khi não AI chết.
+  function pressCancel() {
+    if (active && active.pressTimer) { clearTimeout(active.pressTimer); active.pressTimer = null; }
+  }
+  function pressBlocked() {
+    return !active || busy || !XDH.PRESS.ON ||
+           (XDH.Tut && XDH.Tut.isActive && XDH.Tut.isActive()) ||
+           (XDH.Speech && XDH.Speech.isListening && XDH.Speech.isListening());
+  }
+  function pressArm() {
+    pressCancel();
+    if (pressBlocked()) return;
+    const T = XDH.PRESS.TIERS;
+    const ms = active.pressTier >= T.length
+      ? XDH.PRESS.GIVEUP_MS
+      : T[active.pressTier].min + Math.random() * (T[active.pressTier].max - T[active.pressTier].min);
+    active.pressTimer = setTimeout(pressFire, ms);
+  }
+  function pressLine() {
+    const pack = XDH.PRESS_LINES[active.npc.id] || XDH.PRESS_LINES.gen_z;
+    const tiers = pack[XDH.lang === 'en' ? 'en' : 'vi'] || pack.vi;
+    const pool = tiers[Math.min(active.pressTier, tiers.length - 1)] || tiers[0];
+    const fresh = pool.filter(l => !active.pressUsed.includes(l));
+    const line = (fresh.length ? fresh : pool)[Math.floor(Math.random() * (fresh.length ? fresh.length : pool.length))];
+    active.pressUsed.push(line);
+    return line;
+  }
+  async function pressFire() {
+    if (!active) return;
+    if (busy) { pressArm(); return; }               // đang gõ chữ / đang chờ AI → hẹn lại, không chen
+    // Hết 3 nấc mà vẫn im → hàng xóm bỏ cuộc, cửa đóng (không phải tội nói dối nên KHÔNG có công an)
+    if (active.pressTier >= XDH.PRESS.TIERS.length) {
+      pressCancel();
+      finish(false, XDH.lang === 'en'
+        ? 'You just stood there in silence — the door shut. 🤐'
+        : 'Đứng im như trời trồng — cửa đóng cái rầm. 🤐', 'silence');
+      return;
+    }
+    const line = pressLine();
+    active.pressTier++;
+    busy = true; XDH.UI.setBusy(true);
+    XDH.UI.floatNums([popEvent('press', applyDeltas(active.state, { patience: XDH.PRESS.PATIENCE }))]);
+    XDH.UI.setMeters(active.state);
+    XDH.UI.setDoorStage(doorStage(active.state, diffOf(active.npc)));
+    active.history.push({ role: 'npc', text: line, brain: 'kịch bản', verdict: null });
+    await XDH.UI.typeNpcLine(line, active.pressTier >= 3 ? 'buc_minh' : 'chan', active.npc);
+    if (!active) return;
+    // Kiên nhẫn về 0 vì im lặng cũng là thua — dùng chung cửa thua sẵn có
+    if (active.state.patience <= 0) {
+      pressCancel();
+      finish(false, XDH.lang === 'en' ? 'They ran out of patience and shut the door. 😤'
+                                      : 'Hàng xóm hết kiên nhẫn, đóng sầm cửa. 😤');
+      return;
+    }
+    busy = false; XDH.UI.setBusy(false);
+    pressArm();
+  }
+  // ui.js gọi khi người chơi GÕ PHÍM / bấm mic: đồng hồ im lặng đếm lại từ đầu (giữ nguyên nấc).
+  function pressPoke() { if (active) pressArm(); }
+
   // Một dòng popup cho cú code cộng NGOÀI verdict (mâu thuẫn đồ · quà · tin đồn · nhớ đêm trước…).
   function popEvent(id, applied) {
     const e = XDH.POP_EVENT[id];
@@ -112,7 +190,8 @@ XDH.Convo = (function () {
     helped: 'mình đã giúp họ ít tiền/đồ ăn',
     meal_win: 'mình quý tới mức mời họ vào ăn cơm',
     refused: 'mình đã từ chối không giúp',
-    come_back_later: 'mình hẹn họ lát quay lại'
+    come_back_later: 'mình hẹn họ lát quay lại',
+    silence: 'họ đứng im không nói gì nên mình đóng cửa'
   };
   const MEM_BAD = {
     lo_lieu: 'họ từng bị mình bắt nói dối lộ liễu',
@@ -228,6 +307,11 @@ XDH.Convo = (function () {
       memeTurn: -99,    // v0.6 F2: lượt gần nhất có meme (trần 1 meme / 3 lượt)
       memeUsed: [],     // v0.6 F2: không lặp lại meme trong cùng cuộc
       leaked: false,    // v0.6 F5.1: đã rò rỉ ý định "sắp đuổi" chưa (một lần / cuộc)
+      pressTier: 0,     // v1.1: nấc hỏi dồn hiện tại (0-3) — trả lời một câu là về 0
+      pressTimer: null, // v1.1: đồng hồ im lặng đang chạy
+      pressUsed: [],    // v1.1: câu thúc đã dùng — không lặp trong cùng cuộc
+      glow: false,      // v1.2 ✨ nâng tầm đẹp trai: còn hiệu lực tới hết cuộc này
+      mind: false,      // v1.2 🧠 máy đọc suy nghĩ: còn hiệu lực tới hết cuộc này
       topics: [],       // v0.6 F5.2: chủ đề người chơi ĐÃ chạm — dòng tiếc nuối bám vào đây
       finalTestPhase: null,   // §3 câu hỏi chốt: null → 'answering' (hard house only)
       finalTestPassed: false,
@@ -272,6 +356,8 @@ XDH.Convo = (function () {
     if (!active || busy) return;
     text = (text || '').trim();
     if (!text) return;
+    pressCancel();
+    active.pressTier = 0;   // v1.1: chịu mở miệng là hàng xóm nguôi — về nấc 1
     await exchange(text, false);
   }
 
@@ -279,6 +365,7 @@ XDH.Convo = (function () {
     if (!active) return;
     busy = true;
     XDH.UI.setBusy(true);
+    pressCancel();               // v1.1: đang có lượt nói thì đồng hồ im lặng nghỉ
     if (!isGreeting && !finalAsk) {
       XDH.UI.echoPlayer(playerText);
       XDH.markPlayed();          // đã nói được câu đầu tiên → hết là người mới, thôi dẫn dắt
@@ -327,6 +414,7 @@ XDH.Convo = (function () {
       XDH.UI.hideThinking();
       busy = false; XDH.UI.setBusy(false);
       XDH.UI.toast('Mất sóng với hàng xóm 😵 thử lại nhé (' + err.message + ')');
+      pressArm();
       return;
     }
     XDH.UI.hideThinking();
@@ -365,6 +453,12 @@ XDH.Convo = (function () {
         appliedR = applyDeltas(st, { trust: diff.corro.trust, suspicion: diff.corro.susp });
         corroApplied = true;
       }
+      // v1.2 ✨ NÂNG TẦM ĐẸP TRAI — còn hiệu lực tới hết cuộc: câu nào được chấm TỐT thì
+      // cộng thêm một ít tin. Vẫn là CODE cầm số (AI không biết món này tồn tại).
+      let appliedG = null;
+      if (active.glow && (ai.verdict === 'hop_ly' || ai.verdict === 'danh_trung')) {
+        appliedG = applyDeltas(st, { trust: XDH.GLOW.BONUS_TRUST });
+      }
       // v0.4 T2: sổ ghi "bị bắt quả tang" — mâu thuẫn đồ-vs-chuyện hoặc nói dối lộ rõ
       if (contraApplied) active.events.push('contradiction');
       if (ai.verdict === 'lo_lieu') active.events.push('lo_lieu');
@@ -382,7 +476,8 @@ XDH.Convo = (function () {
       XDH.UI.floatNums([
         { text: (en ? vLab.en : vLab.vi) + (vNum ? ' ' + vNum : ''), cls: vLab.cls },
         appliedC ? popEvent('contradiction', appliedC) : null,
-        appliedR ? popEvent('corroboration', appliedR) : null
+        appliedR ? popEvent('corroboration', appliedR) : null,
+        appliedG ? popEvent('glow_bonus', appliedG) : null
       ]);
       XDH.UI.debugTurn({
         verdict: ai.verdict,
@@ -441,13 +536,15 @@ XDH.Convo = (function () {
     // v0.6 F5.1 — bong bóng 💭 RÒ RỈ Ý ĐỊNH trước 1 lượt. CODE quyết, không nhờ AI.
     const leak = leakThought();
     if (leak) XDH.UI.setThought(leak);
+    // v1.2 🧠 máy đọc suy nghĩ: bật rồi thì lượt NÀO cũng thấy — và thấy luôn chỗ họ đang thèm nghe
+    else if (active.mind) XDH.UI.setThought((ai.thought ? ai.thought + ' ' : '') + '💭 ' + craveLine());
     else if (ai.thought) XDH.UI.setThought(ai.thought);
     // §4: desktop auto-focus so the player can answer immediately (mobile: no keyboard pop-up)
     if (window.matchMedia('(pointer: fine)').matches) {
       setTimeout(() => { const t = document.getElementById('text-in'); if (!t.disabled) t.focus(); }, 60);
     }
 
-    if (isGreeting) { busy = false; XDH.UI.setBusy(false); return; }
+    if (isGreeting) { busy = false; XDH.UI.setBusy(false); pressArm(); return; }
 
     let doorOpens = st.trust >= diff.threshold &&
                     st.suspicion < R.SUSPICION_BLOCKS &&
@@ -491,12 +588,14 @@ XDH.Convo = (function () {
       finish(false, why);
     } else {
       busy = false; XDH.UI.setBusy(false);
+      pressArm();                 // v1.1: tới lượt người chơi → đồng hồ im lặng chạy lại
     }
   }
 
   function finish(won, message, cause) {
     if (!active) return;
     clearInterval(active.timerId);
+    pressCancel();               // v1.1: cuộc đóng thì đồng hồ im lặng tắt theo
     // v0.4 T2: chốt sổ — thắng = được mời vào; thua = công an rượt / hết giờ / bị đuổi
     ledgerLog(won ? 'invited' : (active.policeTrigger ? 'police' : (cause || 'kicked')));
     const h = XDH.run.houses[active.houseId];
@@ -582,6 +681,7 @@ XDH.Convo = (function () {
   function finishKetTien(result, outcome) {
     if (!active) return;
     clearInterval(active.timerId);
+    pressCancel();               // v1.1
     // v0.4 T2: chốt sổ Kẹt Tiền — mời cơm = thắng, được cho = helped, còn lại theo loại
     ledgerLog(result.win ? 'meal_win'
       : outcome === 'tu_choi' ? 'refused'
@@ -674,6 +774,30 @@ XDH.Convo = (function () {
       XDH.UI.setThought('Ai mà chê trà sữa khuya bao giờ… dễ thương ghê.');
       XDH.UI.setMeters(st);
       XDH.UI.setDoorStage(doorStage(st, diffOf(active.npc)));
+    } else if (id === 'glow') {
+      // v1.2 ✨ NÂNG TẦM ĐẸP TRAI: +10 tin ngay + cờ "nói gì cũng dễ tin" tới hết cuộc này.
+      inv.glow--;
+      const st = active.state;
+      active.glow = true;
+      XDH.UI.floatNums([popEvent('glow', applyDeltas(st, { trust: XDH.GLOW.TRUST_NOW }))]);
+      XDH.UI.echoPlayer(XDH.lang === 'en'
+        ? '(fixes their hair and collar — suddenly glowing) ✨'
+        : '(vuốt lại tóc, chỉnh cổ áo — bỗng sáng bừng cả góc hẻm) ✨');
+      active.history.push({ role: 'player', text: '(Người lạ bỗng chỉnh trang lại, trông sáng sủa dễ nhìn hẳn ra.)' });
+      XDH.UI.setThought(XDH.lang === 'en'
+        ? 'Wait… looking closer, they’re actually not bad at all.'
+        : 'Ủa… nhìn kỹ lại thấy cũng dễ nhìn ghê ta.');
+      XDH.UI.setMeters(st);
+      XDH.UI.setDoorStage(doorStage(st, diffOf(active.npc)));
+    } else if (id === 'mind') {
+      // v1.2 🧠 MÁY ĐỌC SUY NGHĨ: tới hết cuộc này, lượt nào cũng lộ suy nghĩ + chỗ họ thèm nghe.
+      inv.mind--;
+      active.mind = true;
+      XDH.UI.floatNums([popEvent('mind', null)]);
+      XDH.UI.setThought('💭 ' + craveLine());
+      XDH.UI.toast(XDH.lang === 'en'
+        ? '🧠 Mind reader ON — you now see what they are craving every turn.'
+        : '🧠 Máy đọc suy nghĩ BẬT — từ giờ lượt nào cũng thấy họ đang thèm nghe gì.');
     } else if (id === 'hourglass') {
       inv.hourglass--;
       active.secondsLeft += 45;
@@ -711,6 +835,7 @@ XDH.Convo = (function () {
   function leave() {
     if (!active) return;
     clearInterval(active.timerId);
+    pressCancel();               // v1.1
     ledgerLog('left');   // v0.4 T2: rút lui cũng vào sổ
     // Lưu trí nhớ hàng xóm cho lần quay lại trong đêm (reset khi qua đêm mới)
     XDH.run.houses[active.houseId].saved = {
@@ -731,7 +856,23 @@ XDH.Convo = (function () {
     XDH.UI.refreshHud();
   }
 
+  // ---- ?press=test — tay nắm cho máy kiểm (Playwright). Không ảnh hưởng game thường ----
+  if (/[?&]press=test/.test(location.search)) {
+    XDH.PressTest = {
+      st: () => (active ? { tier: active.pressTier, armed: !!active.pressTimer,
+                            patience: active.state.patience, used: active.pressUsed.slice(),
+                            glow: active.glow, mind: active.mind } : null),
+      fire: () => pressFire(),
+      arm: pressArm,
+      cancel: pressCancel,
+      poke: pressPoke,
+      setTier: (n) => { if (active) active.pressTier = n; },
+      lastLine: () => (active ? (active.history.filter(h => h.role === 'npc').pop() || {}).text || '' : '')
+    };
+  }
+
   return { start, playerSays, leave, canKnock, useItem, kill, isActive: () => !!active,
            giveStick,               // v1.0 hệ nhiệm vụ
+           pressPoke, pressCancel,  // v1.1 đồng hồ im lặng (ui.js gọi khi gõ phím / bấm mic)
            compressNightMemory };   // v0.4 T5
 })();

@@ -154,6 +154,19 @@
       this.add.text(POS.cart[0], POS.cart[1] + 56, kt ? '🍜 Quán bánh mì — ĂN Ở ĐÂY' : '🍞 Bánh mì đêm — MỞ CỬA',
         { fontSize: '12px', color: '#ffb547', fontFamily: 'Segoe UI' }).setOrigin(0.5);
 
+      // v1.2 — 🎰 THÙNG RÁC QUAY SỐ (Lucas 08-16): cái thùng rác của xóm nhưng có 3 ô quay
+      // nhấp nháy. Đứng cạnh bấm E để cược. Luật + tỉ lệ nằm hết ở casino.js.
+      {
+        const [sx, sy] = XDH.SLOT.POS;
+        const slotImg = this.add.image(sx, sy, this.textures.exists('trashbin') ? 'trashbin' : 'cart')
+          .setDepth(8).setScale(this.textures.exists('trashbin') ? 2 : 1);
+        slotImg.setTint(0xffd36b);
+        this.add.text(sx, sy + 36, '🎰 Thùng rác quay số',
+          { fontSize: '12px', color: '#ffb547', fontFamily: 'Segoe UI' }).setOrigin(0.5).setDepth(8);
+        this.tweens.add({ targets: slotImg, alpha: 0.72, duration: 620, yoyo: true, repeat: -1 });
+        this.slotSpot = { x: sx, y: sy };
+      }
+
       // §0 #6: Bà Năm's tutorial hut — mid-bottom, free scripted practice house.
       // Lucas chốt phương án A (2026-08-09): hướng dẫn 4 bước có ở CẢ HAI chế độ.
       // Kẹt Tiền dùng kịch bản riêng, kết bằng bà cho tiền (không có nút CẮN).
@@ -588,6 +601,7 @@
       if (!this.nearTarget || XDH.Convo.isActive() || XDH.Tut.isActive() || this.police || this.policeCar) return;
       if (this.nearTarget === 'wardrobe') XDH.UI.openWardrobe();
       else if (this.nearTarget === 'shop') XDH.UI.openShop();
+      else if (this.nearTarget === 'slot') XDH.Casino.openSlot();   // v1.2 🎰
       else if (this.nearTarget === 'tutorial') XDH.Tut.start();
       else if (this.nearTarget.type === 'trash') XDH.Mission.lootTrash(this.nearTarget.id);   // v1.0
       else XDH.Convo.start(this.nearTarget.id);
@@ -711,6 +725,13 @@
         this.nearTarget = 'shop';
         promptText = XDH.isKetTien() ? '🍜 Quán bánh mì — ăn (' + KEY + ')' : '🍞 Quầy bánh mì (' + KEY + ')';
         tx = POS.cart[0]; ty = POS.cart[1] - 60;
+      }
+      // v1.2 🎰 thùng rác quay số — đứng cạnh là cược được (casino.js cầm luật)
+      if (!this.nearTarget && this.slotSpot &&
+          Phaser.Math.Distance.Between(px, py, this.slotSpot.x, this.slotSpot.y) < 70) {
+        this.nearTarget = 'slot';
+        promptText = '🎰 Thùng rác quay số (' + KEY + ')';
+        tx = this.slotSpot.x; ty = this.slotSpot.y - 50;
       }
       // v1.0 🗑️ lục thùng rác — mỗi thùng 1 lần/đêm (missions.js cầm luật + bảng loot)
       if (!this.nearTarget && this.trashBins) {
