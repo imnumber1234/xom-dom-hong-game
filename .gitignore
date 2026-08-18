@@ -1,0 +1,5 @@
+# Tệp riêng của máy — không đẩy lên kho chung.
+# state.json có mảnh khoá API, tuyệt đối không để công khai.
+state.json
+game/tail.log
+game/tail.pid
