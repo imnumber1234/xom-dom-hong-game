@@ -922,3 +922,38 @@ Số đậu 4 vẫn ĐẠT: **0/12 câu trúng tim rơi vào "nhạt"** đối v
 
 `v2-check` **49/49** (thêm 6 mục cho vòng này) · `mission-check` **25/25** ·
 `v2-browser` **28/28** · `press-slot` **41/41** · `listen-check` **11/12** · `v2-live` ngôn ngữ **20/20 + 20/20**.
+
+---
+
+# 🚀 ĐÃ LÊN LINK CHÍNH — 2026-08-21 (Lucas cho phép: "put it live")
+
+**https://xom-dom-hong.pages.dev** giờ đang chạy v2.0 + v2.1 + v2.2 + v2.3.
+Git: nhánh `v2.0-hop-kinh` đã gộp vào `main` và đẩy lên (`19b28b8 → c33ab68`, gộp thẳng không xung đột).
+
+## Kiểm NGAY TRÊN LINK CHÍNH sau khi đẩy — 9/9 + 41/41
+
+| Mục | Kết quả |
+|---|---|
+| Công tắc "mở hết, miễn phí hết" | ✅ **TẮT** trên link chính (đúng thiết kế) |
+| Tiền khởi điểm | ✅ 0k · giá đồ nghề còn nguyên · tủ đồ vẫn khoá 3 món giấy tờ |
+| Ô soi 🔬 | ✅ **TẮT** — người chơi thường không thấy |
+| Phù hiệu "BẢN THỬ" | ✅ ẩn |
+| Luật 2 lần xúc phạm là gọi công an | ✅ có |
+| Công an áo xanh rêu · 3 nhiệm vụ giấu | ✅ có |
+| Nhân vật đáp đúng câu vừa nói | ✅ nói "mời cô cà phê" → cô đáp thẳng chuyện cà phê |
+| Bộ kiểm v1.1 + v1.2 chạy trên link chính | ✅ **41/41** |
+| Lỗi trong bảng điều khiển trình duyệt | ✅ 0 |
+
+## Sổ đen + bảng đèn trên link chính
+
+- Sổ đen **đã ghi được lượt thật từ link chính** (bảng ghi tách theo địa chỉ, nên phân biệt được
+  lượt của bản thử với lượt của bản chính).
+- Bảng đèn mở được bằng **cùng một chìa**: `xom-dom-hong.pages.dev/dash?key=…`
+  Không có chìa → **401, khoá hẳn** (đã thử).
+- ⚠️ Từ giờ **mọi câu người chơi thật nói đều được lưu**. Đó là chủ ý (để đo phễu người mới và
+  để sau này tự luyện não), nhưng cần nhớ khi chia sẻ ảnh chụp bảng đèn ra ngoài.
+
+## Còn treo
+
+Bảng đèn hiện **gộp chung** số của bản thử và bản chính. Muốn phễu người mới sạch thì hoặc xoá sổ
+trước khi mời bạn bè, hoặc thêm bộ lọc theo địa chỉ. Chưa làm — chờ Lucas chọn.

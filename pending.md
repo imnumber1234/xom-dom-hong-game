@@ -717,3 +717,16 @@ Chi tiết: `report.md` mục v2.3.
 
 **Luật mới cho mọi bộ đo về sau:** bộ đo phải bắt chước **đúng đường máy khách thật đi**
 (ở đây là: đẩy câu người chơi vào lịch sử TRƯỚC khi gọi). Đã sửa `listen-check.mjs` + `v2-live.mjs`.
+
+### 🚀 2026-08-21 — ĐÃ LÊN LINK CHÍNH (Lucas cho phép)
+
+`xom-dom-hong.pages.dev` chạy v2.0→v2.3. Git đã gộp vào `main` và đẩy lên.
+Kiểm ngay trên link chính: 9/9 mục hành vi bản-thật + 41/41 bộ kiểm cũ + 0 lỗi console.
+
+**Cần Lucas chọn — bảng đèn đang GỘP số bản thử với bản chính:**
+1. **Xoá sổ đen** trước khi mời bạn bè (phễu người mới sạch từ đầu) — *em nghiêng về cái này*
+2. Thêm bộ lọc theo địa chỉ vào bảng đèn (giữ lại số cũ, tách ra xem riêng)
+3. Kệ, cứ để lẫn
+
+**Nhớ:** từ giờ mọi câu người chơi thật nói đều được lưu vào sổ đen. Chủ ý là vậy, nhưng cẩn thận
+khi chia sẻ ảnh chụp bảng đèn ra ngoài vì nó in nguyên văn lời người chơi.

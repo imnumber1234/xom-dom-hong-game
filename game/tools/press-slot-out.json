@@ -5,7 +5,7 @@
   {
    "what": "A1 — vao van co san tien theo dung cong tac dang bat",
    "ok": true,
-   "ev": "2000/2000"
+   "ev": "500/500"
   },
   {
    "what": "A2 — bang CHE DO TEST hien",
@@ -35,12 +35,12 @@
   {
    "what": "B1b — ngoi im that thi hang xom TU len tieng (khong can goi tay)",
    "ok": true,
-   "ev": "Alo? Còn ở đó hông?"
+   "ev": "Ủa rồi sao?"
   },
   {
    "what": "B2 — nac 1 keu: hang xom noi 1 cau + nhich len nac 2",
    "ok": true,
-   "ev": "{'tier': 1, 'armed': True, 'patience': 92, 'used': ['Alo? Còn ở đó hông?', 'Nãy giờ im ru à, kể tiếp đi.'], 'glow': False, 'mind': False}"
+   "ev": "{'tier': 1, 'armed': True, 'patience': 92, 'used': ['Ủa rồi sao?', 'Alo? Còn ở đó hông?'], 'glow': False, 'mind': False}"
   },
   {
    "what": "B3 — im lang mat dung 4 kien nhan",
@@ -50,7 +50,7 @@
   {
    "what": "B4 — cau thuc lay tu kho cua game (khong goi AI)",
    "ok": true,
-   "ev": "Nãy giờ im ru à, kể tiếp đi."
+   "ev": "Alo? Còn ở đó hông?"
   },
   {
    "what": "B5 — thuc xong tu len day lai",
@@ -60,7 +60,7 @@
   {
    "what": "B6 — go mot phim thi dong ho chay lai (giu nac)",
    "ok": true,
-   "ev": "{'tier': 1, 'armed': True, 'patience': 92, 'used': ['Alo? Còn ở đó hông?', 'Nãy giờ im ru à, kể tiếp đi.'], 'glow': False, 'mind': False}"
+   "ev": "{'tier': 1, 'armed': True, 'patience': 92, 'used': ['Ủa rồi sao?', 'Alo? Còn ở đó hông?'], 'glow': False, 'mind': False}"
   },
   {
    "what": "B7 — dang giu mic thi KHONG len day dong ho",
@@ -120,22 +120,22 @@
   {
    "what": "C8 — 🧠 hien bong bong suy nghi ngay",
    "ok": true,
-   "ev": "💭 💭 Có drama gì trong xóm kể em nghe đi chớ… em hóng muốn xỉu mà."
+   "ev": "💭 💭 Tự tin lên xíu coi… run run vậy ai mà vibe nổi."
   },
   {
-   "what": "D1 — quay 1000 lan: ti le thang 41.7% (chot 40%, lech <= 5%)",
+   "what": "D1 — quay 1000 lan: ti le thang 43.0% (chot 40%, lech <= 5%)",
    "ok": true,
-   "ev": "{'spins': 1000, 'jackpot': 68, 'win': 349, 'lose': 583}"
+   "ev": "{'spins': 1000, 'jackpot': 52, 'win': 378, 'lose': 570}"
   },
   {
-   "what": "D1b — ti le trung lon 6.8% (chot 6%, lech <= 3%)",
+   "what": "D1b — ti le trung lon 5.2% (chot 6%, lech <= 3%)",
    "ok": true,
-   "ev": "{'spins': 1000, 'jackpot': 68, 'win': 349, 'lose': 583}"
+   "ev": "{'spins': 1000, 'jackpot': 52, 'win': 378, 'lose': 570}"
   },
   {
    "what": "D2 — dem du so lan quay",
    "ok": true,
-   "ev": "{'spins': 1000, 'jackpot': 68, 'win': 349, 'lose': 583}"
+   "ev": "{'spins': 1000, 'jackpot': 52, 'win': 378, 'lose': 570}"
   },
   {
    "what": "D3 — thua thi mat dung tien cuoc",
@@ -150,7 +150,7 @@
   {
    "what": "D5 — 3 hinh giong nhau: an gap doi + duoc them 1 mon do nghe",
    "ok": true,
-   "ev": "{'gift': 13, 'hourglass': 11, 'hint': 4, 'wardrobe': 17, 'glow': 17, 'mind': 6} → {'gift': 13, 'hourglass': 11, 'hint': 5, 'wardrobe': 17, 'glow': 17, 'mind': 6"
+   "ev": "{'gift': 10, 'hourglass': 8, 'hint': 7, 'wardrobe': 7, 'glow': 13, 'mind': 7} → {'gift': 10, 'hourglass': 9, 'hint': 7, 'wardrobe': 7, 'glow': 13, 'mind': 7}"
   },
   {
    "what": "D6 — TAT TAY thua sach thi ve 0k",
@@ -190,7 +190,7 @@
   {
    "what": "E2 — khong du 30k thi khong mua duoc (khi KHONG bat playtest)",
    "ok": true,
-   "ev": "playtest=True ket qua=coins"
+   "ev": "playtest=False ket qua=None"
   },
   {
    "what": "F0 — TAT cong tac playtest thi moi thu ve nhu cu (gia goc + tu do khoa lai)",
