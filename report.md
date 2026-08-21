@@ -822,3 +822,49 @@ là câu bịa ra để thử (người tên "Ngu") — và câu đó cũng ch�
 
 Ảnh chụp: `game/shots/v21-don-cong-an.png` · `v21-ba-nam.png` · `v21-tat-den.png`.
 Tốn **4/40 lượt sinh ảnh** miễn phí của PixelLab (trial vừa làm mới). Khoá PixelLab **không** vào kho.
+
+---
+
+# 🔬 v2.2 — Ô SOI: HỘP KÍNH NGAY BÊN CẠNH LÚC ĐANG CHƠI (2026-08-21, vòng 3)
+
+Lucas: *"i want to see it real time, like when playing it there is a window next to so i can see
+the observability of the AI that I am interacting with"*.
+
+**Bảng đèn `/dash` không phải thứ anh cần.** Nó là trang riêng, xem SAU, xem theo kiểu tổng hợp.
+Cái cần là thấy NGAY, ngay lúc đang nói chuyện. Nên dựng thêm **ô soi** — một cột dán bên phải
+màn hình, cập nhật từng lượt. Cả xóm + khung hội thoại tự nhích sang trái, không cái nào bị che.
+
+## Bật lên là thấy gì
+
+| Ô | Trả lời câu hỏi |
+|---|---|
+| 🧠 **Ai vừa trả lời** | não nào · thử qua não nào rồi · máy chủ nghĩ mất bao lâu · **tổng bạn phải chờ** · tốn bao nhiêu chữ · não nào đang nằm nghỉ · game có phải nắn lại câu không (lặp / sai tiếng / lỡ lộ bí mật) |
+| ⚖️ **Nó chấm câu vừa rồi** | AI tự chấm gì · **mã nguồn có nâng lên không và vì sao** · cộng trừ từng chỉ số · suy nghĩ thầm của nhân vật · nó nghĩ bạn đang xưng là ai |
+| 📊 **Trong đầu nhân vật** | 4 chỉ số + **thiện cảm tách hẳn hai lớp** (mã nguồn / AI) · chủ đề đã chạm · chủ đề còn chưa chạm |
+| 🚪 **Cánh cửa** | ngưỡng nhà này · đang mở mấy nấc · **VÌ SAO chưa mở** (thiếu bao nhiêu %, hay nghi ngờ quá cao, hay vừa buông lời hỗn) |
+| 😠 **Lời lẽ** | lượt này bị chấm mức nào · hậu quả · **rủi ro gọi công an** · đã hỗn mấy lần trên 2 |
+| 🎯 **Chuyện giấu** | giai đoạn · đã hé mấy manh mối · AI phát tín hiệu gì · **cổng gác cho qua hay chặn, vì sao** |
+| 🗣️ **Ngôn ngữ** | bạn chọn tiếng gì · nó trả lời tiếng gì |
+| 🧾 **Các lượt trước** | 12 lượt gần nhất, mỗi lượt một dòng |
+
+## Ba luật của ô soi
+
+1. **CHỈ ĐỌC, KHÔNG SỬA.** Không một dòng nào trong `soi.js` đụng vào trạng thái game.
+   Soi mà làm lệch thứ mình đang soi thì vô nghĩa. Có mục kiểm máy canh đúng điều này.
+2. **Không tự tính lại con số nào.** `convo.js` đưa sang số nào thì vẽ đúng số đó — tính hai nơi
+   là kiểu gì cũng có ngày lệch (bài học popup số bay v0.6).
+3. **Tắt là game về y như cũ.** Mặc định: bản thử bật sẵn, **LINK CHÍNH tắt**. Nút 🔬 trên thanh
+   trên cùng bật/tắt bất cứ lúc nào, nhớ lựa chọn cho lần sau. `?soi=0` ép tắt.
+
+## Lỗi bắt được ngay trong lúc kiểm
+
+**Nút "⏭️ Bỏ qua" của màn truyện mở đầu chui xuống dưới ô soi** → bấm mãi không trúng, máy kiểm
+đứng chờ 30 giây rồi bỏ cuộc. Gốc: em mới nhích mấy thứ hay dùng sang trái, sót mấy màn phủ dán
+cứng vào màn hình. Nay **liệt kê đủ 10 thứ** dán cứng và nhích chung một lượt. Máy hẹp (dưới
+1000px) thì ô soi tự thành nửa dưới màn hình thay vì cột phải.
+
+## Đậu máy sau vòng này — 137/137
+
+`v2-check` **43/43** (thêm 5 mục cho ô soi) · `mission-check` **25/25** ·
+`v2-browser` **28/28** · `press-slot` **41/41**.
+Ảnh: `game/shots/v22-soi.png` · `v22-soi-hon.png`.

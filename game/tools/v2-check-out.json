@@ -1,6 +1,6 @@
 {
- "pass": 38,
- "total": 38,
+ "pass": 43,
+ "total": 43,
  "checks": [
   {
    "#": 1,
@@ -229,6 +229,36 @@
    "mục": "Ảnh mới có đủ: 3 sắc mặt Bà Năm + màn về đồn (và màn về đồn vẫn có bản vẽ tay dự phòng)",
    "đạt": "✅",
    "bằng chứng": "ba_nam_normal.png 5327 · ba_nam_suspect.png 4877 · ba_nam_trust.png 4402 · station.png 345"
+  },
+  {
+   "#": 39,
+   "mục": "Ô soi CHỈ ĐỌC: không có một dòng nào sửa trạng thái game",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 40,
+   "mục": "Ô soi lấy SỐ ĐÃ TÍNH từ convo.js, không tự tính lại (không bao giờ lệch với game)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 41,
+   "mục": "Bật ô soi thì cả xóm, khung hội thoại và mọi màn phủ đều nhích sang trái",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 42,
+   "mục": "Ô soi bật là máy chủ trả thêm số thật (mất bao lâu · thử qua não nào · trả lời tiếng gì)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 43,
+   "mục": "LINK CHÍNH mặc định TẮT ô soi; bản thử bật sẵn; ?soi=0 tắt được",
+   "đạt": "✅",
+   "bằng chứng": ""
   }
  ]
 }

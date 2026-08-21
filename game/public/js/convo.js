@@ -427,6 +427,7 @@ XDH.Convo = (function () {
     }
     XDH.UI.openConvo(npc, active.state);
     XDH.UI.setFriend(friendPct(active.state, diffOf(npc)));   // v2.0: thanh thiện cảm hiện ngay
+    if (XDH.Soi) XDH.Soi.openConvo(npc);                      // v2.2: ô soi theo đúng nhà đang gõ
     // v2.0 — có đúng món đồ nhà này đang cần → nút ĐƯA ĐỒ hiện ra, nhãn đổi theo món
     const giveBtn = document.getElementById('btn-give-stick');
     const canGive = XDH.Mission && XDH.Mission.canGive(npc.id);
@@ -484,6 +485,10 @@ XDH.Convo = (function () {
       freshTopics = active.topicsHit.filter(id => before.indexOf(id) < 0);
     }
     if (!isGreeting) XDH.UI.showThinking(active.npc);   // §6b: kill the 3-4s dead air
+    // v2.2 — ô soi: đồng hồ chờ chạy ngay, và đo TỔNG thời gian người chơi thật sự phải đợi
+    // (khác với thời gian máy chủ nghĩ — chênh nhau chính là đường truyền).
+    const netT0 = Date.now();
+    if (XDH.Soi && XDH.Soi.isOn() && !isGreeting) XDH.Soi.waiting(playerText);
     let res;
     try {
       const r = await fetch('/api/converse', {
@@ -521,7 +526,8 @@ XDH.Convo = (function () {
           // v1.0 hệ nhiệm vụ: chỉ mode ma sói mới gửi (missions.js tự gác cửa)
           ...(XDH.Mission ? XDH.Mission.convoContext(active.npc.id) : {}),
           // v1.0.1 hộp kính: ?debug=1 → server trả thêm vì-sao-chặn tín hiệu + có-viết-lại-vì-lặp
-          ...(XDH.DEBUG ? { debug: true } : {})
+          // v1.0.1 hộp kính ?debug=1 · v2.2 ô soi cũng cần mấy con số này (não nào, mất bao lâu…)
+          ...((XDH.DEBUG || (XDH.Soi && XDH.Soi.isOn())) ? { debug: true } : {})
         })
       });
       res = await r.json();
@@ -547,6 +553,7 @@ XDH.Convo = (function () {
     // for all 3 brains, scaled by the house's difficulty tier (§2b).
     const st = active.state;
     const diff = diffOf(active.npc);
+    let soi = null;                       // v2.2: gói số cho ô soi, chỉ có ở lượt CÓ chấm điểm
     if (scoring) {
       // ── v2.0 việc 6 — SỬA LỖI B: lượt 1 lúc nào cũng bị chấm "nhạt" (đo 6/6 lần sáng 21/08) ──
       // Hai lớp vá, cả hai do CODE cầm nên đổi não cũng không đổi luật:
@@ -657,6 +664,31 @@ XDH.Convo = (function () {
         brain: res.brain || (res.scripted ? 'kịch bản' : '?'),
         state: st
       });
+      // v2.2 — GOM SỐ CHO Ô SOI. Chỉ ĐỌC lại đúng những con số vừa dùng ở trên, không tính lại
+      // lần nào: tính hai nơi là kiểu gì cũng có ngày lệch (bài học popup số bay v0.6).
+      const dbg = res.debug || {};
+      const allTopics = topicsOf(active.npc.id).map(w => w.id);
+      soi = {
+        brain: res.brain || null, scripted: !!res.scripted, tried: dbg.tried || [],
+        serverMs: dbg.ms != null ? dbg.ms : null, roundMs: Date.now() - netT0,
+        tokIn: res.usage ? res.usage.in : null, tokOut: res.usage ? res.usage.out : null,
+        retried: !!dbg.retried, langFixed: !!dbg.langFixed, leakFixed: !!dbg.leakFixed,
+        bench: dbg.bench || null,
+        aiVerdict: ai.verdict, verdict: vName,
+        dT: appliedV.trust, dS: appliedV.suspicion, dI: appliedV.interest, dP: appliedV.patience,
+        contradiction: contraApplied, corroboration: corroApplied,
+        thought: ai.thought || '', claim: ai.player_claim || '',
+        state: { ...st },
+        friendCode: friendCode(), friendAi: friendAi(st, diff), friendShown: friendPct(st, diff),
+        topics: active.topicsHit.slice(),
+        topicsLeft: allTopics.filter(x => active.topicsHit.indexOf(x) < 0),
+        threshold: diff.threshold,
+        inviteIntent: !!ai.invite_intent,
+        offense: offRes, offenses: active.offenses,
+        mission: dbg.mission || null, signalRaw: dbg.signal_raw || '',
+        signalFinal: dbg.signal_final || '', gateReason: dbg.gate_reason || '',
+        lang: XDH.lang, replyLang: dbg.reply_lang || null
+      };
       // v0.6 F4 — mặt CHÁN do CODE bật, không nhờ AI: nói nhạt liên tiếp là thấy ngay.
       active.blandStreak = (vName === 'thuong' || vName === 'kha_nghi')
         ? active.blandStreak + 1 : 0;
@@ -724,6 +756,21 @@ XDH.Convo = (function () {
       XDH.UI.setFriend(friendPct(st, diff));
       XDH.UI.setDoorStage(doorStage(st, diff));
       doorOpens = friendPct(st, diff) >= 100;
+    }
+    // v2.2 — ĐẨY SANG Ô SOI. Đặt ở đây vì tới lúc này mới biết cửa có mở không và VÌ SAO chưa mở.
+    if (soi && XDH.Soi) {
+      soi.doorStage = doorStage(st, diff);
+      soi.doorOpen = doorOpens;
+      soi.doorWhy = doorOpens
+        ? (XDH.lang === 'en' ? 'open — warmth is full' : 'mở rồi — thiện cảm đã đầy')
+        : active.offenseOutcome
+        ? (XDH.lang === 'en' ? 'you were rude this turn' : 'lượt này bạn buông lời hỗn')
+        : st.suspicion >= R.SUSPICION_BLOCKS
+        ? (XDH.lang === 'en' ? 'suspicion too high (' + st.suspicion + ' ≥ ' + R.SUSPICION_BLOCKS + ')'
+                             : 'nghi ngờ quá cao (' + st.suspicion + ' ≥ ' + R.SUSPICION_BLOCKS + ')')
+        : (XDH.lang === 'en' ? 'warmth still short by ' + (100 - soi.friendShown) + '%'
+                             : 'thiện cảm còn thiếu ' + (100 - soi.friendShown) + '%');
+      XDH.Soi.turn(soi);
     }
     // §3/§2b: hard house never opens on the first invite — one "câu hỏi chốt" first.
     if (doorOpens && diff.finalTest && !active.finalTestPassed) {
@@ -830,6 +877,7 @@ XDH.Convo = (function () {
     // v0.6 F2 + F5.2: thua thì có meme phản ứng, và một dòng tiếc nuối bám đúng thẻ nhân vật.
     if (!won) XDH.UI.showMeme(XDH.Memes.forEvent(police ? 'police' : 'kicked', active));
     const regret = won ? '' : regretLine();
+    if (XDH.Soi) XDH.Soi.closeConvo();
     XDH.UI.endConvo(message, won, () => {
       active = null;
       busy = false;
@@ -1071,6 +1119,7 @@ XDH.Convo = (function () {
     });
     if (XDH.isKetTien()) XDH.run.knocked++;
     active = null; busy = false;
+    if (XDH.Soi) XDH.Soi.closeConvo();
     XDH.UI.closeConvo();
     XDH.UI.refreshHud();
   }

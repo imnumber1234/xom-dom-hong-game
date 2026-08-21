@@ -693,3 +693,15 @@ Chi tiết + số đo: `report.md` mục v2.1. Đậu máy 132/132 (38+25+28+41)
   cần **gói trả phí bậc 1**; bản trial không mở tính năng đó. Không có cũng không sao — mặt vẫn đổi
   theo cảm xúc, chỉ là không mấp máy môi như Ly/Tí.
 - Còn **36/40 lượt sinh ảnh** miễn phí trong tháng của PixelLab.
+
+### ✅ 2026-08-21 khuya — v2.2 Ô SOI (Lucas xin xem AI theo thời gian thật lúc đang chơi)
+
+Cột soi dán bên phải màn hình, cập nhật từng lượt: não nào trả lời · mất bao lâu · chấm câu bạn ra sao
+· mã nguồn có nâng điểm không · 4 chỉ số + thiện cảm hai lớp · **vì sao cửa chưa mở** · rủi ro gọi công an
+· tín hiệu nhiệm vụ bị chặn vì lý do gì · ngôn ngữ. Bản thử bật sẵn, **link chính tắt**, nút 🔬 bật/tắt.
+
+Chi tiết: `report.md` mục v2.2. Đậu máy 137/137.
+
+**Phân biệt hai thứ, đừng lẫn:**
+- **Ô soi** (trong game, nút 🔬) = xem NGAY một cuộc đang nói, để hiểu con AI trước mặt.
+- **Bảng đèn** (`/dash`, cần chìa) = xem SAU, gộp nhiều người chơi, để biết người mới rơi ở khúc nào.

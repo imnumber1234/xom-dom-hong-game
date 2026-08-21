@@ -640,6 +640,11 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
     if (body.debug === true) {
       shaped.debug = {
         retried, langFixed, leakFixed,
+        // v2.2 — ô soi cần đúng ba con số này để nói thật với Lucas là AI mất bao lâu,
+        // đi qua những não nào, và cuối cùng nó viết bằng thứ tiếng gì.
+        ms: brainMs,
+        tried: res.tried || [],
+        reply_lang: guessLang(shaped.npc.dialogue),
         mission: body.mission ? { stage: body.mission.stage, clues: Number(body.mission.clues) || 0 } : null,
         signal_raw: rawSig, signal_final: gate.sig, gate_reason: gate.why,
         bench: benchState()   // não nào đang "ngồi ghế nghỉ" (giây còn lại) — soi được vì sao rơi não

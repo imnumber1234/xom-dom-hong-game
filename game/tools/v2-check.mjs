@@ -209,6 +209,28 @@ add(37, 'Xin lỗi tử tế thì lùi một nấc; lượt vừa hỗn thì c�
     files.map(f => f.split('/').pop() + ' ' + (fs.existsSync(path.join(A, f)) ? fs.statSync(path.join(A, f)).size : 0)).join(' · '));
 }
 
+// ══ v2.2 — Ô SOI thời gian thật ══════════════════════════════════════════════
+{
+  const soiSrc = fs.readFileSync(path.resolve(HERE, '../public/js/soi.js'), 'utf8');
+  add(39, 'Ô soi CHỈ ĐỌC: không có một dòng nào sửa trạng thái game',
+    !/XDH\.run\s*\.?\w*\s*=[^=]/.test(soiSrc) && !/active\./.test(soiSrc) &&
+    !/applyDeltas|XDH\.Convo\./.test(soiSrc));
+  add(40, 'Ô soi lấy SỐ ĐÃ TÍNH từ convo.js, không tự tính lại (không bao giờ lệch với game)',
+    /XDH\.Soi\.turn\(soi\)/.test(convoSrc) && /friendCode: friendCode\(\)/.test(convoSrc) &&
+    !/friendPct|rudeLevel|VERDICTS/.test(soiSrc));
+  add(41, 'Bật ô soi thì cả xóm, khung hội thoại và mọi màn phủ đều nhích sang trái',
+    /body\.soi-on #game-root\{margin-right/.test(htmlSrc) &&
+    /body\.soi-on #convo\{right/.test(htmlSrc) &&
+    /body\.soi-on \.overlay\{right/.test(htmlSrc) &&
+    /max-width:1000px/.test(htmlSrc));
+  add(42, 'Ô soi bật là máy chủ trả thêm số thật (mất bao lâu · thử qua não nào · trả lời tiếng gì)',
+    /ms: brainMs/.test(fs.readFileSync(path.join(src, 'converse.js'), 'utf8')) &&
+    /reply_lang: guessLang/.test(fs.readFileSync(path.join(src, 'converse.js'), 'utf8')) &&
+    /XDH\.Soi && XDH\.Soi\.isOn\(\)/.test(convoSrc));
+  add(43, 'LINK CHÍNH mặc định TẮT ô soi; bản thử bật sẵn; ?soi=0 tắt được',
+    /XDH\.PLAYTEST \|\| XDH\.DEBUG/.test(soiSrc) && /soi=0/.test(soiSrc) && /soi=1/.test(soiSrc));
+}
+
 console.table(checks);
 const pass = checks.filter(c => c['đạt'] === '✅').length;
 console.log(`\n>>> ${pass}/${checks.length} ĐẠT`);
