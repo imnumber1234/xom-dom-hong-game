@@ -615,3 +615,48 @@ D. Gemini ĐANG CHẾT ở bản thật (bench 597s) -> game chạy 100% bằng 
 
 **Tin tốt:** bảng từ khoá theo nhân vật ĐÃ CÓ SẴN (config.js XDH.REGRET) nhưng chỉ dùng cho câu tiếc nuối
 lúc thua + món máy đọc suy nghĩ. Nối nó vào thanh điểm là xong ý Lucas — không phải làm từ đầu.
+
+### ✅ 2026-08-21 chiều — Terminal B DỰNG XONG v2.0 (11/11 việc, 7/7 số đậu)
+
+Bản thử: **hop-kinh.xom-dom-hong.pages.dev** · bảng đèn **/dash** (cần chìa) · nhánh `v2.0-hop-kinh`.
+Chi tiết đầy đủ + bằng chứng từng con số: `report.md` mục 21/08. **Link chính chưa bị đụng.**
+
+#### 🔴 4 việc CHỜ LUCAS — em cố ý không tự làm
+
+1. **Gắn Cloudflare Access cho bảng đèn** (trang này in NGUYÊN VĂN lời người chơi).
+   Hiện đang khoá bằng mật khẩu riêng (bí mật `DASH_KEY` của môi trường preview). Không có mật khẩu là
+   khoá hẳn, không lộ gì. Chìa của máy KHÔNG mở được mục Zero Trust nên em không tự gắn được.
+   Cần gắn cho đường dẫn `/dash` và `/api/stats`. Mã nguồn đã tự nhận Access sẵn — gắn xong là chạy, khỏi sửa.
+
+2. **Gemini bị Google chặn theo VỊ TRÍ máy chủ** — `"User location is not supported for the API use"`.
+   Máy chủ Cloudflare phục vụ người chơi Việt Nam chạy ở Hồng Kông, mà Google không mở dịch vụ ở đó.
+   Đây là lý do não giỏi nhất (4,3 điểm giọng) chưa bao giờ chạy được ở bản thật. Ba đường đi:
+   · **(a) Chấp nhận** — DeepSeek gánh chính (3,7 điểm, 1,6s, đang chạy tốt). 0đ, làm gì cũng không cần.
+   · (b) Đổi sang Vertex AI của Google Cloud (có chọn vùng) — phải mở tài khoản Google Cloud, **có tiền**.
+   · (c) Tự luyện não riêng rồi chạy thẳng trên Cloudflare (kế hoạch mục 8) — cần sổ đen chạy vài trăm cuộc trước.
+   → **Em nghiêng về (a) bây giờ + (c) sau khi playtest xong.** Chờ Lucas gật.
+
+3. **Khoá Anthropic (Haiku) hết tiền từ 10/08** — `"credit balance is too low"`. Nạp tiền là nó tự sống lại,
+   không cần deploy. **Đây là việc tiêu tiền nên em không tự làm.** Không nạp cũng không sao: chuỗi vẫn còn 2 não sống.
+
+4. **Gộp `v2.0-hop-kinh` vào bản chính** — chỉ làm sau khi Lucas chơi thử bản `hop-kinh` và gật.
+
+#### ⚠️ Việc mới nảy ra (không có trong kế hoạch)
+
+5. **Máy sao lưu tự động đang commit THẲNG vào nhánh chính của mọi kho.**
+   Giữa buổi hôm nay nó tự tạo mốc *"Auto-backup 2026-08-21 09:25:07"* trên `main` của kho game, nuốt trọn
+   phần việc đang làm dở với một dòng ghi chú vô nghĩa. Em đã gom lại thành một mốc sạch trên nhánh riêng và
+   trả `main` về đúng chỗ cũ — **không mất gì**. Nhưng cái máy đó (`.claude/scripts/auto-backup-workspace.bat`)
+   vẫn đang chạy và vẫn sẽ làm vậy lần sau, trái đúng luật ghi trong README của chính kho này
+   ("nhánh riêng cho mỗi việc, không sửa thẳng vào main"). → nên cho nó ghi vào một nhánh `auto-backup` riêng.
+
+6. **Bảng đèn đang chứa cả số liệu của mấy lần thử nghiệm hôm nay** (202 lượt, 31 phiên — phần lớn là máy kiểm
+   của em chứ không phải người chơi thật). Muốn có phễu sạch cho buổi playtest thì xoá bảng đi trước khi mời
+   bạn bè vào. Câu lệnh nằm trong `report.md`. **Xoá dữ liệu nên em không tự làm.**
+
+7. **Việc vặt / mượn đồ giữa ba nhà chưa được chơi thử bằng tay từ đầu tới cuối.** Máy đã kiểm từng khúc
+   (cổng chặn, popup, quầy bán, nút đưa đồ, tiền thưởng) nhưng chưa có ai ngồi chơi hết một mạch
+   "moi chuyện Cô Sáu → sang mượn gấu bông của Tí → mang về trả". Đây là thứ **chỉ người chơi thật kiểm được**.
+
+8. **Câu 1 của kế hoạch — động cơ con sói — vẫn đang treo.** Lucas chốt "để sau". Kèm theo bài toán chưa giải:
+   chốt "nạn nhân CHẾT" nghĩa là mỗi hàng xóm chỉ dùng được MỘT lần mỗi ván, mà xóm chỉ có 3 nhà.
