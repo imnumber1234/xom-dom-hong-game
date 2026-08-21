@@ -96,7 +96,10 @@ async function turnOneTest() {
       const j = await say({
         npcId: npc, lang: 'vi', mode: 'ma_soi', night: 1, turn: 1, friend: 0,
         session: 'v2live_turn1_' + npc + '_' + i,
-        playerText: text, history: [{ role: 'npc', text: GREET[npc] }],
+        // v2.3: máy khách THẬT đẩy câu người chơi vào lịch sử TRƯỚC khi gọi. Bộ đo cũ không làm vậy
+        // nên nó đo nhầm một đường code khác — số cũ (AI chấm "nhạt" 12/12) là do AI KHÔNG HỀ
+        // ĐƯỢC ĐỌC câu đó, chứ không phải nó chấm keo. Sửa xong đo lại cho ra số thật.
+        playerText: text, history: [{ role: 'npc', text: GREET[npc] }, { role: 'player', text }],
         state: { ...START }, outfit: 'quần áo bình thường, hơi nhàu'
       });
       const ai = j && j.npc ? j.npc.verdict : null;
@@ -144,6 +147,7 @@ async function langTest(lang, lines) {
     const history = [{ role: 'npc', text: GREET[npc] }];
     const state = { ...START };
     for (let i = 0; i < lines.length; i++) {
+      history.push({ role: 'player', text: lines[i] });   // v2.3: giống hệt máy khách thật
       const j = await say({
         npcId: npc, lang, mode: 'ma_soi', night: 1, turn: i + 1,
         session: 'v2live_lang_' + lang + '_' + npc,
@@ -151,7 +155,6 @@ async function langTest(lang, lines) {
         outfit: lang === 'en' ? 'ordinary clothes, a bit rumpled' : 'quần áo bình thường, hơi nhàu'
       });
       if (!j || !j.npc) { rows.push({ npc, lượt: i + 1, 'trả lời': 'LỖI', đúng: false }); continue; }
-      history.push({ role: 'player', text: lines[i] });
       history.push({ role: 'npc', text: j.npc.dialogue });
       // cho điểm nhích lên như trong game thật, để lượt sau không nói chuyện trong chân không
       const v = { danh_trung: 16, hop_ly: 10, thuong: 0, kha_nghi: 0, lo_lieu: -8 }[j.npc.verdict] || 0;

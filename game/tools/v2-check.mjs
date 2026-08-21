@@ -218,17 +218,45 @@ add(37, 'Xin lỗi tử tế thì lùi một nấc; lượt vừa hỗn thì c�
   add(40, 'Ô soi lấy SỐ ĐÃ TÍNH từ convo.js, không tự tính lại (không bao giờ lệch với game)',
     /XDH\.Soi\.turn\(soi\)/.test(convoSrc) && /friendCode: friendCode\(\)/.test(convoSrc) &&
     !/friendPct|rudeLevel|VERDICTS/.test(soiSrc));
-  add(41, 'Bật ô soi thì cả xóm, khung hội thoại và mọi màn phủ đều nhích sang trái',
-    /body\.soi-on #game-root\{margin-right/.test(htmlSrc) &&
-    /body\.soi-on #convo\{right/.test(htmlSrc) &&
-    /body\.soi-on \.overlay\{right/.test(htmlSrc) &&
-    /max-width:1000px/.test(htmlSrc));
+  {
+    // v2.3: sót MỘT thứ dán cứng là thứ đó chui xuống dưới ô soi, bấm không được
+    // (đúng lỗi nút "Bỏ qua" của truyện mở đầu). Soát đủ CẢ DANH SÁCH, không soát mẫu.
+    const must = ['#convo', '#hud', '.overlay', '#ov-story', '#ov-kill', '#webview-warn',
+                  '#regret', '#touchpad', '#rotate-hint', '#test-badge'];
+    const missing = must.filter(x => !new RegExp('body\.soi-on ' + x.replace('.', '\.')).test(htmlSrc));
+    add(41, 'Bật ô soi thì xóm + MỌI thứ dán cứng vào màn hình đều nhích sang trái',
+      /body\.soi-on #game-root\{margin-right/.test(htmlSrc) && !missing.length &&
+      /max-width:1000px/.test(htmlSrc), missing.length ? 'còn sót: ' + missing.join(' ') : 'đủ 10 thứ');
+  }
   add(42, 'Ô soi bật là máy chủ trả thêm số thật (mất bao lâu · thử qua não nào · trả lời tiếng gì)',
     /ms: brainMs/.test(fs.readFileSync(path.join(src, 'converse.js'), 'utf8')) &&
     /reply_lang: guessLang/.test(fs.readFileSync(path.join(src, 'converse.js'), 'utf8')) &&
     /XDH\.Soi && XDH\.Soi\.isOn\(\)/.test(convoSrc));
   add(43, 'LINK CHÍNH mặc định TẮT ô soi; bản thử bật sẵn; ?soi=0 tắt được',
     /XDH\.PLAYTEST \|\| XDH\.DEBUG/.test(soiSrc) && /soi=0/.test(soiSrc) && /soi=1/.test(soiSrc));
+}
+
+// ══ v2.3 — nhân vật phải NGHE câu vừa nói ════════════════════════════════════
+{
+  const cvSrc = fs.readFileSync(path.join(src, 'converse.js'), 'utf8');
+  add(44, 'LƯỚI AN TOÀN: câu mới nhất LUÔN có mặt trong tin nhắn gửi AI, kể cả khi chỗ gọi quên đẩy vào lịch sử',
+    /messages\[messages\.length - 1\]\.role !== 'user'/.test(cvSrc) &&
+    /messages\.push\(\{ role: 'user', content: playerText \}\)/.test(cvSrc));
+  add(45, 'Luật "ĐÁP LẠI CÂU VỪA NÓI" đặt Ở CUỐI CÙNG (chỗ mô hình nhớ rõ nhất) và TRÍCH nguyên văn',
+    /LUẬT QUAN TRỌNG NHẤT CỦA LƯỢT NÀY/.test(cvSrc) &&
+    cvSrc.indexOf('LUẬT QUAN TRỌNG NHẤT CỦA LƯỢT NÀY') > cvSrc.indexOf('last.content += missionNote') &&
+    /CÂU ĐẦU TIÊN của bạn PHẢI đáp lại/.test(cvSrc));
+  add(46, 'Cấm lôi lại nghi vấn cũ đã hỏi rồi + cấm mở đầu hai lượt liền giống nhau',
+    /không lôi lại một nghi vấn mà bạn đã hỏi ở lượt trước/.test(cvSrc) &&
+    /không mở đầu hai lượt liền bằng cùng một kiểu câu/.test(cvSrc));
+  add(47, 'Máy bắt lặp bắt luôn kiểu "mở đầu giống hệt" (không chỉ trùng cả câu)',
+    /headA === head\(p, 6\)/.test(cvSrc));
+  add(48, 'Chuyện riêng của nhân vật phải NHƯỜNG chỗ cho câu người chơi vừa nói (cả 3 nhà)',
+    (fs.readFileSync(path.join(src, '_personas.js'), 'utf8').match(/LUẬT NHƯỜNG CHỖ/g) || []).length === 3);
+  add(49, 'Bộ đo bắt chước ĐÚNG máy khách thật (đẩy câu vào lịch sử trước khi gọi)',
+    /history\.push\(\{ role: 'player', text: line \}\);\s*\n\s*const j = await say/.test(
+      fs.readFileSync(path.resolve(HERE, 'listen-check.mjs'), 'utf8')) &&
+    /\{ role: 'player', text \}\]/.test(fs.readFileSync(path.resolve(HERE, 'v2-live.mjs'), 'utf8')));
 }
 
 console.table(checks);

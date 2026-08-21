@@ -1,6 +1,6 @@
 {
- "pass": 43,
- "total": 43,
+ "pass": 49,
+ "total": 49,
  "checks": [
   {
    "#": 1,
@@ -244,9 +244,9 @@
   },
   {
    "#": 41,
-   "mục": "Bật ô soi thì cả xóm, khung hội thoại và mọi màn phủ đều nhích sang trái",
+   "mục": "Bật ô soi thì xóm + MỌI thứ dán cứng vào màn hình đều nhích sang trái",
    "đạt": "✅",
-   "bằng chứng": ""
+   "bằng chứng": "đủ 10 thứ"
   },
   {
    "#": 42,
@@ -257,6 +257,42 @@
   {
    "#": 43,
    "mục": "LINK CHÍNH mặc định TẮT ô soi; bản thử bật sẵn; ?soi=0 tắt được",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 44,
+   "mục": "LƯỚI AN TOÀN: câu mới nhất LUÔN có mặt trong tin nhắn gửi AI, kể cả khi chỗ gọi quên đẩy vào lịch sử",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 45,
+   "mục": "Luật \"ĐÁP LẠI CÂU VỪA NÓI\" đặt Ở CUỐI CÙNG (chỗ mô hình nhớ rõ nhất) và TRÍCH nguyên văn",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 46,
+   "mục": "Cấm lôi lại nghi vấn cũ đã hỏi rồi + cấm mở đầu hai lượt liền giống nhau",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 47,
+   "mục": "Máy bắt lặp bắt luôn kiểu \"mở đầu giống hệt\" (không chỉ trùng cả câu)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 48,
+   "mục": "Chuyện riêng của nhân vật phải NHƯỜNG chỗ cho câu người chơi vừa nói (cả 3 nhà)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 49,
+   "mục": "Bộ đo bắt chước ĐÚNG máy khách thật (đẩy câu vào lịch sử trước khi gọi)",
    "đạt": "✅",
    "bằng chứng": ""
   }

@@ -1,0 +1,117 @@
+{
+ "base": "https://hop-kinh.xom-dom-hong.pages.dev",
+ "runId": "listen_mt2qv063",
+ "deaf": 1,
+ "repeat": 0,
+ "total": 12,
+ "rows": [
+  {
+   "npc": "me_bim_sua",
+   "lượt": 1,
+   "bạn nói": "Good evening. I am a delivery driver, I have…",
+   "nó có nhắc lại chữ nào": "delivery,driver,house",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "A delivery driver at midnight? My goodness, what on earth could be so "
+  },
+  {
+   "npc": "me_bim_sua",
+   "lượt": 2,
+   "bạn nói": "I can buy you a coffee if you want, there is…",
+   "nó có nhắc lại chữ nào": "buy,coffee",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "Buy me coffee? At midnight? My goodness, you must be *very* tired — or"
+  },
+  {
+   "npc": "me_bim_sua",
+   "lượt": 3,
+   "bạn nói": "By the way, do you know if the bus station i…",
+   "nó có nhắc lại chữ nào": "bus,station",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "The bus station? At midnight? My goodness, even the *dust* is asleep d"
+  },
+  {
+   "npc": "me_bim_sua",
+   "lượt": 4,
+   "bạn nói": "My phone died at noon so I have been walking…",
+   "nó có nhắc lại chữ nào": "phone,noon,been",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "A charger? My goodness, you’ve been walking since *noon* — that’s eigh"
+  },
+  {
+   "npc": "me_bim_sua",
+   "lượt": 5,
+   "bạn nói": "Honestly the weather tonight is really nice,…",
+   "nó có nhắc lại chữ nào": "weather,nice",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "Nice weather? My goodness, yes — *too* nice, you hear? Like the kind t"
+  },
+  {
+   "npc": "me_bim_sua",
+   "lượt": 6,
+   "bạn nói": "What do you do for work, if you do not mind …",
+   "nó có nhắc lại chữ nào": "what,work,not",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "What do I do for work? My goodness, I’m a full-time baby wrangler — Bi"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 1,
+   "bạn nói": "Hi, sorry — I am a delivery driver, wrong ad…",
+   "nó có nhắc lại chữ nào": "delivery,driver",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "Delivery driver? At midnight? 😌 Just saying — you’re either slaying o"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 2,
+   "bạn nói": "I can buy you a bubble tea if you want, the …",
+   "nó có nhắc lại chữ nào": "bridge",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "Oh, you’re *buying*? 😌 Not just delivering — that’s a whole vibe upgr"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 3,
+   "bạn nói": "Do you know if the bus station still runs th…",
+   "nó có nhắc lại chữ nào": "bus,station",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "Bus station? At 12:17 AM? 😌 Girl, I’ve filmed TikToks there — it’s li"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 4,
+   "bạn nói": "My phone died at noon, could I borrow a char…",
+   "nó có nhắc lại chữ nào": "phone,died,noon",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "Phone died at *noon*? 😌 SOS… that charger’s been in my drawer since 2"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 5,
+   "bạn nói": "The weather is actually really nice tonight.…",
+   "nó có nhắc lại chữ nào": "weather,nice",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "Weather’s nice? 😌 Uh-huh… and my ex’s ‘I’m fine’ texts also start wit"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 6,
+   "bạn nói": "What do you do for work, if I may ask?…",
+   "nó có nhắc lại chữ nào": "❌ KHÔNG",
+   "lặp mở đầu": "không",
+   "não": "qwen",
+   "thoại": "I make TikToks. 500k followers. 'Xóm Đóm Hòng' is literally my brand \ud83d"
+  }
+ ]
+}

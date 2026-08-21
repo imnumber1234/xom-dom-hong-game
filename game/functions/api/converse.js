@@ -483,6 +483,17 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
     return json({ ok: true, scripted: true, npc: so });
   }
 
+  // ══ v2.3 LƯỚI AN TOÀN — CÂU MỚI NHẤT PHẢI CÓ MẶT, KHÔNG ĐƯỢC THIẾU ══════════
+  // Máy khách đẩy câu người chơi vào `history` TRƯỚC khi gọi, nên bình thường tin nhắn cuối
+  // đã là câu đó. Nhưng nếu chỗ gọi nào quên (bài kiểm, máy khách cũ, mạng cắt giữa chừng)
+  // thì tin nhắn cuối là lời của CHÍNH NHÂN VẬT — và khi đó TOÀN BỘ phần dặn dò phía dưới
+  // (trạng thái ngầm · nhiệm vụ · nhại giọng · luật ĐÁP LẠI CÂU VỪA NÓI) bị bỏ qua sạch,
+  // mà câu người chơi cũng KHÔNG hề được đưa vào. AI trả lời trong chân không.
+  // Bắt được 21/08 lúc đo "nhân vật có nghe không": nó trả lời chậm đúng MỘT LƯỢT.
+  if (playerText.trim() && messages[messages.length - 1].role !== 'user') {
+    messages.push({ role: 'user', content: playerText });
+  }
+
   // Hidden state hint on the last user turn (helps calibrate tone + invite pacing)
   const last = messages[messages.length - 1];
   if (last.role === 'user') {
@@ -545,6 +556,33 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
     const prevPlayer = history.filter(h => h.role === 'player').slice(0, -1).map(h => String(h.text || ''));
     if (isRepeatLine(playerText, prevPlayer)) {
       last.content += '\n[Đạo diễn: người lạ vừa HỎI LẠI gần y nguyên câu cũ. Nhân vật NHẬN RA điều đó và phản ứng đúng tính cách (bực nhẹ, đùa kiểu "hỏi hoài dạ", hoặc trả lời cụt hơn) — tuyệt đối không trả lời lại giống lần trước.]';
+    }
+    // ══ v2.3 — LUẬT QUAN TRỌNG NHẤT, ĐẶT CUỐI CÙNG (chỗ mô hình nhớ rõ nhất) ══════════
+    // Lucas bắt lỗi 21/08: nói "I can buy you coffee" với Cô Sáu, cô đáp lại bằng gần y nguyên
+    // câu cũ về bé Bin — không hề nhắc tới cà phê. Đo lại bằng tools/listen-check.mjs:
+    // **1/12 lượt** mới thật sự đáp lại câu người chơi vừa nói. Nhân vật bám chết vào câu ĐẦU TIÊN
+    // rồi tra khảo lại mãi ("A delivery driver? At midnight?") suốt 6 lượt liền.
+    //
+    // Gốc rễ: cả bộ prompt đang dạy nhân vật ĐI SOI người lạ + ĐẨY chuyện riêng của mình, mà
+    // KHÔNG có một dòng nào bảo "trước hết hãy trả lời đúng thứ họ vừa nói". Thêm dòng đó vào,
+    // và đặt nó ở CUỐI CÙNG để nó thắng mọi khối phía trên.
+    if (playerText.trim()) {
+      const quoted = playerText.trim().slice(0, 300);
+      last.content += lang === 'en'
+        ? `\n\n[DIRECTOR — THE MOST IMPORTANT RULE OF THIS TURN. The stranger JUST said, word for word:
+"${quoted}"
+Your FIRST sentence must respond to THAT — accept it, refuse it, thank them, question it, tease it, whatever fits you. Only AFTER you have answered may you go back to what is on your own mind.
+· NEVER reply as if they had said nothing new.
+· NEVER re-open a doubt you already raised in an earlier turn and they already answered. Ask it once; then move on.
+· NEVER open two turns in a row with the same kind of sentence.
+A real person answers the sentence in front of them first. Be a real person.]`
+        : `\n\n[ĐẠO DIỄN — LUẬT QUAN TRỌNG NHẤT CỦA LƯỢT NÀY. Người lạ VỪA NÓI, nguyên văn:
+"${quoted}"
+CÂU ĐẦU TIÊN của bạn PHẢI đáp lại đúng thứ đó — đồng ý, từ chối, cảm ơn, hỏi vặn, mỉa mai… kiểu gì cũng được miễn đúng tính nết bạn. Đáp xong RỒI mới được quay về chuyện riêng của mình.
+· TUYỆT ĐỐI không trả lời như thể họ chưa nói gì mới.
+· TUYỆT ĐỐI không lôi lại một nghi vấn mà bạn đã hỏi ở lượt trước và họ đã trả lời rồi. Hỏi một lần thôi, rồi đi tiếp.
+· TUYỆT ĐỐI không mở đầu hai lượt liền bằng cùng một kiểu câu.
+Người thật thì trả lời câu đang đứng trước mặt mình trước đã. Hãy là người thật.]`;
     }
   }
 
@@ -732,12 +770,18 @@ async function askBrain(env, system, messages, tool = NPC_TOOL, opts = {}) {
 // Chuẩn hoá rồi so với các câu NPC gần nhất: trùng hệt, hoặc câu ngắn nằm gần nguyên trong câu dài.
 export function isRepeatLine(line, prevLines) {
   const norm = (s) => String(s || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  // v2.3: mấy chữ ĐẦU của câu — bệnh Lucas bắt được 21/08 là hai câu khác nhau ở giữa nhưng
+  // mở đầu y hệt ("Oh my goodness — she's been … since 3 PM"), nên so cả câu thì lọt lưới.
+  const head = (s, n) => norm(s).split(' ').filter(Boolean).slice(0, n).join(' ');
   const a = norm(line);
   if (a.length < 12) return false;
+  const headA = head(line, 6);
   return (prevLines || []).some(p => {
     const b = norm(p);
     if (!b || b.length < 12) return false;
     if (a === b) return true;
+    // mở đầu 6 chữ giống hệt = coi như lặp, dù phần sau có khác
+    if (headA && headA.split(' ').length >= 4 && headA === head(p, 6)) return true;
     const [short, long] = a.length <= b.length ? [a, b] : [b, a];
     return short.length >= 20 && long.includes(short.slice(0, Math.ceil(short.length * 0.8)));
   });

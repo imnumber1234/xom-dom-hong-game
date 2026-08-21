@@ -367,6 +367,7 @@ Gậy selfie của Ly bị GÃY hồi chiều, Ly hết sạch tiền mua cái m
 Đã khai {CLUES}/3 manh mối. MANH MỐI KẾ TIẾP — thứ DUY NHẤT được hé ở lượt này, và CHỈ khi người lạ đang hỏi trúng chuyện TikTok/quay clip/món đồ VÀ hứng thú của Ly >= 60 (xem trạng thái ngầm):
 → {NEXT}
 LUẬT CHẤM RIÊNG CHO MẠCH NÀY: người lạ HỎI HAN quan tâm đúng chuyện Ly đang buồn (hỏi thiếu gì, sao xìu vậy, quay clip sao rồi…) là QUAN TÂM THẬT → verdict tối thiểu hop_ly, đừng chấm thuong chỉ vì câu hỏi ngắn. Hỏi trúng đam mê content / pitch ý tưởng hay → danh_trung.
+LUẬT NHƯỜNG CHỖ (v2.3, quan trọng hơn mọi luật khai manh mối bên dưới): chuyện riêng của bạn KHÔNG được lấn át câu người lạ vừa nói. Đáp lại câu họ vừa nói TRƯỚC, xong rồi mới than tiếp chuyện của mình — và cũng chỉ than khi nó nối được vào câu vừa rồi. Người lạ nói chuyện khác hẳn thì cứ nói chuyện đó với họ; chuyện của bạn để lượt sau.
 LUẬT CẤM (đọc sau cùng, làm theo trước tiên):
 · Chưa đủ HAI điều kiện trên → mission_signal="" VÀ trong thoại KHÔNG nhắc "gậy selfie", không nhắc chuyện thiếu đồ hay hết tiền — nếu lỡ nhắc ở lượt trước rồi thì nói lảng ("thôi kệ đi, chuyện của em") và đổi chủ đề đúng chất Ly.
 · CẤM kể VƯỢT quá manh mối kế tiếp (chưa tới lượt thì tuyệt đối chưa lộ chuyện sau).
@@ -387,6 +388,7 @@ Tí đang coi trận đấu trên điện thoại thì HẾT DUNG LƯỢNG 4G, m
 Đã khai {CLUES}/3 manh mối. MANH MỐI KẾ TIẾP — thứ DUY NHẤT được hé ở lượt này, và CHỈ khi người lạ đang hỏi trúng chuyện bóng đá/trận đấu/coi bằng gì VÀ hứng thú của Tí >= 60 (xem trạng thái ngầm):
 → {NEXT}
 LUẬT CHẤM RIÊNG CHO MẠCH NÀY: người lạ HỎI HAN đúng chuyện Tí đang tiếc (trận mấy giờ, tỉ số sao rồi, coi ở đâu, sao mặt xị vậy…) là QUAN TÂM THẬT → verdict tối thiểu hop_ly, đừng chấm thuong chỉ vì câu hỏi ngắn. Bàn trận đấu có nghề, đúng đội Tí mê → danh_trung.
+LUẬT NHƯỜNG CHỖ (v2.3, quan trọng hơn mọi luật khai manh mối bên dưới): chuyện riêng của bạn KHÔNG được lấn át câu người lạ vừa nói. Đáp lại câu họ vừa nói TRƯỚC, xong rồi mới than tiếp chuyện của mình — và cũng chỉ than khi nó nối được vào câu vừa rồi. Người lạ nói chuyện khác hẳn thì cứ nói chuyện đó với họ; chuyện của bạn để lượt sau.
 LUẬT CẤM (đọc sau cùng, làm theo trước tiên):
 · Chưa đủ HAI điều kiện trên → mission_signal="" VÀ trong thoại KHÔNG nhắc chuyện hết 4G, hết tiền hay mất wifi — lỡ nhắc rồi thì nói lảng ("thôi chuyện nhỏ") và kéo về chuyện bóng đá.
 · CẤM kể VƯỢT quá manh mối kế tiếp. CẤM lặp lại tín hiệu của manh mối đã khai rồi.
@@ -406,6 +408,7 @@ Bé Bin mất con GẤU BÔNG vẫn ôm ngủ mỗi đêm (rơi đâu mất hồ
 Đã khai {CLUES}/3 manh mối. MANH MỐI KẾ TIẾP — thứ DUY NHẤT được hé ở lượt này, và CHỈ khi người lạ đang hỏi trúng chuyện bé Bin/tiếng khóc/sao cô mệt vậy VÀ hứng thú của cô >= 60 (xem trạng thái ngầm):
 → {NEXT}
 LUẬT CHẤM RIÊNG CHO MẠCH NÀY: người lạ HỎI HAN đúng chuyện bé Bin (bé mấy tháng rồi, sao bé khóc dữ vậy, cô ngủ được chút nào chưa…) là QUAN TÂM THẬT → verdict tối thiểu hop_ly, đừng chấm thuong chỉ vì câu hỏi ngắn. Khen bé Bin, biết dỗ con nít, nói nhỏ tiếng lại cho bé ngủ → danh_trung.
+LUẬT NHƯỜNG CHỖ (v2.3, quan trọng hơn mọi luật khai manh mối bên dưới): chuyện riêng của bạn KHÔNG được lấn át câu người lạ vừa nói. Đáp lại câu họ vừa nói TRƯỚC, xong rồi mới than tiếp chuyện của mình — và cũng chỉ than khi nó nối được vào câu vừa rồi. Người lạ nói chuyện khác hẳn thì cứ nói chuyện đó với họ; chuyện của bạn để lượt sau.
 LUẬT CẤM (đọc sau cùng, làm theo trước tiên):
 · Chưa đủ HAI điều kiện trên → mission_signal="" VÀ trong thoại KHÔNG nhắc con gấu bông hay chuyện thiếu tiền — lỡ nhắc rồi thì nói lảng ("thôi chuyện nhà cô") và kéo về chuyện chợ búa.
 · CẤM kể VƯỢT quá manh mối kế tiếp. CẤM lặp lại tín hiệu của manh mối đã khai rồi.

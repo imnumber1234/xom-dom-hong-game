@@ -705,3 +705,15 @@ Chi tiết: `report.md` mục v2.2. Đậu máy 137/137.
 **Phân biệt hai thứ, đừng lẫn:**
 - **Ô soi** (trong game, nút 🔬) = xem NGAY một cuộc đang nói, để hiểu con AI trước mặt.
 - **Bảng đèn** (`/dash`, cần chìa) = xem SAU, gộp nhiều người chơi, để biết người mới rơi ở khúc nào.
+
+### ✅ 2026-08-21 chiều muộn — v2.3 SỬA "NÓ KHÔNG NGHE EM NÓI"
+
+Hai lỗi chồng nhau: (1) thiếu hẳn luật "trả lời câu vừa nói trước đã" · (2) câu mới nhất có lúc
+KHÔNG được gửi cho AI nên nó trả lời chậm một lượt. Đo: **1/12 → 11/12**; trình duyệt thật **4/4**.
+Chi tiết: `report.md` mục v2.3.
+
+**⚠️ Đính chính một con số đã báo:** "AI tự chấm nhạt 12/12" là **đo nhầm đường code** (bộ đo dính
+đúng lỗi 2). Đo lại: **3/12**. Số đậu 4 vẫn đạt (người chơi nhận 0/12 câu "nhạt").
+
+**Luật mới cho mọi bộ đo về sau:** bộ đo phải bắt chước **đúng đường máy khách thật đi**
+(ở đây là: đẩy câu người chơi vào lịch sử TRƯỚC khi gọi). Đã sửa `listen-check.mjs` + `v2-live.mjs`.

@@ -868,3 +868,57 @@ cứng vào màn hình. Nay **liệt kê đủ 10 thứ** dán cứng và nhích
 `v2-check` **43/43** (thêm 5 mục cho ô soi) · `mission-check` **25/25** ·
 `v2-browser` **28/28** · `press-slot` **41/41**.
 Ảnh: `game/shots/v22-soi.png` · `v22-soi-hon.png`.
+
+---
+
+# 👂 v2.3 — "NÓ KHÔNG NGHE EM NÓI" (2026-08-21, vòng 4) — LỖI NẶNG NHẤT TỪ ĐẦU DỰ ÁN
+
+Lucas: *"the AI is not even seeing and replying to my sentence"* · *"it keeps blabbing about her
+kids every time, no matter what I do"*.
+
+## Đo trước, không đoán
+
+Dựng `tools/listen-check.mjs`: nói 6 câu chẳng liên quan gì tới chuyện của nhân vật, rồi đếm xem
+câu trả lời có nhắc lại thứ vừa nói không. **Kết quả lần đầu: 1/12 lượt.** Tệ hơn Lucas mô tả —
+nhân vật bám chết vào câu ĐẦU TIÊN rồi tra khảo lại suốt 6 lượt (*"A delivery driver? At midnight?"*),
+mọi câu sau đó coi như không tồn tại.
+
+## Hai lỗi chồng lên nhau
+
+**Lỗi 1 — thiếu hẳn một luật.** Cả bộ lời dặn đang dạy nhân vật *đi soi người lạ* và *đẩy chuyện
+riêng của mình*, mà **không có một dòng nào bảo "trước hết hãy trả lời đúng thứ họ vừa nói"**.
+Sửa: thêm khối đạo diễn TRÍCH NGUYÊN VĂN câu vừa nói, đặt **ở vị trí cuối cùng** — chỗ mô hình nhớ
+rõ nhất, để nó thắng mọi khối phía trên. Kèm hai lệnh cấm: không lôi lại nghi vấn đã hỏi rồi,
+không mở đầu hai lượt liền giống nhau. Ba khối nhiệm vụ cũng thêm **luật nhường chỗ**.
+→ 1/12 lên **3/12**. Có nhích, nhưng vẫn hỏng. Nghĩa là còn lỗi khác.
+
+**Lỗi 2 — câu mới nhất có lúc KHÔNG HỀ được gửi cho AI.** Nhìn kỹ bảng đo mới thấy: câu trả lời
+**chậm đúng MỘT LƯỢT**. Lượt 3 đang trả lời câu của lượt 2.
+Gốc: máy chủ chỉ gắn phần dặn dò (trạng thái ngầm · nhiệm vụ · nhại giọng · luật mới) **khi tin
+nhắn cuối cùng là lời NGƯỜI CHƠI**. Máy khách thật có đẩy câu vào lịch sử trước khi gọi nên bình
+thường không sao — nhưng chỗ nào quên là **toàn bộ phần dặn dò bị bỏ qua sạch, và câu người chơi
+cũng không được đưa vào**. AI trả lời trong chân không.
+Sửa: thêm **lưới an toàn** — tin nhắn cuối không phải lời người chơi thì máy chủ tự chèn câu đó vào.
+
+**Kết quả sau khi sửa cả hai: 11/12** (câu "trượt" duy nhất là *"What do you do for work?"* →
+*"I make TikToks, 500k followers"* — trả lời hoàn hảo, chỉ là không dùng lại chữ trong câu hỏi;
+đó là giới hạn của cái thước, không phải lỗi game).
+
+**Kiểm bằng trình duyệt thật, đúng đường Lucas chơi: 4/4.** Cô Sáu đáp đúng từng câu — và còn bắt
+được mâu thuẫn: *"nếu điện thoại chết từ trưa thì lấy đâu ra đơn giao hàng?"*
+
+## ⚠️ Phải nói lại cho đúng: một con số em báo hôm nay là SAI
+
+Bộ đo `v2-live.mjs` dính đúng lỗi 2 ở trên. Nên câu em báo lúc chiều —
+*"AI tự chấm nhạt 12/12, nhờ lớp mã nguồn mới cứu"* — **đo nhầm đường code**.
+Đo lại cho đúng: **AI tự chấm "nhạt" chỉ 3/12**. Nó không hề chấm keo; nó chỉ **không được đọc câu
+của người chơi**. Lớp mã nguồn vẫn cần (vẫn còn 3 câu), nhưng công của nó nhỏ hơn em đã nói.
+Số đậu 4 vẫn ĐẠT: **0/12 câu trúng tim rơi vào "nhạt"** đối với người chơi.
+
+> Bài học ghi vào sổ: **bộ đo phải đi ĐÚNG con đường mà người chơi đi.** Bộ đo đi đường khác thì
+> mọi con số nó in ra đều vô nghĩa — mà lại trông rất thuyết phục.
+
+## Đậu máy — 143/143
+
+`v2-check` **49/49** (thêm 6 mục cho vòng này) · `mission-check` **25/25** ·
+`v2-browser` **28/28** · `press-slot` **41/41** · `listen-check` **11/12** · `v2-live` ngôn ngữ **20/20 + 20/20**.
