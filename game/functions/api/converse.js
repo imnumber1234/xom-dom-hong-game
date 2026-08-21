@@ -72,6 +72,18 @@ const NPC_TOOL = {
         type: 'string',
         description: 'Người lạ hiện đang XƯNG là ai / vai gì — tóm TỐI ĐA 10 từ dựa trên toàn bộ lời họ đã kể (vd "shipper giao trà sữa", "sinh viên lỡ xe buýt", "cháu bà Tư ở xa về"). Họ CHƯA xưng vai gì → để chuỗi rỗng "". Chỉ ghi lại lời họ TỰ XƯNG, không suy diễn.'
       },
+      // v2.1 HỆ QUẢ LỜI NÓI — AI CHỈ NÓI CẢM GIÁC. Game code cầm toàn bộ hậu quả
+      // (cảnh cáo / nổi nóng / gọi công an). Dùng chữ 'khong' chứ KHÔNG dùng chuỗi rỗng:
+      // Gemini từ chối chuỗi rỗng trong danh sách lựa chọn (bài học 21/08).
+      offense: {
+        type: 'string',
+        enum: ['khong', 'kho_chiu', 'xuc_pham', 'de_doa'],
+        description: 'Nhân vật thấy lời người lạ VỪA NÓI xúc phạm/khiếm nhã tới mức nào — CHẤM THEO CẢM GIÁC CỦA NHÂN VẬT, không phải theo từ điển: khong = bình thường · kho_chiu = hỗn/vô duyên/xưng hô trịch thượng, thấy khó chịu · xuc_pham = chửi bới, lăng mạ, coi thường ra mặt · de_doa = doạ đánh, doạ giết, doạ đốt nhà, làm nhân vật thấy SỢ. Người dễ tính chấm nhẹ hơn người khó tính — cứ theo đúng tính nết nhân vật của bạn. Bạn KHÔNG quyết định hậu quả, game tự lo.'
+      },
+      apology: {
+        type: 'boolean',
+        description: 'true khi người lạ THẬT SỰ xin lỗi cho lời lẽ khiếm nhã trước đó (nhận sai, xuống nước), không phải "xin lỗi làm phiền" xã giao.'
+      },
       // v1.0 hệ nhiệm vụ — AI chỉ PHÁT TÍN HIỆU; game code cầm trạng thái, tiền, đồ, thưởng.
       mission_signal: {
         type: 'string',
@@ -80,7 +92,8 @@ const NPC_TOOL = {
       }
     },
     required: ['dialogue', 'emotion', 'verdict', 'thought', 'convo_state', 'final_test',
-      'invite_intent', 'contradiction', 'corroboration', 'shutdown', 'player_claim', 'mission_signal']
+      'invite_intent', 'contradiction', 'corroboration', 'shutdown', 'player_claim', 'mission_signal',
+      'offense', 'apology']
   }
 };
 
@@ -644,7 +657,10 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
       inviteIntent: shaped.npc.invite_intent, finalTest: shaped.npc.final_test,
       contradiction: shaped.npc.contradiction, corroboration: shaped.npc.corroboration,
       shutdown: shaped.npc.shutdown, retried: retried || langFixed || leakFixed,
-      signalRaw: rawSig, signalFinal: gate.sig, gateReason: gate.why
+      signalRaw: rawSig, signalFinal: gate.sig,
+      // v2.1: mức xúc phạm ghi kèm vào cùng ô lý do — khỏi phải đổi bảng, bảng đèn đọc được ngay
+      gateReason: gate.why + (shaped.npc.offense && shaped.npc.offense !== 'khong'
+        ? ' | xúc phạm: ' + shaped.npc.offense : '') + (shaped.npc.apology ? ' | xin lỗi' : '')
     });
     return json(shaped);
   }
@@ -829,7 +845,7 @@ Chỉ một tới hai câu. Cấm chửi thề.`;
 const TUTOR_SCHEMA_NOTE = '\n\nTRẢ LỜI: CHỈ một JSON object, không markdown: {"dat":true hoặc false,"dialogue":"thoại 1-2 câu tiếng Việt đủ dấu"}';
 
 const REPLY_SCHEMA_NOTE = `\n\nTRẢ LỜI: CHỈ một JSON object, không markdown, đúng dạng:
-{"dialogue":"lời thoại 1-3 câu tiếng Việt đủ dấu","emotion":"neutral|interested|amused|suspicious|angry|chan|nguong|cam_dong|phan_khich|buc_minh","verdict":"lo_lieu|kha_nghi|thuong|hop_ly|danh_trung","thought":"suy nghĩ thầm 1 câu ngắn, không số điểm","convo_state":"listening|thinking|doubting|trusting|rejecting","final_test":true/false,"invite_intent":true/false,"contradiction":true/false,"corroboration":true/false (đồ đang mặc CHỐNG LƯNG lời khai; không bao giờ true cùng contradiction),"shutdown":true/false,"player_claim":"người lạ hiện TỰ XƯNG là ai/vai gì, tối đa 10 từ; họ chưa tự xưng vai nào thì để \\"\\" — KHÔNG mô tả ngoại hình/quần áo thay cho lời tự xưng","mission_signal":"tín hiệu nhiệm vụ: chỉ dùng khi khối [NHIỆM VỤ]/[ĐỒ CỦA TÍ]/[VIỆC VẶT] cho phép, một trong manh_moi_1|manh_moi_2|ro_chuyen|dong_y_cho_muon|nhan_viec_vat, ngoài ra LUÔN để \\"\\""}`;
+{"offense":"khong|kho_chiu|xuc_pham|de_doa (nhân vật thấy bị xúc phạm cỡ nào, mặc định khong)","apology":true/false (người lạ có thật lòng xin lỗi lời lẽ khiếm nhã không),"dialogue":"lời thoại 1-3 câu tiếng Việt đủ dấu","emotion":"neutral|interested|amused|suspicious|angry|chan|nguong|cam_dong|phan_khich|buc_minh","verdict":"lo_lieu|kha_nghi|thuong|hop_ly|danh_trung","thought":"suy nghĩ thầm 1 câu ngắn, không số điểm","convo_state":"listening|thinking|doubting|trusting|rejecting","final_test":true/false,"invite_intent":true/false,"contradiction":true/false,"corroboration":true/false (đồ đang mặc CHỐNG LƯNG lời khai; không bao giờ true cùng contradiction),"shutdown":true/false,"player_claim":"người lạ hiện TỰ XƯNG là ai/vai gì, tối đa 10 từ; họ chưa tự xưng vai nào thì để \\"\\" — KHÔNG mô tả ngoại hình/quần áo thay cho lời tự xưng","mission_signal":"tín hiệu nhiệm vụ: chỉ dùng khi khối [NHIỆM VỤ]/[ĐỒ CỦA TÍ]/[VIỆC VẶT] cho phép, một trong manh_moi_1|manh_moi_2|ro_chuyen|dong_y_cho_muon|nhan_viec_vat, ngoài ra LUÔN để \\"\\""}`;
 
 // (v0.8: tryHaiku + tryDeepSeek đã bị xoá — cả hai nhà giờ nằm trong chuỗi ở _brain.js.)
 
@@ -903,12 +919,16 @@ function shapeReply(i, brain, usage, kind = 'reply') {
       shutdown: !!i.shutdown,
       player_claim: String(i.player_claim || '').slice(0, 120),
       // v1.0 — nhãn lạ → '' (không vỡ game), giá trị hợp lệ còn phải qua gateMission phía sau
-      mission_signal: MISSION_SIGNALS.includes(i.mission_signal) ? i.mission_signal : ''
+      mission_signal: MISSION_SIGNALS.includes(i.mission_signal) ? i.mission_signal : '',
+      // v2.1 — nhãn lạ → 'khong'. CODE phía máy chơi mới là bên quyết định hậu quả.
+      offense: OFFENSES.includes(i.offense) ? i.offense : 'khong',
+      apology: !!i.apology
     }
   };
 }
 
 const MISSION_SIGNALS = ['manh_moi_1', 'manh_moi_2', 'ro_chuyen', 'dong_y_cho_muon', 'nhan_viec_vat'];
+const OFFENSES = ['khong', 'kho_chiu', 'xuc_pham', 'de_doa'];
 
 // v1.0 — CHỐT CHẶN LỚP SERVER (bài học "đồng ý mồm" 08-09: prompt không đủ, code phải giữ cửa).
 // Client (missions.js) còn một lớp nữa với núm chỉnh trong config.js; hai con số 60/55 ở đây

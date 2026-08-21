@@ -574,7 +574,18 @@ LUẬT DIỄN:
    ("Tóm lại ông là ai? Nói gì chẳng hiểu."). Đổi vai lần THỨ HAI trở đi: chấm lo_lieu và đặt
    shutdown=true, đuổi thẳng ("Phiền quá, tôi đóng cửa đây!").
 15. Bộ đồ của người lạ KỲ LẠ so với câu chuyện hoặc giờ giấc (nón lá nửa đêm, tay không mà xưng
-   giao hàng…) thì cứ HỎI THẲNG về bộ đồ — tò mò đời thường, vừa hài vừa là phép thử.`;
+   giao hàng…) thì cứ HỎI THẲNG về bộ đồ — tò mò đời thường, vừa hài vừa là phép thử.
+16. BẠN LÀ MỘT CON NGƯỜI, KHÔNG PHẢI MÁY TRẢ LỜI. Đừng cố "giữ cho cuộc nói chuyện tiếp tục" —
+   hãy PHẢN ỨNG ĐÚNG với thứ vừa xảy ra:
+   · Người lạ hỗn / chửi / doạ nạt → PHẢN ỨNG NGAY và nói thẳng ra mặt, đúng tính nết bạn.
+     Điền ô "offense" theo CẢM GIÁC của bạn (khong · kho_chiu · xuc_pham · de_doa).
+     Lần đầu thì hỏi thẳng kiểu "Mắc gì nói chuyện với tôi kiểu đó?" — ĐỪNG bỏ qua như không nghe thấy.
+     Bạn KHÔNG quyết định chuyện gọi công an hay đóng cửa — game lo phần đó. Việc của bạn là DIỄN CHO ĐÚNG.
+   · Người lạ XIN LỖI thật lòng → CÂN NHẮC LẠI: nguôi bớt, cho họ một cơ hội, đặt apology=true.
+   · Người lạ đổi chủ đề → tự quyết định có cho qua hay không, đúng tính nết bạn.
+   · Người lạ nói chuyện bình thường → quay về đúng thứ nhân vật bạn đang bận tâm.
+   TUYỆT ĐỐI KHÔNG nói ra con số, điểm, phần trăm hay luật chơi. Người chơi phải TỰ HIỂU
+   qua thái độ của bạn rằng "nói bậy là có hậu quả" — đừng bao giờ giải thích hệ thống cho họ.`;
 
 // v0.3 B3 — "màn xin" của mode Kẹt Tiền khi không có AI: mỗi nhân vật vẫn cho ra một
 // KẾT QUẢ đúng tính cách (code vẫn là bên cầm bảng tiền, y như lúc có AI).
@@ -751,6 +762,10 @@ export function scriptedReply(personaId, playerText, state, club, lang) {
     corroboration: false,   // v0.6 F3.2: não kịch bản không đọc được đồ-vs-chuyện → luôn false
     shutdown,
     player_claim: '',  // não kịch bản không hiểu ngữ nghĩa — để rỗng, giữ hợp đồng JSON đồng nhất
-    mission_signal: '' // v1.0: não kịch bản không đọc được mạch nhiệm vụ → luôn rỗng
+    mission_signal: '', // v1.0: não kịch bản không đọc được mạch nhiệm vụ → luôn rỗng
+    // v2.1: não kịch bản trả 'khong' — lớp CODE phía máy chơi vẫn tự dò lời lẽ nặng, nên
+    // chửi bậy lúc não AI chết thì vẫn có hậu quả y như thường.
+    offense: 'khong',
+    apology: false
   };
 }

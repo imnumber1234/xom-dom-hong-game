@@ -660,3 +660,36 @@ Chi tiết đầy đủ + bằng chứng từng con số: `report.md` mục 21/0
 
 8. **Câu 1 của kế hoạch — động cơ con sói — vẫn đang treo.** Lucas chốt "để sau". Kèm theo bài toán chưa giải:
    chốt "nạn nhân CHẾT" nghĩa là mỗi hàng xóm chỉ dùng được MỘT lần mỗi ván, mà xóm chỉ có 3 nhà.
+
+#### ✅ 2026-08-21 tối — LUCAS TRẢ LỜI 4 câu
+
+| # | Câu | Lucas chốt | Hệ quả |
+|---|---|---|---|
+| 1 | Cloudflare Access cho bảng đèn | **CÓ — xin hướng dẫn từng bước** | ⚠️ Đụng một mâu thuẫn: chìa khoá Access của Cloudflare Pages **chỉ bật được cho TOÀN BỘ bản thử**, mà bản thử chính là link Lucas gửi bạn bè chơi. Bật lên là bạn bè cũng phải đăng nhập. Chi tiết + 3 đường đi ở dưới. |
+| 2 | Gemini bị chặn vùng | **A — kệ nó** | Không phải làm gì. DeepSeek đang gánh chính, Gemini vẫn nằm trong chuỗi, chỗ nào Google cho phép thì nó tự dùng lại. |
+| 3 | Nạp tiền khoá Anthropic | **Để sau** | Haiku nằm cuối chuỗi, không cản gì. Nạp lúc nào là tự sống lại lúc đó, khỏi đẩy lại bản. |
+| 4 | Xoá sổ đen trước playtest | **Chưa hiểu — đang giải thích lại** | Chưa xoá gì cả. |
+
+**Vì sao Access lại vướng (câu 1):** Cloudflare chỉ cho gắn Access theo TÊN MIỀN. Kho game đang dùng tên
+miền sẵn có của Cloudflare (`xom-dom-hong.pages.dev`, cột "Domains: No" — chưa gắn tên miền riêng), nên
+Cloudflare chỉ đưa ra đúng MỘT nút: *"khoá toàn bộ bản thử"*. Không có cách khoá riêng mỗi trang `/dash`.
+Ba đường:
+- **(a) Giữ mật khẩu như hiện tại** — bảng đèn đã khoá thật (mặc định đóng, chìa 24 ký tự ngẫu nhiên,
+  nhớ 12 tiếng). Bạn bè vẫn chơi thoải mái. **0 phút, 0đ.** ← em khuyên đường này
+- (b) Bật nút Access của Cloudflare Pages — an toàn nhất, **nhưng bạn bè cũng phải đăng nhập mới chơi được**.
+- (c) Gắn một tên miền riêng cho game rồi mới gắn Access đúng trang `/dash` — sạch nhất về lâu dài, cần Lucas
+  có tên miền trong Cloudflare (đang có `wildcats.io` cho email — chưa rõ có nằm trong Cloudflare không).
+
+### ✅ 2026-08-21 tối — v2.1 XONG (5 việc Lucas đặt sau khi xem bản thử)
+
+Công an Việt Nam áo xanh rêu · ảnh màn về đồn · hệ quả lời nói · chân dung Bà Năm · nhà bị ăn tắt đèn.
+Chi tiết + số đo: `report.md` mục v2.1. Đậu máy 132/132 (38+25+28+41).
+
+**Lucas chốt thêm:** xúc phạm **tới lần thứ hai là gọi công an, nhà nào cũng vậy**
+(trước đó em làm theo tính nết từng nhà — Ly/Tí chỉ đóng cửa). Luật mới nằm ở `XDH.OFFENSE.POLICE_AFTER`.
+
+**Còn treo, cần Lucas:**
+- Bà Năm mới có **chân dung tĩnh**, chưa có bộ miệng nhép theo lời (7 hình). PixelLab làm được nhưng
+  cần **gói trả phí bậc 1**; bản trial không mở tính năng đó. Không có cũng không sao — mặt vẫn đổi
+  theo cảm xúc, chỉ là không mấp máy môi như Ly/Tí.
+- Còn **36/40 lượt sinh ảnh** miễn phí trong tháng của PixelLab.

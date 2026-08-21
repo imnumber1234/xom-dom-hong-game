@@ -33,8 +33,10 @@ async function call(body, env = {}) {
 // ── 1-4: mission_signal đủ 4 chỗ schema trong converse.js (rủi ro mục 7 của plan) ──
 add(1, 'Chỗ 1/4 — NPC_TOOL.properties có mission_signal (enum đủ 5 tín hiệu + rỗng)',
   /mission_signal:\s*{\s*\n?\s*type: 'string',\s*\n?\s*enum: \['', 'manh_moi_1', 'manh_moi_2', 'ro_chuyen', 'dong_y_cho_muon', 'nhan_viec_vat'\]/.test(converseSrc));
+// v2.1: danh sách bắt buộc dài thêm ('offense', 'apology') → chỉ soát có mission_signal trong đó,
+// đừng khoá cứng vào chữ cuối cùng nữa.
 add(2, 'Chỗ 2/4 — NPC_TOOL.required có mission_signal',
-  /required: \['dialogue'[^\]]*'player_claim', 'mission_signal'\]/.test(converseSrc));
+  /required: \['dialogue'[^\]]*'player_claim',[\s\S]{0,40}'mission_signal'/.test(converseSrc));
 add(3, 'Chỗ 3/4 — REPLY_SCHEMA_NOTE (ghi chú cho não chỉ-biết-JSON) có mission_signal',
   converseSrc.match(/REPLY_SCHEMA_NOTE[\s\S]{0,2000}?mission_signal/) !== null);
 add(4, 'Chỗ 4/4 — shapeReply kẹp mission_signal về danh sách hợp lệ (nhãn lạ → rỗng)',

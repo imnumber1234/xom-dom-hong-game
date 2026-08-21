@@ -63,6 +63,56 @@ XDH.Convo = (function () {
     return Math.max(friendCode(), friendAi(st, diff));
   }
 
+  // ══ v2.1 — HỆ QUẢ CỦA LỜI NÓI (spec Lucas 21/08) ═══════════════════════════
+  // Chia việc rạch ròi: **AI chỉ nói NHÂN VẬT THẤY BỊ XÚC PHẠM CỠ NÀO; CODE quyết hậu quả.**
+  // Hai lớp giống hệt thanh thiện cảm: lớp CODE dò lời lẽ nặng (chạy cả khi não AI chết),
+  // lớp AI chấm theo cảm giác nhân vật. LẤY MỨC NẶNG HƠN.
+  //
+  // Ba luật cứng, không có may rủi, bài kiểm chạy được:
+  //   1. Lần đầu LUÔN chỉ cảnh cáo — trừ lời ĐE DOẠ thật sự ở nhà dễ sợ.
+  //   2. Lần thứ hai LUÔN leo thang (đóng cửa hoặc gọi công an, tuỳ RỦI RO tính ra).
+  //   3. Xin lỗi tử tế thì lùi một nấc và nguôi bớt nghi ngờ.
+  // Con số rủi ro TUYỆT ĐỐI không hiện ra cho người chơi — họ tự học qua thái độ nhân vật.
+  const OFF_ORDER = ['khong', 'kho_chiu', 'xuc_pham', 'de_doa'];
+  const offRank = (x) => Math.max(0, OFF_ORDER.indexOf(x));
+
+  function judgeOffense(ai, playerText, st) {
+    if (!active) return null;
+    const CFG = XDH.OFFENSE;
+    const n = CFG.NPC[active.npc.id] || CFG.DEFAULT_NPC;
+    const apology = !!(ai && ai.apology) || XDH.isApology(playerText);
+    const rank = Math.max(offRank(XDH.rudeLevel(playerText)), offRank(ai && ai.offense));
+
+    if (rank === 0) {
+      // Luật 3 — xin lỗi tử tế: lùi một nấc leo thang + nguôi bớt nghi ngờ.
+      if (apology && active.offenses > 0) {
+        active.offenses--;
+        return { kind: 'apology', applied: applyDeltas(st, { suspicion: -CFG.APOLOGY_HEAL }) };
+      }
+      return null;
+    }
+
+    const level = OFF_ORDER[rank];
+    const w = CFG.WEIGHT[level] || 1;
+    active.offenses++;
+    const applied = applyDeltas(st, {
+      suspicion: Math.round(CFG.SUSP_PER_W * w / n.tolerance),
+      patience: Math.round(CFG.PAT_PER_W * w),
+      trust: Math.round(CFG.TRUST_PER_W * w)
+    });
+    // RỦI RO GỌI CÔNG AN — mức nền của nhà đó × độ nặng ÷ sức chịu đựng × nghi ngờ hiện tại.
+    const risk = n.policeBase * w / n.tolerance * (1 + st.suspicion / 100);
+    let kind = 'warn';
+    const escalate = active.offenses >= 2 || (level === 'de_doa' && risk >= CFG.THREAT_NOW_AT);
+    if (escalate) {
+      // Lucas chốt 21/08: từ lần xúc phạm THỨ HAI là công an tới, không phân biệt nhà nào.
+      // Rủi ro tính ở trên vẫn dùng cho trường hợp DOẠ NẠT ngay lần đầu (nhà dễ sợ thì gọi luôn).
+      const cop = active.offenses >= CFG.POLICE_AFTER || risk >= CFG.POLICE_AT;
+      kind = (cop && !XDH.isKetTien()) ? 'police' : 'end';
+    }
+    return { kind, applied, level, risk, offenses: active.offenses };
+  }
+
   // v0.6 F4 — cảm xúc HIỆN RA: AI đề xuất, CODE có quyền phủ quyết bằng mặt "chán".
   // Thẻ Ly ghi "chán RẤT nhanh — ai nói chuyện nhạt là mắt đờ ra"; trước v0.6 game không có
   // mặt chán nào nên người chơi làm cô chán mà không hề thấy.
@@ -336,6 +386,8 @@ XDH.Convo = (function () {
       secondsLeft: R.CONVO_SECONDS,
       startedAt: Date.now(),
       turns: 0,
+      offenses: 0,      // v2.1: đã hỗn mấy lần trong cuộc này (lần 2 là leo thang)
+      offenseOutcome: null,  // v2.1: 'end' | 'police' — CODE quyết, không phải AI
       topicsHit: [],    // v2.0: chủ đề đã chạm — LỚP CODE của thanh thiện cảm
       playerTurns: 0,    // v2.0: đếm riêng LƯỢT NGƯỜI CHƠI NÓI (turns tính cả câu chào)
       inviteSpoken: false,  // v2.0: đã bắt AI nói câu mời chưa (một lần / cuộc)
@@ -370,6 +422,7 @@ XDH.Convo = (function () {
       active.claim = saved.claim || '';   // v0.4 T2: lời xưng theo người chơi khi quay lại (events KHÔNG mang theo — entry cũ đã ghi rồi)
       active.topicsHit = (saved.topicsHit || []).slice();   // v2.0: chủ đề đã chạm không mất khi quay lại
       active.playerTurns = saved.playerTurns || 0;
+      active.offenses = saved.offenses || 0;   // v2.1: rút lui rồi quay lại KHÔNG xoá được tội cũ
       active.resumed = true;
     }
     XDH.UI.openConvo(npc, active.state);
@@ -553,6 +606,11 @@ XDH.Convo = (function () {
       if (active.glow && (ai.verdict === 'hop_ly' || ai.verdict === 'danh_trung')) {
         appliedG = applyDeltas(st, { trust: XDH.GLOW.BONUS_TRUST });
       }
+      // v2.1 — HỆ QUẢ LỜI NÓI. Xét SAU khi cộng điểm verdict (để rủi ro đọc đúng nghi ngờ mới nhất).
+      const offRes = judgeOffense(ai, playerText, st);
+      active.offenseOutcome = (offRes && (offRes.kind === 'end' || offRes.kind === 'police'))
+        ? offRes.kind : null;
+      if (offRes && offRes.level) active.events.push('offense_' + offRes.level);
       // v0.4 T2: sổ ghi "bị bắt quả tang" — mâu thuẫn đồ-vs-chuyện hoặc nói dối lộ rõ
       if (contraApplied) active.events.push('contradiction');
       if (ai.verdict === 'lo_lieu') active.events.push('lo_lieu');
@@ -569,6 +627,10 @@ XDH.Convo = (function () {
       const vNum = XDH.UI.popDeltas(appliedV);
       XDH.UI.floatNums([
         { text: (en ? vLab.en : vLab.vi) + (vNum ? ' ' + vNum : ''), cls: vLab.cls },
+        offRes && offRes.kind === 'apology' ? popEvent('apology', offRes.applied) : null,
+        offRes && offRes.kind === 'warn' ? popEvent('offense_warn', offRes.applied) : null,
+        offRes && offRes.kind === 'end' ? popEvent('offense_end', offRes.applied) : null,
+        offRes && offRes.kind === 'police' ? popEvent('offense_cop', offRes.applied) : null,
         appliedF ? popEvent('friend_topic', appliedF) : null,
         graced ? popEvent('first_grace', null) : null,
         appliedC ? popEvent('contradiction', appliedC) : null,
@@ -580,7 +642,9 @@ XDH.Convo = (function () {
         friend: friendPct(st, diff) + '% (code ' + friendCode() + ' · ai ' + friendAi(st, diff) + ')',
         dT: appliedV.trust, dS: appliedV.suspicion, dI: appliedV.interest, dP: appliedV.patience,
         contradiction: contraApplied, corroboration: corroApplied,
-        extra: [appliedC ? `mâu-thuẫn tin ${appliedC.trust} nghi ${appliedC.suspicion}` : '',
+        extra: [offRes ? `hỗn ${offRes.level || 'xin lỗi'} lần ${active.offenses} → ${offRes.kind}`
+                  + (offRes.risk != null ? ` (rủi ro ${Math.round(offRes.risk * 100)}%)` : '') : '',
+                appliedC ? `mâu-thuẫn tin ${appliedC.trust} nghi ${appliedC.suspicion}` : '',
                 appliedR ? `chống-lưng tin ${appliedR.trust} nghi ${appliedR.suspicion}` : '',
                 // v1.0.1 hộp kính nhiệm vụ: tín hiệu thô → sau cổng (kèm lý do) + cờ viết-lại-vì-lặp
                 res.debug ? `nv ${res.debug.mission ? res.debug.mission.stage + '·manh mối ' + res.debug.mission.clues : '—'}`
@@ -649,7 +713,10 @@ XDH.Convo = (function () {
     // → cửa đóng. Có đường tự lành cho chiều ngược lại, KHÔNG có cho chiều này.
     // Luật mới: THANH THIỆN CẢM chạm 100% là CODE MỞ CỬA. AI không còn quyền phủ quyết,
     // chỉ còn quyền DIỄN — nếu nó chưa nói câu mời thì mình bắt nó nói (khối inviteAsk dưới).
-    let doorOpens = friendPct(st, diff) >= 100 && st.suspicion < R.SUSPICION_BLOCKS;
+    // v2.1: lượt vừa buông lời hỗn thì cửa KHÔNG mở, dù thanh có đầy. Người ta không mời
+    // một người vừa chửi mình vào nhà.
+    let doorOpens = friendPct(st, diff) >= 100 && st.suspicion < R.SUSPICION_BLOCKS
+                    && !active.offenseOutcome;
     // Đường tự lành CŨ giữ nguyên: AI thật lòng muốn mời mà thanh chưa đầy → nhích +4 mỗi lượt.
     if (!doorOpens && ai.invite_intent && st.suspicion < R.SUSPICION_BLOCKS) {
       XDH.UI.floatNums([popEvent('invite_nudge', applyDeltas(st, { trust: 4 }))]);
@@ -667,11 +734,14 @@ XDH.Convo = (function () {
         return;
       }
     }
-    const failed = st.suspicion >= R.SUSPICION_FAIL || st.patience <= 0 || !!ai.shutdown;
-    // 🚓 Chuyện quá vô lý (nghi kịch trần, hoặc bị đuổi vì nói dối lộ liễu) → NPC gọi công an
+    const failed = st.suspicion >= R.SUSPICION_FAIL || st.patience <= 0 || !!ai.shutdown
+                   || !!active.offenseOutcome;      // v2.1: hỗn lần hai là hết cửa
+    // 🚓 Chuyện quá vô lý (nghi kịch trần, bị đuổi vì nói dối lộ liễu, hoặc CHỬI BỚI tới lần
+    // thứ hai ở một nhà dễ gọi công an) → xe ò í e tới.
     if (failed) {
       active.policeTrigger = st.suspicion >= R.SUSPICION_FAIL ||
-        (!!ai.shutdown && ai.verdict === 'lo_lieu');
+        (!!ai.shutdown && ai.verdict === 'lo_lieu') ||
+        active.offenseOutcome === 'police';
     }
 
     if (doorOpens) {
@@ -693,7 +763,14 @@ XDH.Convo = (function () {
       XDH.UI.setBusy(true);
       document.getElementById('btn-kill').style.display = 'block';
     } else if (failed) {
-      const why = st.suspicion >= R.SUSPICION_FAIL ? 'Bị nghi tới bến — cửa khoá, đèn tắt. 🔒'
+      const en = XDH.lang === 'en';
+      const why = active.offenseOutcome === 'police'
+        ? (en ? 'They had enough of your mouth — and picked up the phone. 🚓'
+              : 'Họ chịu hết nổi cái miệng của bạn — và với lấy điện thoại. 🚓')
+        : active.offenseOutcome === 'end'
+        ? (en ? 'You pushed it one step too far. The door slammed. 🚪'
+              : 'Bạn đi quá một bước rồi. Cửa đóng cái rầm. 🚪')
+        : st.suspicion >= R.SUSPICION_FAIL ? 'Bị nghi tới bến — cửa khoá, đèn tắt. 🔒'
         : st.patience <= 0 ? 'Hàng xóm hết kiên nhẫn, đóng sầm cửa. 😤'
         : 'Hàng xóm đuổi thẳng. Về thay đồ đi. 🚪💨';
       finish(false, why);
@@ -985,7 +1062,8 @@ XDH.Convo = (function () {
       finalTestPassed: active.finalTestPassed,
       claim: active.claim,
       topicsHit: active.topicsHit.slice(),     // v2.0
-      playerTurns: active.playerTurns
+      playerTurns: active.playerTurns,
+      offenses: active.offenses               // v2.1
     };
     XDH.run.transcripts.push({
       npc: active.npc.name, won: false, elapsed: Math.round((Date.now() - active.startedAt) / 1000),
@@ -1024,6 +1102,15 @@ XDH.Convo = (function () {
         inviteSpoken: active.inviteSpoken
       } : null),
       say: (text) => playerSays(text),
+      // v2.1: bơm thẳng một lượt "AI đã chấm sẵn" để kiểm hệ quả lời nói mà không tốn lượt gọi AI
+      offense: (aiOffense, text) => {
+        if (!active) return null;
+        const r = judgeOffense({ offense: aiOffense, apology: false }, text || '', active.state);
+        active.offenseOutcome = (r && (r.kind === 'end' || r.kind === 'police')) ? r.kind : null;
+        return r;
+      },
+      offenses: () => (active ? active.offenses : null),
+      rude: (t) => XDH.rudeLevel(t),
       setState: (o) => { if (active) Object.assign(active.state, o); },
       npc: () => (active ? active.npc.id : null)
     };

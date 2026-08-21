@@ -230,10 +230,30 @@ XDH.UI = (function () {
   function openWardrobe() { buildAvatarMenu(); $('ov-wardrobe').classList.add('show'); }
 
   // ---- 🚔 v0.9: màn kết "về đồn" (Lucas 2026-08-12) — cảnh trong đồn vẽ 8-bit bằng code ----
+  // v2.1 — MÀN VỀ ĐỒN: dùng ẢNH PIXEL THẬT (assets/art/scene/station.png, sinh bằng PixelLab
+  // 21/08 theo yêu cầu của Lucas). Ảnh hỏng / chưa tải xong → rơi về bản vẽ tay bên dưới,
+  // đúng khuôn của portraits.js: KHÔNG BAO GIỜ để trống màn hình.
+  // Chữ "CÔNG AN" luôn do CODE viết đè lên, không tin chữ do máy sinh ảnh vẽ ra —
+  // máy sinh ảnh không viết nổi tiếng Việt có dấu (lần này nó vẽ ra "BFE MENTH").
+  const stationImg = new Image();
+  let stationOk = null;
+  stationImg.onload = () => { stationOk = true; drawStation(); };
+  stationImg.onerror = () => { stationOk = false; drawStation(); };
+  stationImg.src = 'assets/art/scene/station.png';
+
   function drawStation() {
     const c = $('station-scene'); if (!c) return;
     const g = c.getContext('2d');
     g.imageSmoothingEnabled = false;
+    if (stationOk && stationImg.naturalWidth) {
+      g.drawImage(stationImg, 0, 0, 240, 150);
+      // tấm biển trên tường: che chữ máy vẽ rồi viết lại cho đúng tiếng Việt
+      g.fillStyle = '#8e1520'; g.fillRect(150, 20, 44, 24);
+      g.fillStyle = '#b3212b'; g.fillRect(152, 22, 40, 20);
+      g.fillStyle = '#ffdf3a'; g.font = 'bold 9px monospace'; g.textAlign = 'center';
+      g.fillText('CÔNG AN', 172, 35);
+      return;
+    }
     const P = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x, y, w, h); };
     P(0, 0, 240, 110, '#2b2438');                                  // tường
     P(0, 110, 240, 40, '#3a3150');                                 // sàn
@@ -241,16 +261,23 @@ XDH.UI = (function () {
     P(16, 18, 56, 40, '#0e1a2e');                                  // cửa sổ đêm
     for (let i = 0; i < 4; i++) P(22 + i * 13, 18, 3, 40, '#8a8fa8'); // song sắt
     P(14, 14, 60, 4, '#4a3f6b'); P(14, 58, 60, 4, '#4a3f6b');      // khung cửa sổ
-    P(96, 8, 74, 16, '#1d3a8f');                                   // bảng "CÔNG AN"
+    P(96, 8, 74, 16, XDH.COP.UNIFORM_DARK);                        // bảng "CÔNG AN" (nền xanh rêu)
     g.fillStyle = '#ffdf3a'; g.font = 'bold 10px monospace'; g.textAlign = 'center';
     g.fillText('CÔNG AN', 133, 20);
     P(140, 70, 76, 34, '#6b4a2b'); P(138, 66, 80, 6, '#8a6a4b');   // bàn làm việc
-    P(150, 34, 20, 20, '#eab98a');                                 // công an: mặt
-    P(148, 30, 24, 6, '#1d3a8f'); P(152, 26, 16, 5, '#1d3a8f');    // mũ kê pi
-    P(154, 40, 3, 3, '#221a12'); P(163, 40, 3, 3, '#221a12');      // mắt nghiêm
-    P(153, 48, 14, 2, '#221a12');                                  // miệng thẳng
-    P(146, 54, 28, 14, '#2b4fd9');                                 // áo xanh
-    P(158, 57, 4, 4, '#ffdf3a');                                   // phù hiệu
+    // v2.1 — CÔNG AN NHÂN DÂN VIỆT NAM (Lucas 21/08): áo xanh rêu, mũ kê pi vành đỏ sao vàng.
+    const C = XDH.COP;
+    P(150, 34, 20, 20, C.SKIN);                                    // mặt
+    P(152, 24, 16, 4, C.CAP);                                      // chóp mũ kê pi
+    P(148, 28, 24, 4, C.BAND);                                     // VÀNH ĐỎ
+    P(157, 27, 5, 5, C.STAR);                                      // SAO VÀNG giữa mũ
+    P(146, 32, 28, 2, C.CAP);                                      // lưỡi trai
+    P(154, 40, 3, 3, C.INK); P(163, 40, 3, 3, C.INK);              // mắt nghiêm
+    P(153, 48, 14, 2, C.INK);                                      // miệng thẳng
+    P(146, 54, 28, 14, C.UNIFORM);                                 // ÁO XANH RÊU
+    P(146, 54, 5, 3, C.RANK); P(169, 54, 5, 3, C.RANK);            // quân hàm đỏ trên vai
+    P(146, 64, 28, 3, C.UNIFORM_DARK);                             // thắt lưng
+    P(158, 58, 4, 4, C.STAR);                                      // phù hiệu ngực
     P(44, 62, 40, 10, '#4a3f6b');                                  // ghế sói
     P(50, 30, 26, 26, '#8a8fa8');                                  // sói: đầu cúi
     P(50, 26, 7, 8, '#8a8fa8'); P(69, 26, 7, 8, '#8a8fa8');        // tai CỤP

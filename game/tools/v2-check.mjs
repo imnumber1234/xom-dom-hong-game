@@ -179,6 +179,36 @@ add(29, 'Thanh thiện cảm có mặt trong trang + luôn hiện (không cần 
 add(30, 'track.js được nạp và nạp SAU config.js (nó cần XDH đã có)',
   htmlSrc.indexOf('js/track.js') > htmlSrc.indexOf('js/config.js') && htmlSrc.includes('js/track.js'));
 
+// ══ v2.1 — công an Việt Nam · tắt đèn · hệ quả lời nói · ảnh mới ══════════════
+const uiSrc = fs.readFileSync(path.resolve(HERE, '../public/js/ui.js'), 'utf8');
+add(31, 'Công an mặc ĐỒ XANH RÊU kiểu Việt Nam, không còn xanh dương kiểu Mỹ',
+  /XDH\.COP = \{[\s\S]{0,200}UNIFORM: '#5b7a3f'/.test(cfgSrc) &&
+  /BAND: '#b3212b'/.test(cfgSrc) && /STAR: '#ffd93a'/.test(cfgSrc) &&
+  !/0x2b4fd9\); gg\.fillRect\(4, 10/.test(gameSrc) &&
+  /XDH\.COP_HEX/.test(gameSrc) && /const C = XDH\.COP;/.test(uiSrc));
+add(32, 'Nhà BỊ ĂN thì tắt đèn hẳn (khác với "xong" của Kẹt Tiền) + đèn neon tắt theo',
+  /KILLED_TINT/.test(cfgSrc) && /const killed = !XDH\.isKetTien\(\) && !!st\.won/.test(gameSrc) &&
+  /TẮT ĐÈN/.test(gameSrc) && /h\.decor \|\| \[\]/.test(gameSrc));
+add(33, 'Phiếu AI có ô "thấy bị xúc phạm cỡ nào" — và KHÔNG dùng chuỗi rỗng (bẫy Gemini)',
+  /enum: \['khong', 'kho_chiu', 'xuc_pham', 'de_doa'\]/.test(fs.readFileSync(path.join(src, 'converse.js'), 'utf8')));
+add(34, 'Máy dò lời lẽ nặng so KHỚP CẢ TỪ — "ngủ/người/nguyên" không bị bắt oan',
+  /XDH\.rudeLevel = function/.test(cfgSrc) && /vi: \[/.test(cfgSrc) && /any: \[/.test(cfgSrc) &&
+  /A\.includes\(' ' \+ w \+ ' '\)/.test(cfgSrc));
+add(35, 'Rủi ro công an tính bằng CÔNG THỨC ở code (nền × độ nặng ÷ sức chịu đựng × nghi ngờ)',
+  /n\.policeBase \* w \/ n\.tolerance \* \(1 \+ st\.suspicion \/ 100\)/.test(convoSrc));
+add(36, 'Lucas chốt: XÚC PHẠM LẦN THỨ HAI LÀ GỌI CÔNG AN, nhà nào cũng vậy',
+  /POLICE_AFTER: 2/.test(cfgSrc) && /active\.offenses >= CFG\.POLICE_AFTER/.test(convoSrc));
+add(37, 'Xin lỗi tử tế thì lùi một nấc; lượt vừa hỗn thì cửa KHÔNG mở',
+  /kind: 'apology'/.test(convoSrc) && /!active\.offenseOutcome/.test(convoSrc));
+{
+  const A = path.resolve(HERE, '../public/assets/art');
+  const files = ['face/ba_nam_normal.png', 'face/ba_nam_suspect.png', 'face/ba_nam_trust.png', 'scene/station.png'];
+  add(38, 'Ảnh mới có đủ: 3 sắc mặt Bà Năm + màn về đồn (và màn về đồn vẫn có bản vẽ tay dự phòng)',
+    files.every(f => fs.existsSync(path.join(A, f)) && fs.statSync(path.join(A, f)).size > 2000) &&
+    /stationOk && stationImg\.naturalWidth/.test(uiSrc) && /CÔNG AN/.test(uiSrc),
+    files.map(f => f.split('/').pop() + ' ' + (fs.existsSync(path.join(A, f)) ? fs.statSync(path.join(A, f)).size : 0)).join(' · '));
+}
+
 console.table(checks);
 const pass = checks.filter(c => c['đạt'] === '✅').length;
 console.log(`\n>>> ${pass}/${checks.length} ĐẠT`);

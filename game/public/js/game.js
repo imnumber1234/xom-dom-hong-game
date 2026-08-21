@@ -134,15 +134,18 @@
           fontSize: '13px', color: '#5dffa4', fontFamily: 'Segoe UI', fontStyle: 'bold',
           backgroundColor: 'rgba(10,6,18,0.75)', padding: { x: 6, y: 3 }
         }).setOrigin(0.5).setVisible(false).setDepth(52);
-        this.houseSprites.push({ x, y: GROUND_Y - 30, id: i, sprite: s, doneFx: [tag] });
+        this.houseSprites.push({ x, y: GROUND_Y - 30, id: i, sprite: s, doneFx: [tag], tag, decor: [] });
       });
       // §6b: identical houses → per-resident dressing (Ly neon · Tí bóng đá · Cô Sáu phơi đồ)
-      this.add.rectangle(hx[0] - 62, GROUND_Y - 66, 10, 34, 0xff5dd2).setAlpha(0.9); // Ly: neon strip
-      this.add.circle(hx[0] - 62, GROUND_Y - 66, 13, 0xff5dd2).setAlpha(0.18);
-      this.add.circle(hx[1] + 60, GROUND_Y + 4, 7, 0xffffff);                        // Tí: quả bóng
-      this.add.rectangle(hx[1] + 60, GROUND_Y + 1, 8, 2, 0x222222);
-      this.add.rectangle(hx[2] - 40, GROUND_Y - 96, 60, 2, 0xcccccc);                // Cô Sáu: dây phơi
-      this.add.rectangle(hx[2] - 58, GROUND_Y - 89, 12, 12, 0xffe9a8);
+      // v2.1: nhớ đồ trang trí thuộc nhà nào, để lúc nhà đó bị ăn thì TẮT luôn đèn neon.
+      const decor = (i, o, a) => { o.setAlpha(a == null ? 1 : a); o._a0 = (a == null ? 1 : a);
+                                   this.houseSprites[i].decor.push(o); return o; };
+      decor(0, this.add.rectangle(hx[0] - 62, GROUND_Y - 66, 10, 34, 0xff5dd2), 0.9);  // Ly: đèn neon
+      decor(0, this.add.circle(hx[0] - 62, GROUND_Y - 66, 13, 0xff5dd2), 0.18);
+      decor(1, this.add.circle(hx[1] + 60, GROUND_Y + 4, 7, 0xffffff));                // Tí: quả bóng
+      decor(1, this.add.rectangle(hx[1] + 60, GROUND_Y + 1, 8, 2, 0x222222));
+      decor(2, this.add.rectangle(hx[2] - 40, GROUND_Y - 96, 60, 2, 0xcccccc));        // Cô Sáu: dây phơi
+      decor(2, this.add.rectangle(hx[2] - 58, GROUND_Y - 89, 12, 12, 0xffe9a8));
       this.add.rectangle(hx[2] - 36, GROUND_Y - 88, 10, 14, 0x8fd4ff);
 
       // wardrobe shed (bottom-left) + bánh mì cart = the powerup shop (§2)
@@ -399,19 +402,27 @@
       // 🚓 v0.9: xe công an ò í e — thân trắng sọc xanh, đèn nóc đỏ/xanh (nhấp nháy bằng tween)
       tex('policecar', 52, 22, gg => {
         gg.fillStyle(0xf2f2f2); gg.fillRect(2, 8, 48, 9);           // thân xe
-        gg.fillStyle(0x2b4fd9); gg.fillRect(2, 13, 48, 4);          // sọc xanh
+        gg.fillStyle(XDH.COP_HEX.UNIFORM); gg.fillRect(2, 13, 48, 4);   // v2.1: sọc XANH RÊU cho khớp bộ đồ
         gg.fillStyle(0xf2f2f2); gg.fillRect(10, 3, 32, 5);          // nóc
         gg.fillStyle(0x9ad4ff); gg.fillRect(13, 4, 10, 5); gg.fillRect(28, 4, 10, 5); // kính
         gg.fillStyle(0xff2247); gg.fillRect(19, 0, 5, 3);           // đèn đỏ
         gg.fillStyle(0x2b6bff); gg.fillRect(26, 0, 5, 3);           // đèn xanh
         gg.fillStyle(0x241e35); gg.fillCircle(12, 19, 3); gg.fillCircle(40, 19, 3); // bánh
       });
-      tex('police', 16, 16, gg => {
-        gg.fillStyle(0x1d3a8f); gg.fillRect(3, 2, 10, 3);          // mũ kê pi
-        gg.fillStyle(0xeab98a); gg.fillRect(5, 5, 6, 5);           // mặt
-        gg.fillStyle(0x221a12); gg.fillRect(6, 7, 1, 1); gg.fillRect(9, 7, 1, 1);
-        gg.fillStyle(0x2b4fd9); gg.fillRect(4, 10, 8, 5);          // áo xanh
-        gg.fillStyle(0xffdf3a); gg.fillRect(7, 11, 2, 2);          // phù hiệu
+      // v2.1 — CÔNG AN NHÂN DÂN VIỆT NAM: áo xanh rêu, mũ kê pi vành đỏ sao vàng,
+      // quân hàm đỏ trên vai. Màu lấy từ XDH.COP_HEX (config.js) — đổi một chỗ là đổi hết.
+      tex('police', 16, 18, gg => {
+        const C = XDH.COP_HEX;
+        gg.fillStyle(C.CAP);      gg.fillRect(3, 1, 10, 3);         // chóp mũ kê pi
+        gg.fillStyle(C.BAND);     gg.fillRect(3, 4, 10, 2);         // vành đỏ
+        gg.fillStyle(C.STAR);     gg.fillRect(7, 4, 2, 2);          // sao vàng giữa mũ
+        gg.fillStyle(C.CAP);      gg.fillRect(2, 6, 12, 1);         // lưỡi trai
+        gg.fillStyle(C.SKIN);     gg.fillRect(5, 7, 6, 5);          // mặt
+        gg.fillStyle(C.INK);      gg.fillRect(6, 9, 1, 1); gg.fillRect(9, 9, 1, 1);
+        gg.fillStyle(C.UNIFORM);  gg.fillRect(4, 12, 8, 6);         // áo XANH RÊU
+        gg.fillStyle(C.UNIFORM_DARK); gg.fillRect(4, 15, 8, 1);     // thắt lưng
+        gg.fillStyle(C.RANK);     gg.fillRect(4, 12, 2, 1); gg.fillRect(10, 12, 2, 1);  // quân hàm vai
+        gg.fillStyle(C.STAR);     gg.fillRect(7, 13, 2, 2);         // phù hiệu ngực
       });
 
       // v1.0 🗑️ thùng rác xóm — nắp hé, có con ruồi chấm đen cho có mùi… đời
@@ -652,11 +663,24 @@
       // Done markers reflect tonight's state (auto reset when a new night begins)
       for (const h of this.houseSprites) {
         const st = XDH.run.houses[h.id];
-        const done = !!(st.won || st.done);                           // v0.3: mode Kẹt Tiền dùng cờ done
+        // v2.1 — TÁCH HAI CHUYỆN: "xong" (Kẹt Tiền: xin xong, nhà chỉ mờ đi) khác hẳn
+        // "BỊ ĂN" (ma sói cắn người trong nhà → nhà TỐI HẲN, đèn tắt, neon tắt).
+        const killed = !XDH.isKetTien() && !!st.won;
+        const done = !!(st.won || st.done);
         h.doneFx.forEach(o => o.setVisible(done));
-        if (h.wasDone !== done) {                                     // v0.8: xong = TẮT ĐÈN cả căn nhà
-          done ? h.sprite.setTint(0x5a5a7a) : h.sprite.clearTint();
-          h.wasDone = done;
+        const key = killed ? 'killed' : (done ? 'done' : 'on');
+        if (h.wasDone !== key) {
+          if (killed) h.sprite.setTint(XDH.BLACKOUT.KILLED_TINT);
+          else if (done) h.sprite.setTint(XDH.BLACKOUT.DONE_TINT);
+          else h.sprite.clearTint();
+          // đồ trang trí của nhà đó tắt theo (đèn neon của Ly, quả bóng của Tí, dây phơi Cô Sáu)
+          (h.decor || []).forEach(o => {
+            if (killed) { o.setAlpha(0.12); }
+            else { o.setAlpha(o._a0 == null ? 1 : o._a0); }
+          });
+          if (h.tag) h.tag.setText(killed ? '🌑 TẮT ĐÈN' : '✅ XONG')
+            .setColor(killed ? '#8fa3c8' : '#5dffa4');
+          h.wasDone = key;
         }
       }
       if (this.tutDoneTag) this.tutDoneTag.setVisible(!!localStorage.getItem('xdh_tut_done'));

@@ -664,3 +664,126 @@ XDH.POP_EVENT.first_grace  = { vi: '👋 Miễn phạt câu chào đầu',  en: 
 XDH.POP_EVENT.door_forced  = { vi: '🚪 THIỆN CẢM ĐẦY — CỬA MỞ!', en: '🚪 FULL WARMTH — DOOR OPENS!', cls: 'hit' };
 XDH.POP_EVENT.mission_item = { vi: '🎒 Có món đồ rồi!',          en: '🎒 Got the item!',          cls: 'hit' };
 XDH.POP_EVENT.mission_done = { vi: '💖 Trả đồ xong — họ vui xỉu', en: '💖 Delivered — they are thrilled', cls: 'hit' };
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// v2.1 — CÔNG AN NHÌN RA CÔNG AN VIỆT NAM (Lucas 21/08: "green outfit, not like this")
+// ══════════════════════════════════════════════════════════════════════════════
+// Trước đây vẽ áo XANH DƯƠNG kiểu cảnh sát Mỹ. Công an nhân dân Việt Nam mặc XANH RÊU
+// (olive), mũ kê pi có vành đỏ + sao vàng, quân hàm đỏ trên vai. Mọi chỗ vẽ công an
+// (màn về đồn · người rượt ngoài xóm · xe) đọc CHUNG bảng màu này — đổi một chỗ là đổi hết.
+XDH.COP = {
+  UNIFORM: '#5b7a3f',      // áo xanh rêu
+  UNIFORM_DARK: '#40592c', // bóng áo
+  CAP: '#40592c',          // mũ kê pi
+  BAND: '#b3212b',         // vành đỏ trên mũ
+  STAR: '#ffd93a',         // sao vàng
+  SKIN: '#eab98a',
+  INK: '#221a12',
+  RANK: '#b3212b'          // quân hàm đỏ trên vai
+};
+// Dạng số cho Phaser (nó không đọc chuỗi #rrggbb)
+XDH.COP_HEX = {};
+Object.keys(XDH.COP).forEach(k => { XDH.COP_HEX[k] = parseInt(XDH.COP[k].slice(1), 16); });
+
+// v2.1 — NHÀ BỊ ĂN THÌ TẮT ĐÈN (Lucas 21/08: "that house is blackout")
+// Khác với "xong" của chế độ Kẹt Tiền (chỉ mờ đi): nhà bị SÓI ĂN thì tối hẳn, đèn tắt,
+// đèn neon của Ly cũng tắt theo. Nhìn cả xóm là biết đêm nay mình đã làm gì.
+XDH.BLACKOUT = { KILLED_TINT: 0x2a2438, DONE_TINT: 0x5a5a7a };
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// v2.1 — HỆ QUẢ CỦA LỜI NÓI (Lucas 21/08, spec "Conversation Consequence System")
+// ══════════════════════════════════════════════════════════════════════════════
+// LUẬT GỐC: **AI chỉ nói NHÂN VẬT THẤY BỊ XÚC PHẠM CỠ NÀO. CODE quyết định hậu quả.**
+// Không nhét "chửi bậy = +50% công an" vào prompt — như vậy vừa không đo được, vừa mỗi não
+// một kiểu. Ở đây là một phép tính đàng hoàng, chạy được bài kiểm, không có may rủi:
+//
+//     rủi ro công an =  MỨC NỀN của nhà đó
+//                     × ĐỘ NẶNG của câu vừa nói
+//                     ÷ SỨC CHỊU ĐỰNG của nhà đó
+//                     × (1 + nghi ngờ hiện tại / 100)
+//
+// Nhờ vậy cùng một câu "ĐM mày" mà mỗi nhà một kiểu — đúng cái Lucas muốn ("nhìn người"):
+//   · Cô Sáu  — có con nhỏ, sợ nhất người lạ hung hăng → cảnh cáo một câu rồi GỌI CÔNG AN.
+//   · Tí      — sinh viên, nóng tính → NỔI NÓNG rồi đóng cửa, hiếm khi gọi công an.
+//   · Ly      — Gen Z, không thèm cãi → BƠ LUÔN, đóng cửa, gần như không bao giờ gọi công an.
+//
+// LUẬT CỨNG (nằm ở CODE, không nằm ở prompt):
+//   1. Lần đầu LUÔN chỉ là cảnh cáo — trừ khi là lời ĐE DOẠ thật sự.
+//   2. Lần thứ hai LUÔN leo thang (chắc chắn, không phụ thuộc may rủi).
+//   3. Xin lỗi tử tế thì được gỡ lại một nấc.
+//   4. TUYỆT ĐỐI không hiện con số rủi ro ra cho người chơi. Họ tự học qua thái độ nhân vật.
+XDH.OFFENSE = {
+  // Độ nặng của hành vi. 'khong' = không có gì (dùng chữ chứ không dùng chuỗi rỗng —
+  // Gemini từ chối chuỗi rỗng trong danh sách lựa chọn, bài học đắt ngày 21/08).
+  WEIGHT: { khong: 0, kho_chiu: 1, xuc_pham: 2, de_doa: 3 },
+  NPC: {
+    me_bim_sua: { tolerance: 1.0, policeBase: 0.55 },   // mẹ có con nhỏ — gọi công an nhanh nhất
+    sinh_vien:  { tolerance: 2.0, policeBase: 0.15 },   // sinh viên — nổi nóng chứ ít gọi
+    gen_z:      { tolerance: 1.5, policeBase: 0.08 }    // Gen Z — bơ và đóng cửa
+  },
+  DEFAULT_NPC: { tolerance: 1.5, policeBase: 0.2 },
+  SUSP_PER_W: 14,        // mỗi nấc nặng cộng bấy nhiêu nghi ngờ (chia cho sức chịu đựng)
+  PAT_PER_W: -10,        // … và trừ bấy nhiêu kiên nhẫn
+  TRUST_PER_W: -6,
+  POLICE_AT: 0.5,        // rủi ro từ mức này trở lên thì công an tới (dùng cho lời ĐE DOẠ lần đầu)
+  // 🔒 Lucas chốt 21/08: XÚC PHẠM TỚI LẦN THỨ HAI LÀ GỌI CÔNG AN — NHÀ NÀO CŨNG VẬY.
+  // Tính nết từng nhà vẫn còn nguyên ở chỗ khác: ai dễ thấy bị xúc phạm hơn (sức chịu đựng),
+  // ai mất kiên nhẫn nhanh hơn, và LỜI THOẠI mỗi người một kiểu. Chỉ riêng cái kết là chung.
+  POLICE_AFTER: 2,
+  THREAT_NOW_AT: 1.0,    // lời ĐE DOẠ mà rủi ro vượt mức này thì khỏi cảnh cáo, gọi luôn
+  APOLOGY_HEAL: 10       // xin lỗi tử tế: gỡ lại bấy nhiêu nghi ngờ + lùi một nấc leo thang
+};
+
+// Máy dò lời lẽ nặng do CODE cầm — lớp SÀN, chạy cả khi não AI chết hoặc AI bỏ sót.
+// So theo TỪNG TỪ chứ không so chuỗi con: "ngu" nằm trong "người/ngủ/nguyên" — so chuỗi con
+// là bắt oan cả câu tử tế. Có cả bản không dấu vì người ta hay gõ tắt.
+XDH.RUDE = {
+  // vi  = CHỈ dò trong câu CÒN DẤU. Bắt buộc với mấy từ ngắn: bỏ dấu ra thì "ngủ/người/nguyên"
+  //       đều thành "ngu", "mày" thành "may" — dò kiểu đó là bắt oan cả câu tử tế (đo thật 21/08).
+  // any = dò cả câu còn dấu LẪN câu bỏ dấu. Dành cho từ viết tắt và tiếng Anh, vốn không có dấu.
+  de_doa: {
+    vi: ['giết mày', 'tao giết', 'đâm mày', 'đập chết', 'đốt nhà', 'tao xử mày'],
+    any: ['giet may', 'tao giet', 'dam may', 'dap chet', 'dot nha',
+          'kill you', 'burn your house', 'i will kill']
+  },
+  xuc_pham: {
+    vi: ['đm', 'đmm', 'đcm', 'địt', 'đụ', 'óc chó', 'đồ chó', 'con chó', 'mẹ mày', 'câm mồm',
+         'câm mõm', 'im mồm', 'cút', 'xéo', 'đồ ngu', 'ngu như', 'thằng ngu', 'con điên'],
+    any: ['dm', 'dmm', 'dcm', 'vcl', 'clm', 'cmm', 'oc cho', 'do cho', 'con cho', 'me may',
+          'cam mom', 'im mom', 'do ngu', 'ngu nhu', 'fuck', 'fuk', 'fck', 'shit', 'bitch',
+          'asshole', 'stupid', 'idiot', 'moron', 'shut up']
+  },
+  kho_chiu: {
+    vi: ['mày', 'tao', 'ngu', 'điên', 'khùng', 'dở hơi', 'vô duyên', 'rảnh háng'],
+    any: ['weirdo', 'freak', 'creep']
+  }
+};
+XDH.APOLOGY_WORDS = ['xin lỗi', 'xin loi', 'lỡ lời', 'lo loi', 'em sai rồi', 'em sai roi',
+                     'tôi sai', 'toi sai', 'sorry', 'my bad', 'i apologise', 'i apologize',
+                     'my apologies', 'didn\u2019t mean', 'did not mean'];
+
+// Cắt câu thành TỪ rồi so KHỚP CẢ TỪ (hoặc cả cụm) — không bao giờ so chuỗi con.
+XDH.rudeLevel = function (text) {
+  const raw = String(text || '').toLowerCase();
+  const bare = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
+  const pad = (t) => ' ' + t.replace(/[^\p{L}\p{N}]+/gu, ' ').trim() + ' ';
+  const A = pad(raw), B = pad(bare);
+  const hit = (row) => (row.vi || []).some(w => A.includes(' ' + w + ' '))
+                    || (row.any || []).some(w => A.includes(' ' + w + ' ') || B.includes(' ' + w + ' '));
+  if (hit(XDH.RUDE.de_doa)) return 'de_doa';
+  if (hit(XDH.RUDE.xuc_pham)) return 'xuc_pham';
+  if (hit(XDH.RUDE.kho_chiu)) return 'kho_chiu';
+  return 'khong';
+};
+XDH.isApology = function (text) {
+  const raw = ' ' + String(text || '').toLowerCase() + ' ';
+  const bare = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
+  return XDH.APOLOGY_WORDS.some(w => raw.includes(w) || bare.includes(w));
+};
+
+XDH.POP_EVENT.offense_warn = { vi: '😠 Họ thấy bị xúc phạm', en: '😠 They took offence',      cls: 'warn' };
+XDH.POP_EVENT.offense_end  = { vi: '🚪 Quá giới hạn rồi',    en: '🚪 That was one step too far', cls: 'bad'  };
+XDH.POP_EVENT.offense_cop  = { vi: '🚓 Họ với lấy điện thoại', en: '🚓 They reach for the phone', cls: 'bad' };
+XDH.POP_EVENT.apology      = { vi: '🙇 Lời xin lỗi có tác dụng', en: '🙇 The apology landed',    cls: 'good' };

@@ -1,6 +1,6 @@
 {
- "pass": 30,
- "total": 30,
+ "pass": 38,
+ "total": 38,
  "checks": [
   {
    "#": 1,
@@ -181,6 +181,54 @@
    "mục": "track.js được nạp và nạp SAU config.js (nó cần XDH đã có)",
    "đạt": "✅",
    "bằng chứng": ""
+  },
+  {
+   "#": 31,
+   "mục": "Công an mặc ĐỒ XANH RÊU kiểu Việt Nam, không còn xanh dương kiểu Mỹ",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 32,
+   "mục": "Nhà BỊ ĂN thì tắt đèn hẳn (khác với \"xong\" của Kẹt Tiền) + đèn neon tắt theo",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 33,
+   "mục": "Phiếu AI có ô \"thấy bị xúc phạm cỡ nào\" — và KHÔNG dùng chuỗi rỗng (bẫy Gemini)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 34,
+   "mục": "Máy dò lời lẽ nặng so KHỚP CẢ TỪ — \"ngủ/người/nguyên\" không bị bắt oan",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 35,
+   "mục": "Rủi ro công an tính bằng CÔNG THỨC ở code (nền × độ nặng ÷ sức chịu đựng × nghi ngờ)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 36,
+   "mục": "Lucas chốt: XÚC PHẠM LẦN THỨ HAI LÀ GỌI CÔNG AN, nhà nào cũng vậy",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 37,
+   "mục": "Xin lỗi tử tế thì lùi một nấc; lượt vừa hỗn thì cửa KHÔNG mở",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 38,
+   "mục": "Ảnh mới có đủ: 3 sắc mặt Bà Năm + màn về đồn (và màn về đồn vẫn có bản vẽ tay dự phòng)",
+   "đạt": "✅",
+   "bằng chứng": "ba_nam_normal.png 5327 · ba_nam_suspect.png 4877 · ba_nam_trust.png 4402 · station.png 345"
   }
  ]
 }

@@ -764,3 +764,61 @@ Sửa: `converse.js` · `_brain.js` · `_personas.js` · `config.js` · `convo.j
 - Đẩy lại bản thử: `cd game && npx wrangler pages deploy public --project-name xom-dom-hong --branch hop-kinh`
 - Trả biến `BRAIN_ORDER` của bản thử về như cũ (em đã gỡ nó ra vì nó ép sai thứ tự não — giá trị cũ đo được là
   `haiku,gemini,qwen`): `npx wrangler pages secret put BRAIN_ORDER --project-name xom-dom-hong --env preview`
+
+---
+
+# 🚓 v2.1 — CÔNG AN VIỆT NAM · HỆ QUẢ LỜI NÓI · TẮT ĐÈN · ẢNH MỚI (2026-08-21, vòng 2)
+
+Lucas xem bản thử rồi đặt 5 việc. Làm hết, cùng trên **hop-kinh.xom-dom-hong.pages.dev**.
+
+| # | Lucas nói | Đã làm |
+|---|---|---|
+| 1 | Công an phải nhìn ra công an Việt Nam, đồ xanh lá | ✅ áo **xanh rêu**, mũ kê pi **vành đỏ + sao vàng**, quân hàm đỏ trên vai — cả 3 chỗ (màn về đồn · người rượt ngoài xóm · sọc xe) đọc chung một bảng màu `XDH.COP` |
+| 2 | Sinh ảnh cho màn kết, dùng thay mấy hình hộp kỳ cục | ✅ ảnh pixel thật 240×148 (PixelLab). Chữ **"CÔNG AN"** do code viết đè — máy sinh ảnh vẽ ra "BFE MENTH", không viết nổi tiếng Việt |
+| 3 | Chửi bậy phải có hệ quả | ✅ hệ thống đầy đủ, xem mục dưới |
+| 4 | Chân dung nhà hướng dẫn cũng phải 8-bit như Tí | ✅ Bà Năm có 3 sắc mặt thật, cùng khuôn mặt, cùng phong cách |
+| 5 | Ăn được người nhà nào thì nhà đó tắt đèn | ✅ nhà tối hẳn + **đèn neon của Ly tắt theo** + nhãn đổi thành "🌑 TẮT ĐÈN" |
+
+## Hệ quả lời nói — chia việc rạch ròi
+
+**AI chỉ nói *nhân vật thấy bị xúc phạm cỡ nào*. MÃ NGUỒN quyết định hậu quả.** Không nhét
+"chửi bậy = +50% công an" vào lời dặn AI — như vậy vừa không đo được vừa mỗi não một kiểu.
+
+Hai lớp, y hệt thanh thiện cảm: lớp CODE dò lời lẽ nặng (chạy cả khi não AI chết) + lớp AI chấm
+theo cảm giác nhân vật, **lấy mức nặng hơn**.
+
+Công thức rủi ro (nằm ở code, chạy được bài kiểm, **không có may rủi**):
+
+> mức nền của nhà đó × độ nặng câu nói ÷ sức chịu đựng của nhà đó × (1 + nghi ngờ hiện tại)
+
+Ba luật cứng: **lần đầu luôn chỉ cảnh cáo** (trừ lời doạ giết) · **lần thứ hai là gọi công an**
+(Lucas chốt: nhà nào cũng vậy) · **xin lỗi tử tế thì lùi một nấc**.
+
+Đo thật trên bản đã lên mạng:
+
+| Nhà | Lần 1 | Lần 2 | Rủi ro tính ra |
+|---|---|---|---|
+| Ly (Gen Z) | cảnh cáo | 🚓 công an | 17% |
+| Tí (sinh viên) | cảnh cáo | 🚓 công an | 22% |
+| Cô Sáu (có con nhỏ) | cảnh cáo | 🚓 công an | 194% |
+
+Tính nết từng nhà **vẫn còn nguyên** ở chỗ khác: ai dễ thấy bị xúc phạm hơn (sức chịu đựng
+1,0 / 2,0 / 1,5), ai mất kiên nhẫn nhanh hơn, và lời thoại mỗi người một kiểu. Doạ giết thì
+leo thang **ngay lần đầu**. **Người chơi không bao giờ thấy một con số nào** — họ tự hiểu qua thái độ.
+
+### Máy dò lời lẽ nặng — cái bẫy suýt dính
+Bản đầu so chuỗi con nên **"ngủ · người · nguyên" đều bị bắt thành "ngu"**. Đã sửa: cắt câu thành
+TỪ rồi so khớp cả từ, và mấy từ ngắn chỉ dò trong câu CÒN DẤU. Kiểm 14 câu: 13 đúng, 1 sai duy nhất
+là câu bịa ra để thử (người tên "Ngu") — và câu đó cũng chỉ dừng ở mức cảnh cáo.
+
+## Đậu máy sau vòng này
+
+| Bộ | Kết quả |
+|---|---|
+| `v2-check.mjs` (thêm 8 mục mới cho v2.1) | **38/38** |
+| `mission-check.mjs` | **25/25** |
+| `v2-browser.py` | **28/28** |
+| `press-slot-check.py` | **41/41** |
+
+Ảnh chụp: `game/shots/v21-don-cong-an.png` · `v21-ba-nam.png` · `v21-tat-den.png`.
+Tốn **4/40 lượt sinh ảnh** miễn phí của PixelLab (trial vừa làm mới). Khoá PixelLab **không** vào kho.
