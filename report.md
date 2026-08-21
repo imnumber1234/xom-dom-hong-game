@@ -957,3 +957,37 @@ Git: nhánh `v2.0-hop-kinh` đã gộp vào `main` và đẩy lên (`19b28b8 →
 
 Bảng đèn hiện **gộp chung** số của bản thử và bản chính. Muốn phễu người mới sạch thì hoặc xoá sổ
 trước khi mời bạn bè, hoặc thêm bộ lọc theo địa chỉ. Chưa làm — chờ Lucas chọn.
+
+---
+
+# 🧹 v2.4 — SỔ ĐEN TỰ DỌN (2026-08-21, Lucas chốt A + "tự xoá theo định kỳ")
+
+**Đã xoá sổ về trắng** (159 lượt + 179 cột mốc của mấy lần thử) — phễu người mới bắt đầu từ 0.
+
+## Máy tự dọn — không cần ai nhớ, không cần thêm dịch vụ nào
+
+**Giữ 30 ngày.** Dòng nào cũ hơn thì tự biến mất.
+
+Cloudflare Pages **không có đồng hồ hẹn giờ**. Muốn có thì phải dựng thêm một dịch vụ nữa — thêm
+chỗ hỏng, thêm chỗ quên, thêm hoá đơn. Nên em gắn việc dọn **ăn theo lượt ghi**:
+
+- Sổ chỉ phình ra **khi có người chơi**. Có người chơi thì có lượt ghi. Vậy cứ gắn việc dọn vào
+  lượt ghi là nó **tự chạy đúng lúc cần**, và không bao giờ chạy khi không cần.
+- Chặn bằng đồng hồ trong máy chủ: **nhiều nhất một lần mỗi giờ**, dù có nghìn lượt.
+- Chạy nền, hỏng thì nuốt — **người chơi không bao giờ phải chờ vì chuyện dọn dẹp**.
+
+**Đổi số ngày không cần đẩy bản mới:** đặt biến `LEDGER_KEEP_DAYS` của Cloudflare (nhận 1–365).
+
+## Đã thử THẬT, không phải nói suông
+
+Nhét tay vào sổ hai dòng **60 ngày tuổi** → vào link chính chơi đúng một lượt → đếm lại:
+**dòng cũ biến mất, còn 0.** Máy dọn chạy đúng.
+
+Bảng đèn nay hiện thêm hai ô: **"Sổ tự xoá sau 30 ngày"** và **"Dòng cũ nhất: … ngày trước"** —
+để không ai nhìn số trên đó rồi tưởng là số từ đầu dự án.
+
+## Một chuyện nhỏ nhìn thấy trong sổ
+
+Có mấy lượt vào sổ mà **không có mã phiên**. Nguyên nhân: trình duyệt nào còn giữ bản `convo.js`
+CŨ (từ trước v2.0) trong bộ nhớ đệm thì nó không gửi mã phiên. Không hỏng gì — chỉ là mấy lượt đó
+không ghép được vào phễu người mới. Tự hết khi bộ nhớ đệm hết hạn hoặc người chơi tải lại trang.

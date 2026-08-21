@@ -730,3 +730,14 @@ Kiểm ngay trên link chính: 9/9 mục hành vi bản-thật + 41/41 bộ ki�
 
 **Nhớ:** từ giờ mọi câu người chơi thật nói đều được lưu vào sổ đen. Chủ ý là vậy, nhưng cẩn thận
 khi chia sẻ ảnh chụp bảng đèn ra ngoài vì nó in nguyên văn lời người chơi.
+
+### ✅ 2026-08-21 — v2.4: sổ đen ĐÃ XOÁ TRẮNG + TỰ DỌN sau 30 ngày
+
+Lucas chốt A. Đã xoá 159 lượt + 179 cột mốc. Máy tự dọn gắn vào lượt ghi (Pages không có đồng hồ
+hẹn giờ), nhiều nhất một lần mỗi giờ, chạy nền. Đã thử thật: nhét dòng 60 ngày tuổi vào rồi chơi
+một lượt → dòng đó biến mất.
+
+**Đổi số ngày:** đặt biến `LEDGER_KEEP_DAYS` trong Cloudflare (1–365), không cần đẩy bản mới.
+
+**Nhỏ, chưa cần làm:** vài lượt vào sổ thiếu mã phiên vì trình duyệt còn giữ bản `convo.js` cũ
+trong bộ nhớ đệm. Tự hết khi người chơi tải lại trang.

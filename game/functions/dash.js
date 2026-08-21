@@ -291,6 +291,12 @@ section.card table{min-width:460px}
       kpi('Rơi kịch bản', (t.turns? scriptedPct + '%' : '—')) +
       kpi('Chữ đã gửi đi', num(t.tin)) +
       kpi('Chữ AI viết ra', num(t.tout));
+    // v2.4: nói thẳng sổ tự dọn sau bao lâu + dòng cũ nhất đang là bao lâu trước
+    if (d.keepDays){
+      var age = d.oldestTs ? Math.max(0, Math.round((Date.now() - d.oldestTs)/86400000)) : null;
+      $('kpis').innerHTML += kpi('Sổ tự xoá sau', d.keepDays + ' ngày') +
+        kpi('Dòng cũ nhất', age === null ? '—' : (age + ' ngày trước'));
+    }
 
     // phễu
     var byName = {}; (d.funnel||[]).forEach(function(r){ byName[r.name] = r; });

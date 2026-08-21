@@ -64,6 +64,47 @@ export function guessLang(text) {
   return vi > en ? 'vi' : 'en';
 }
 
+// ══ v2.4 — MÁY TỰ DỌN SỔ (Lucas 21/08: "make it automatic delete after period of time") ══
+//
+// Sổ đen lưu NGUYÊN VĂN lời người chơi thật. Giữ mãi vừa không cần vừa không nên. Nhưng nó cũng
+// là bộ dữ liệu để sau này tự luyện não (kế hoạch mục 8), nên không thể xoá quá tay.
+// → Giữ mặc định 30 NGÀY. Đổi bằng biến LEDGER_KEEP_DAYS của Cloudflare, KHÔNG cần đẩy bản mới.
+//
+// Vì sao dọn kiểu "ăn theo lượt ghi" chứ không dựng đồng hồ hẹn giờ riêng:
+//   · Cloudflare Pages KHÔNG có đồng hồ hẹn giờ. Muốn có phải dựng thêm một dịch vụ nữa —
+//     thêm chỗ để hỏng, thêm chỗ để quên.
+//   · Sổ chỉ phình ra khi CÓ NGƯỜI CHƠI. Mà có người chơi thì có lượt ghi. Vậy cứ gắn việc dọn
+//     vào lượt ghi là nó tự chạy đúng lúc cần, và không bao giờ chạy khi không cần.
+//   · Chặn bằng đồng hồ trong máy chủ: tối đa MỘT lần dọn mỗi giờ, nên dù có nghìn lượt cũng
+//     không có chuyện xoá đi xoá lại tốn công.
+// Việc dọn chạy nền (waitUntil), hỏng thì nuốt — người chơi không bao giờ chờ vì chuyện dọn dẹp.
+const SWEEP_EVERY_MS = 60 * 60 * 1000;   // nhiều nhất một lần mỗi giờ
+let lastSweep = 0;
+
+export function keepDays(env) {
+  const n = Number(env && env.LEDGER_KEEP_DAYS);
+  if (!isFinite(n) || n <= 0) return 30;
+  return Math.max(1, Math.min(365, Math.round(n)));
+}
+
+function sweepOld(ctx) {
+  const db = ctx && ctx.env && ctx.env.LOG;
+  if (!db) return;
+  const now = Date.now();
+  if (now - lastSweep < SWEEP_EVERY_MS) return;
+  lastSweep = now;                                  // đặt TRƯỚC khi chạy: hỏng cũng không dọn dồn
+  const cutoff = now - keepDays(ctx.env) * 24 * 60 * 60 * 1000;
+  const p = db.batch([
+    db.prepare('DELETE FROM turns WHERE ts < ?').bind(cutoff),
+    db.prepare('DELETE FROM events WHERE ts < ?').bind(cutoff)
+  ]).then(() => {
+    console.log(`[sổ đen] đã dọn dòng cũ hơn ${keepDays(ctx.env)} ngày`);
+  }).catch(e => {
+    console.log('[sổ đen] dọn hỏng — nuốt lỗi: ' + String(e && e.message || e).slice(0, 200));
+  });
+  if (ctx.waitUntil) ctx.waitUntil(p);
+}
+
 function insert(db, table, cols, row) {
   const values = cols.map(c => (row[c] === undefined ? null : row[c]));
   const marks = cols.map(() => '?').join(',');
@@ -95,6 +136,7 @@ export function logTurn(ctx, r) {
     signal_raw: S(r.signalRaw, 40), signal_final: S(r.signalFinal, 40), gate_reason: S(r.gateReason, 160),
     retried: B(r.retried), reply_lang: S(guessLang(r.npcText), 4), err: S(r.err, 400)
   };
+  sweepOld(ctx);                                    // v2.4: tiện tay dọn luôn dòng quá hạn
   const p = insert(db, 'turns', TURN_COLS, row).catch(e => {
     console.log('[sổ đen] ghi lượt hỏng — nuốt lỗi, game chạy tiếp: ' + String(e && e.message || e).slice(0, 200));
   });
@@ -112,6 +154,7 @@ export function logEvent(ctx, e) {
     name: S(e.name, 40), mode: S(e.mode, 16), lang: S(e.lang, 4), npc: S(e.npc, 24),
     night: N(e.night), detail: S(e.detail, 600)
   };
+  sweepOld(ctx);                                    // v2.4
   const p = insert(db, 'events', EVENT_COLS, row).catch(err => {
     console.log('[sổ đen] ghi cột mốc hỏng: ' + String(err && err.message || err).slice(0, 200));
   });

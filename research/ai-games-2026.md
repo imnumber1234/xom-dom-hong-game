@@ -102,3 +102,52 @@ Game bán chạy nhất (1 triệu bản) là game **KHÔNG dùng AI** nhưng ch
 - https://developers.cloudflare.com/ai-gateway/observability/logging/ · https://langfuse.com/integrations/native/opentelemetry
 - https://gamineai.com/blog/the-first-10-telemetry-events-every-indie-game-should-ship-and-why
 - https://tienphong.vn/giai-ma-bi-mat-cua-ma-ca-rong-post1841784.tpo (ma cà rồng VN — hút hơi, không hút máu) · https://imknownasthu.wixsite.com/lifhorror/post/ma-lai-rut-ruot-la-gi
+
+
+---
+
+## 8. MMORPG — người ta thiết kế thế nào (bổ sung 21/08, Lucas hỏi lại "MRPG" = MMORPG)
+
+> Mô tả thôi, không khuyến nghị. Lucas: "chỉ cần biết người khác làm sao."
+
+### 8a. Hai trường phái lớn
+| | Công viên giải trí (themepark) | Hộp cát (sandbox) |
+|---|---|---|
+| Ai | WoW · FFXIV · ESO · Warframe | EVE Online · RuneScape cổ · Star Wars Galaxies · Minecraft |
+| Cách dựng | Đường đi định sẵn, nhiệm vụ dẫn từ vùng này sang vùng khác theo cấp | Thả người chơi vào thế giới, hãng chỉ cấp CƠ CHẾ, nội dung do người chơi tạo |
+| Nội dung đến từ | Đội làm game viết sẵn | Người chơi — kinh tế, chiến tranh, chính trị |
+| Điểm yếu | Hết nội dung là hết chơi; phải ra bản mới liên tục | Người mới vào không biết làm gì; dễ bị người chơi cũ bắt nạt |
+
+### 8b. Bốn kiểu người chơi (Bartle) — khung phân loại kinh điển
+Achiever (đạt thành tích) · Explorer (khám phá) · Socializer (giao lưu) · Killer (đấu người).
+Trục ngang = thích tương tác với NGƯỜI hay với THẾ GIỚI; trục dọc = tương tác hai chiều hay hành động một chiều.
+
+### 8c. Quy mô và tiền — con số thật
+| Mức | Chi phí |
+|---|---|
+| Indie nhỏ | 50.000 – 2 triệu USD |
+| AAA | 50 triệu – hơn 200 triệu USD |
+
+**Phạm vi indie được coi là THỰC TẾ:** một thế giới nhỏ chia phòng, **100–300 người chơi cùng lúc trong MỘT vùng**, một vòng chơi tập trung (đánh nhau HOẶC chế đồ), **một trục tiến bộ duy nhất**, và **20–40 giờ nội dung** lúc ra mắt.
+
+### 8d. Vì sao MMO indie chết
+Không phải lúc ra mắt — mà **sau đó**. Dự án không lên kế hoạch và không có người cho giai đoạn hậu ra mắt sẽ **mất người chơi nhanh hơn tốc độ kiếm người mới**. Thành công dài hạn phụ thuộc vào **nhịp ra nội dung**, **cân bằng kinh tế**, và **giữ chân** — không phải màn ra mắt hoành tráng.
+Chất keo giữ người: bang hội, tổ đội, hệ thống người dẫn dắt người mới, chat/thoại, danh tiếng.
+
+### 8e. AI trong MMO — ai đang làm
+| Dự án | Làm gì | Tình trạng |
+|---|---|---|
+| **Wanderfolk** | Mỗi dân làng có **trí nhớ vector** (mỗi cuộc nói chuyện được tóm tắt, lưu vào PostgreSQL + pgvector; lượt sau lấy lại ký ức **theo mức LIÊN QUAN** chứ không theo thứ tự thời gian). Danh tiếng **−100 → +100**. **Mạng tin đồn** lan hành vi khắp làng. Làng tự chạy mỗi ngày: NPC kết bạn, hứa hẹn, cãi nhau vì tài nguyên — đi vắng về thì quan hệ trong làng đã đổi. Có cả cơ chế **bị đuổi khỏi làng = hết game** | ⚠️ Toàn bộ là **trang tự quảng cáo của chính hãng** — chưa có nguồn độc lập kiểm chứng |
+| **Epitome** | MMO "thế hệ mới", NPC + nhiệm vụ do AI sinh, bạn đồng hành lớn lên cùng người chơi, hội sát thủ động | Gọi vốn Kickstarter từ 1/2026 — **chưa ra game** |
+| **Nghiên cứu CHI 2026** | Đo NPC chạy bằng LLM trong Stardew Valley, so chơi một mình vs chơi nhiều người | Bài hội thảo học thuật |
+
+**Điểm đáng chú ý:** cơ chế mạnh nhất mà Wanderfolk quảng cáo — **danh tiếng + mạng tin đồn** — chính là thứ Xóm Đóm Hòng đã có từ v0.4 (sổ tai tiếng, câu chào "nghe đồn"). Khác biệt: họ lưu **qua nhiều phiên chơi** bằng cơ sở dữ liệu; mình chỉ giữ **trong một ván**.
+
+### Nguồn
+- https://en.wikipedia.org/wiki/Bartle_taxonomy_of_player_types
+- https://forums.mmorpg.com/discussion/315163/sandbox-vs-theme-park-style-mmos
+- https://game-ace.com/blog/mmorpg-games-and-how-to-develop-them/ · https://www.cubix.co/blog/mmorpg-game-development-cost/
+- https://galaxy4games.com/en/knowledgebase/blog/mmorpgs-in-2026-player-demand-market-reality-and-development-potential
+- https://wanderfolk.ai/how-ai-npcs-work/ (trang của chính hãng — tự khai)
+- https://massivelyop.com/2025/12/11/epitome-is-an-upcoming-next-gen-mmo-thats-leaning-heavily-into-ai-generated-npcs-and-quests/
+- https://dl.acm.org/doi/10.1145/3772363.3798665 (CHI 2026)

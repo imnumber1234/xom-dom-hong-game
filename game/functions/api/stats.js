@@ -9,6 +9,7 @@
 // và ở quy mô chơi thử thì kéo về tính tay vừa đúng vừa đọc được, khỏi viết truy vấn hack.
 
 import { dashGate, withCookie } from './_dashauth.js';
+import { keepDays } from './_ledger.js';
 
 const json = (d, gate) => withCookie(new Response(JSON.stringify(d), {
   headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }
@@ -110,8 +111,12 @@ export async function onRequestGet(ctx) {
       return { brain, n: arr.length, p50: pct(arr, 0.5), p95: pct(arr, 0.95), max: arr[arr.length - 1] };
     }).sort((a, b) => b.n - a.n);
 
+    // v2.4 — bảng đèn phải NÓI RÕ sổ giữ được bao lâu, để không ai tưởng số ở đây là từ đầu dự án
+    const oldest = all(await db.prepare('SELECT MIN(ts) t FROM turns').all())[0] || {};
     return json({
       ok: true, from,
+      keepDays: keepDays(ctx.env),
+      oldestTs: oldest.t || null,
       totals: all(totals)[0] || {},
       funnel: all(funnel),
       verdicts: all(verdicts),
