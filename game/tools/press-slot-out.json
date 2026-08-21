@@ -35,12 +35,12 @@
   {
    "what": "B1b — ngoi im that thi hang xom TU len tieng (khong can goi tay)",
    "ok": true,
-   "ev": "Nãy giờ im ru à, kể tiếp đi."
+   "ev": "Ủa rồi sao?"
   },
   {
    "what": "B2 — nac 1 keu: hang xom noi 1 cau + nhich len nac 2",
    "ok": true,
-   "ev": "{'tier': 1, 'armed': True, 'patience': 92, 'used': ['Nãy giờ im ru à, kể tiếp đi.', 'Alo? Còn ở đó hông?'], 'glow': False, 'mind': False}"
+   "ev": "{'tier': 1, 'armed': True, 'patience': 92, 'used': ['Ủa rồi sao?', 'Nãy giờ im ru à, kể tiếp đi.'], 'glow': False, 'mind': False}"
   },
   {
    "what": "B3 — im lang mat dung 4 kien nhan",
@@ -50,7 +50,7 @@
   {
    "what": "B4 — cau thuc lay tu kho cua game (khong goi AI)",
    "ok": true,
-   "ev": "Alo? Còn ở đó hông?"
+   "ev": "Nãy giờ im ru à, kể tiếp đi."
   },
   {
    "what": "B5 — thuc xong tu len day lai",
@@ -60,7 +60,7 @@
   {
    "what": "B6 — go mot phim thi dong ho chay lai (giu nac)",
    "ok": true,
-   "ev": "{'tier': 1, 'armed': True, 'patience': 92, 'used': ['Nãy giờ im ru à, kể tiếp đi.', 'Alo? Còn ở đó hông?'], 'glow': False, 'mind': False}"
+   "ev": "{'tier': 1, 'armed': True, 'patience': 92, 'used': ['Ủa rồi sao?', 'Nãy giờ im ru à, kể tiếp đi.'], 'glow': False, 'mind': False}"
   },
   {
    "what": "B7 — dang giu mic thi KHONG len day dong ho",
@@ -80,7 +80,7 @@
   {
    "what": "B10 — so ghi dung ly do 'silence' (khong phai bi cong an)",
    "ok": true,
-   "ev": "[{\"night\":1,\"houseId\":0,\"npcId\":\"gen_z\",\"claim\":\"sinh viên\",\"events\":[\"silence\"]}]"
+   "ev": "[{\"night\":1,\"houseId\":0,\"npcId\":\"gen_z\",\"claim\":\"sinh vien o tro gan day\",\"events\":[\"contradiction\",\"silence\"]}]"
   },
   {
    "what": "C1 — bang tui do hien du 3 mon dang co",
@@ -120,22 +120,22 @@
   {
    "what": "C8 — 🧠 hien bong bong suy nghi ngay",
    "ok": true,
-   "ev": "💭 💭 Khen content của em một câu có gu thôi… là em cho vô liền á."
+   "ev": "💭 💭 Có drama gì trong xóm kể em nghe đi chớ… em hóng muốn xỉu mà."
   },
   {
-   "what": "D1 — quay 1000 lan: ti le thang 41.6% (chot 40%, lech <= 5%)",
+   "what": "D1 — quay 1000 lan: ti le thang 40.2% (chot 40%, lech <= 5%)",
    "ok": true,
-   "ev": "{'spins': 1000, 'jackpot': 60, 'win': 356, 'lose': 584}"
+   "ev": "{'spins': 1000, 'jackpot': 53, 'win': 349, 'lose': 598}"
   },
   {
-   "what": "D1b — ti le trung lon 6.0% (chot 6%, lech <= 3%)",
+   "what": "D1b — ti le trung lon 5.3% (chot 6%, lech <= 3%)",
    "ok": true,
-   "ev": "{'spins': 1000, 'jackpot': 60, 'win': 356, 'lose': 584}"
+   "ev": "{'spins': 1000, 'jackpot': 53, 'win': 349, 'lose': 598}"
   },
   {
    "what": "D2 — dem du so lan quay",
    "ok": true,
-   "ev": "{'spins': 1000, 'jackpot': 60, 'win': 356, 'lose': 584}"
+   "ev": "{'spins': 1000, 'jackpot': 53, 'win': 349, 'lose': 598}"
   },
   {
    "what": "D3 — thua thi mat dung tien cuoc",
@@ -150,7 +150,7 @@
   {
    "what": "D5 — 3 hinh giong nhau: an gap doi + duoc them 1 mon do nghe",
    "ok": true,
-   "ev": "{'gift': 7, 'hourglass': 9, 'hint': 9, 'wardrobe': 10, 'glow': 16, 'mind': 9} → {'gift': 7, 'hourglass': 9, 'hint': 9, 'wardrobe': 11, 'glow': 16, 'mind': 9}"
+   "ev": "{'gift': 6, 'hourglass': 8, 'hint': 9, 'wardrobe': 12, 'glow': 8, 'mind': 10} → {'gift': 6, 'hourglass': 8, 'hint': 10, 'wardrobe': 12, 'glow': 8, 'mind': 10}"
   },
   {
    "what": "D6 — TAT TAY thua sach thi ve 0k",
