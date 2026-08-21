@@ -1,11 +1,11 @@
 {
- "pass": 40,
- "total": 40,
+ "pass": 41,
+ "total": 41,
  "checks": [
   {
-   "what": "A1 — ?test=1 vao van co 500k",
+   "what": "A1 — vao van co san tien theo dung cong tac dang bat",
    "ok": true,
-   "ev": "500"
+   "ev": "2000/2000"
   },
   {
    "what": "A2 — bang CHE DO TEST hien",
@@ -80,7 +80,7 @@
   {
    "what": "B10 — so ghi dung ly do 'silence' (khong phai bi cong an)",
    "ok": true,
-   "ev": "[{\"night\":1,\"houseId\":0,\"npcId\":\"gen_z\",\"claim\":\"sinh vien\",\"events\":[\"contradiction\",\"silence\"]}]"
+   "ev": "[{\"night\":1,\"houseId\":0,\"npcId\":\"gen_z\",\"claim\":\"sinh viên\",\"events\":[\"silence\"]}]"
   },
   {
    "what": "C1 — bang tui do hien du 3 mon dang co",
@@ -120,22 +120,22 @@
   {
    "what": "C8 — 🧠 hien bong bong suy nghi ngay",
    "ok": true,
-   "ev": "💭 💭 Có drama gì trong xóm kể em nghe đi chớ… em hóng muốn xỉu mà."
+   "ev": "💭 💭 Khen content của em một câu có gu thôi… là em cho vô liền á."
   },
   {
-   "what": "D1 — quay 1000 lan: ti le thang 41.0% (chot 40%, lech <= 5%)",
+   "what": "D1 — quay 1000 lan: ti le thang 41.6% (chot 40%, lech <= 5%)",
    "ok": true,
-   "ev": "{'spins': 1000, 'jackpot': 72, 'win': 338, 'lose': 590}"
+   "ev": "{'spins': 1000, 'jackpot': 60, 'win': 356, 'lose': 584}"
   },
   {
-   "what": "D1b — ti le trung lon 7.2% (chot 6%, lech <= 3%)",
+   "what": "D1b — ti le trung lon 6.0% (chot 6%, lech <= 3%)",
    "ok": true,
-   "ev": "{'spins': 1000, 'jackpot': 72, 'win': 338, 'lose': 590}"
+   "ev": "{'spins': 1000, 'jackpot': 60, 'win': 356, 'lose': 584}"
   },
   {
    "what": "D2 — dem du so lan quay",
    "ok": true,
-   "ev": "{'spins': 1000, 'jackpot': 72, 'win': 338, 'lose': 590}"
+   "ev": "{'spins': 1000, 'jackpot': 60, 'win': 356, 'lose': 584}"
   },
   {
    "what": "D3 — thua thi mat dung tien cuoc",
@@ -150,7 +150,7 @@
   {
    "what": "D5 — 3 hinh giong nhau: an gap doi + duoc them 1 mon do nghe",
    "ok": true,
-   "ev": "{'gift': 9, 'hourglass': 12, 'hint': 11, 'wardrobe': 9, 'glow': 16, 'mind': 15} → {'gift': 9, 'hourglass': 12, 'hint': 12, 'wardrobe': 9, 'glow': 16, 'mind': 15"
+   "ev": "{'gift': 7, 'hourglass': 9, 'hint': 9, 'wardrobe': 10, 'glow': 16, 'mind': 9} → {'gift': 7, 'hourglass': 9, 'hint': 9, 'wardrobe': 11, 'glow': 16, 'mind': 9}"
   },
   {
    "what": "D6 — TAT TAY thua sach thi ve 0k",
@@ -188,9 +188,14 @@
    "ev": "junk"
   },
   {
-   "what": "E2 — khong du 30k thi khong mua duoc",
+   "what": "E2 — khong du 30k thi khong mua duoc (khi KHONG bat playtest)",
    "ok": true,
-   "ev": ""
+   "ev": "playtest=True ket qua=coins"
+  },
+  {
+   "what": "F0 — TAT cong tac playtest thi moi thu ve nhu cu (gia goc + tu do khoa lai)",
+   "ok": true,
+   "ev": "false | hop qua 30k | con khoa 3"
   },
   {
    "what": "F1 — link KHONG co ?test=1 van bat dau 0k",

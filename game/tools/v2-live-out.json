@@ -1,0 +1,483 @@
+{
+ "base": "https://hop-kinh.xom-dom-hong.pages.dev",
+ "runId": "live_mt2bgrz4",
+ "turnOne": [
+  {
+   "npc": "gen_z",
+   "trúng tim": "CÓ",
+   "câu mở": "Ê Ly ơi, cái clip trend hôm qua của em qua…",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "deepseek"
+  },
+  {
+   "npc": "gen_z",
+   "trúng tim": "CÓ",
+   "câu mở": "Ly ơi anh có một ý tưởng kịch bản video nà…",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "deepseek"
+  },
+  {
+   "npc": "gen_z",
+   "trúng tim": "CÓ",
+   "câu mở": "Ly ơi trong xóm mình đang có drama gì hay …",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  },
+  {
+   "npc": "gen_z",
+   "trúng tim": "CÓ",
+   "câu mở": "Khuya rồi mà em vẫn quay content à, chăm q…",
+   "AI chấm": "danh_trung",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  },
+  {
+   "npc": "gen_z",
+   "trúng tim": "không",
+   "câu mở": "Chào em, cho anh hỏi thăm đường ra bến xe …",
+   "AI chấm": "thuong",
+   "người chơi nhận": "thuong",
+   "não": "deepseek"
+  },
+  {
+   "npc": "gen_z",
+   "trúng tim": "không",
+   "câu mở": "Dạ em chào chị, trời hôm nay mát ha.…",
+   "AI chấm": "thuong",
+   "người chơi nhận": "thuong",
+   "não": "deepseek"
+  },
+  {
+   "npc": "sinh_vien",
+   "trúng tim": "CÓ",
+   "câu mở": "Ê Tí ơi, trận tối nay tỉ số sao rồi em, an…",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  },
+  {
+   "npc": "sinh_vien",
+   "trúng tim": "CÓ",
+   "câu mở": "Nhìn cái phòng trọ này là biết đời sinh vi…",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  },
+  {
+   "npc": "sinh_vien",
+   "trúng tim": "CÓ",
+   "câu mở": "Anh mang theo miếng đồ ăn nè, coi trận chu…",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  },
+  {
+   "npc": "sinh_vien",
+   "trúng tim": "CÓ",
+   "câu mở": "Em ơi đội em ruột là MU hay Arsenal vậy, a…",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  },
+  {
+   "npc": "sinh_vien",
+   "trúng tim": "không",
+   "câu mở": "Chào em, cho anh hỏi thăm đường ra bến xe …",
+   "AI chấm": "thuong",
+   "người chơi nhận": "thuong",
+   "não": "qwen"
+  },
+  {
+   "npc": "sinh_vien",
+   "trúng tim": "không",
+   "câu mở": "Dạ em chào anh, trời hôm nay mát ha.…",
+   "AI chấm": "thuong",
+   "người chơi nhận": "thuong",
+   "não": "qwen"
+  },
+  {
+   "npc": "me_bim_sua",
+   "trúng tim": "CÓ",
+   "câu mở": "Cô ơi bé Bin nhà mình dễ thương quá trời, …",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  },
+  {
+   "npc": "me_bim_sua",
+   "trúng tim": "CÓ",
+   "câu mở": "Dạ con nói nhỏ thôi cô, sợ bé Bin đang ngủ…",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  },
+  {
+   "npc": "me_bim_sua",
+   "trúng tim": "CÓ",
+   "câu mở": "Cô ơi dạo này rau ngoài chợ lên giá dữ ha …",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  },
+  {
+   "npc": "me_bim_sua",
+   "trúng tim": "CÓ",
+   "câu mở": "Cô kể con nghe chuyện xóm mình đi cô, con …",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  },
+  {
+   "npc": "me_bim_sua",
+   "trúng tim": "không",
+   "câu mở": "Chào cô, cho con hỏi thăm đường ra bến xe …",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  },
+  {
+   "npc": "me_bim_sua",
+   "trúng tim": "không",
+   "câu mở": "Dạ con chào cô, trời hôm nay mát ha.…",
+   "AI chấm": "thuong",
+   "người chơi nhận": "danh_trung",
+   "não": "qwen"
+  }
+ ],
+ "en": [
+  {
+   "npc": "gen_z",
+   "lượt": 1,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Oh my god — midnight door knock? SOS 😌 Just saying."
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 2,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Oh my god — midnight door knock? SOS 😌 Just saying."
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 3,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Wait — you walked since *this afternoon*? In those clothes? "
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 4,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Wait — you walked since *this afternoon*? In those rumpled c"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 5,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Oh wow — you *walked* since noon? In that outfit? Bro, are y"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 6,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Wait — 'walked since this afternoon' but you're wearing zero"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 7,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Hold up — you claim you've been walking since noon? But your"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 8,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Wait — 'walked since noon' but you're wearing zero backpack,"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 9,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Wait — you walked since *noon*? In *those* clothes? And now "
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 10,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "You said you walked since *this afternoon* — but your outfit"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 1,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Uh… sorry, I’m kinda glued to the match right now 😅 — MU’s "
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 2,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Uh… sorry, I’m still watching the second half — HAGL just sc"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 3,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Uh… sorry, I’m still stuck on this Arsenal vs. City penalty "
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 4,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Uh… sorry, I’m still watching the second half — HAGL just sc"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 5,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Uh… sorry, I’m still glued to this match — Arsenal just got "
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 6,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Uh… sorry, I’m still watching the VAR review on that Arsenal"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 7,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Uh… sorry, I’m still stuck on this VAR call — HAGL’s keeper "
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 8,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Uh… sorry, I’m still watching the VAR review on that Arsenal"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 9,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Uh… sorry, I’m still glued to the match — MU just got a pen!"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 10,
+   "não": "qwen",
+   "trả lời": "en",
+   "đúng": true,
+   "thoại": "Uh… sorry, I’m still watching the VAR review — MU just got a"
+  }
+ ],
+ "vi": [
+  {
+   "npc": "gen_z",
+   "lượt": 1,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Á hả? Gõ cửa giữa đêm à? Em đang quay TikTok chủ đề 'đêm khu"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 2,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Sinh viên đi lạc mà mặc đồ nhàu như vừa ngủ dậy trên ghế xe "
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 3,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Sinh viên đi lạc giữa đêm mà áo sơ mi nhăn như khăn lau bếp "
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 4,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Ủa sinh viên đi lạc mà không mang theo balo, không có sách v"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 5,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Sinh viên đi lạc mà không mang balo, không có sách vở, không"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 6,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Sinh viên đi lạc giữa đêm mà tay không cầm gì ngoài… vibe 't"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 7,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Sinh viên đi lạc mà không có balo, không có thẻ, không có… g"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 8,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Trận tối nay hay dữ luôn, chị có coi hiệp hai không? 😌"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 9,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Sinh viên đi lạc mà không mang balo, không có thẻ sinh viên,"
+  },
+  {
+   "npc": "gen_z",
+   "lượt": 10,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Áo sơ mi nhăn như khăn lau bếp mà tự xưng sinh viên đi lạc g"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 1,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Dạ anh ơi, em đang xem bàn thắng thứ ba của HAGL… nên hơi qu"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 2,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Dạ anh ơi, em chào anh… chờ chút nha — Barca đang lên bóng d"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 3,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Dạ anh ơi, em đang xem bàn thắng của Văn Tùng… xin lỗi anh n"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 4,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Dạ anh ơi, em vừa thấy Văn Thanh dứt điểm xong — xin lỗi anh"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 5,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Dạ anh ơi, em vừa reo lên vì bàn thắng của Văn Đức… xin lỗi "
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 6,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Dạ anh ơi, em vừa hét lên vì bàn thắng của Văn Quyết… xin lỗ"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 7,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Dạ anh ơi, em vừa reo lên vì bàn thắng của Văn Toàn… xin lỗi"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 8,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Dạ anh ơi, em vừa hét lên vì cú sút phạt của Văn Quyết — xin"
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 9,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Dạ anh ơi, em vừa reo lên vì pha kiến tạo của Văn Đức — xin "
+  },
+  {
+   "npc": "sinh_vien",
+   "lượt": 10,
+   "não": "qwen",
+   "trả lời": "vi",
+   "đúng": true,
+   "thoại": "Dạ anh ơi, em vừa hét lên vì cú volley của Văn Tùng — xin lỗ"
+  }
+ ],
+ "passes": {
+  "so4": true,
+  "so7_en": true,
+  "so7_vi": true
+ },
+ "brains": {
+  "deepseek": 4,
+  "qwen": 54
+ }
+}

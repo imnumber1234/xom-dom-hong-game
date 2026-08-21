@@ -15,6 +15,14 @@ XDH.Casino = (function () {
   function openSlot() {
     if (!XDH.run) return;
     render();
+    // v2.0 việc 9 (đáp án 11) — chốt chặn thứ hai: dù có ai gọi thẳng hàm này thì ở chế độ
+    // Kẹt Tiền máy quay số vẫn KHÔNG mở (ở đó tiền chính là điều kiện thắng).
+    if (XDH.isKetTien()) {
+      XDH.UI.toast(XDH.lang === 'en'
+        ? '🎰 No gambling in Broke mode — that money is your dinner.'
+        : '🎰 Chế độ Kẹt Tiền không có máy quay số — tiền đó là bữa ăn của bạn đó.');
+      return;
+    }
     $('ov-slot').classList.add('show');
   }
   function close() { if (!spinning) $('ov-slot').classList.remove('show'); }
@@ -125,11 +133,12 @@ XDH.Casino = (function () {
 
   function buyLucky(forced) {
     const r = XDH.run, L = XDH.LUCKY;
-    if (r.money < L.PRICE) {
+    const lp = XDH.priceOf(L.PRICE);   // v2.0 việc 8: bật công tắc playtest thì hộp quà 0k
+    if (r.money < lp) {
       XDH.UI.toast(t('Chưa đủ tiền mua hộp quà.', 'Not enough money for a lucky box.'));
       return null;
     }
-    r.money -= L.PRICE;
+    r.money -= lp;
     const prize = rollPrize(forced);
     let ico = '🎁', line = '';
     if (prize.type === 'coins') {

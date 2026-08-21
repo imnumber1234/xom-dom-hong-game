@@ -156,7 +156,9 @@
 
       // v1.2 — 🎰 THÙNG RÁC QUAY SỐ (Lucas 08-16): cái thùng rác của xóm nhưng có 3 ô quay
       // nhấp nháy. Đứng cạnh bấm E để cược. Luật + tỉ lệ nằm hết ở casino.js.
-      {
+      // v2.0 việc 9 (đáp án 11) — TẮT HẲN máy quay số ở chế độ Kẹt Tiền: ở đó TIỀN CHÍNH LÀ
+      // điều kiện thắng, để người chơi nướng tiền ăn vào máy đánh bạc là hỏng cả chế độ.
+      if (!kt) {
         const [sx, sy] = XDH.SLOT.POS;
         const slotImg = this.add.image(sx, sy, this.textures.exists('trashbin') ? 'trashbin' : 'cart')
           .setDepth(8).setScale(this.textures.exists('trashbin') ? 2 : 1);

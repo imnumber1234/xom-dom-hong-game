@@ -14,8 +14,8 @@ XDH.UI = (function () {
       unlocked: { shirt: [], hat: [], item: [] },
       houses: idx.map(i => ({ npcIdx: i, won: false, failedOutfits: [] })),
       night: 1, enteredTonight: 0, dawnHandled: false, policeCaught: false,          // §0 #2: 3-night run
-      // v1.2 — ?test=1 nạp sẵn tiền để thử hết đồ nghề (link chính vẫn 0k)
-      money: XDH.TEST ? XDH.TEST_MONEY : 0,
+      // v1.2 ?test=1 · v2.0 công tắc playtest — cả hai đi qua một cửa XDH.startMoney()
+      money: XDH.startMoney(),
       inv: { gift: 0, hourglass: 0, hint: 0, wardrobe: 0, glow: 0, mind: 0 },
       score: { entered: 0, fastest: Infinity, bestOutfit: '—', maxSuspDelta: -1, maxSuspQuote: '—', maxSuspNpc: '' },
       transcripts: [],
@@ -25,6 +25,11 @@ XDH.UI = (function () {
     // v0.6 F3.1 Q4 = A: tặng sẵn 1 món ngẫu nhiên ngay đêm/ngày 1 — không ai bắt đầu tay trắng.
     for (let i = 0; i < XDH.WARDROBE_LOCK.NIGHT1_FREE; i++) XDH.unlockRandomPiece();
     if (XDH.Mission) XDH.Mission.initRun();                     // v1.0: máy trạng thái nhiệm vụ + túi đồ
+    // v2.0 việc 2 — ván mới: cấp mã ván rồi ghi mốc CHỌN CHẾ ĐỘ (bậc 2 của phễu người mới)
+    if (XDH.Track) {
+      XDH.Track.newRun();
+      XDH.Track.ev('mode_pick', { detail: { mode: XDH.run.mode, playtest: !!XDH.PLAYTEST } });
+    }
     if (XDH.isKetTien()) XDH.KetTien.startDay(1);               // bốc món ăn hôm nay + reset ngày
     refreshHud();
   }
@@ -69,7 +74,11 @@ XDH.UI = (function () {
     const hb = $('btn-bag-hud');
     if (hb) hb.textContent = '🎒 ' + invCount();
     const tb = $('test-badge');
-    if (tb) tb.style.display = XDH.TEST ? 'block' : 'none';
+    if (tb) {
+      // v2.0: phải NHÌN LÀ BIẾT đang ở bản mở-hết — để không ai nhầm nó với bản thật
+      tb.style.display = (XDH.TEST || XDH.PLAYTEST) ? 'block' : 'none';
+      tb.textContent = XDH.PLAYTEST ? '🧪 BẢN THỬ — MIỄN PHÍ HẾT' : '🧪 TEST';
+    }
   }
 
   function toast(msg, ms = 3200) {
@@ -295,48 +304,51 @@ XDH.UI = (function () {
       box.appendChild(m);
     }
 
-    // v1.0 — đường giải 💰: nhận nhiệm vụ rồi thì xe bánh mì có bán GẬY SELFIE (đáp án 3, mục 3)
-    if (XDH.Mission && XDH.Mission.canBuyStick()) {
-      const price = XDH.MISSION_CFG.STICK_PRICE;
-      const s = document.createElement('button');
-      s.className = 'shop-item';
-      s.style.borderColor = r.money >= price ? 'var(--ok)' : 'var(--line)';
-      s.innerHTML = `<b>🤳 ${en ? 'Selfie stick (for Ly)' : 'Gậy selfie (cho Ly)'}</b> <span class="price">${price}k</span>` +
-        `<span class="desc">${en ? 'Brand new, still in the box — exactly what Ly needs.' : 'Mới tinh còn trong hộp — đúng thứ Ly đang cần.'}</span>`;
-      s.disabled = r.money < price;
-      s.onclick = () => {
-        if (!XDH.Mission.buyStick()) return;
-        XDH.Blips.jingle('win');
-        refreshHud();
-        openShop();
-      };
-      box.appendChild(s);
+    // v2.0 — đường giải 💰: nhận nhiệm vụ nào thì xe bánh mì bán đúng món đó (cả ba nhà)
+    if (XDH.Mission) {
+      XDH.Mission.shopItems().forEach(it => {
+        const b = document.createElement('button');
+        b.className = 'shop-item';
+        b.style.borderColor = r.money >= it.price ? 'var(--ok)' : 'var(--line)';
+        b.innerHTML = `<b>${it.emoji} ${en ? it.labelEn : it.labelVi}</b> <span class="price">${it.price}k</span>` +
+          `<span class="desc">${en ? 'Brand new, still in the box — exactly what they need.' : 'Mới tinh còn trong hộp — đúng thứ họ đang cần.'}</span>`;
+        b.disabled = r.money < it.price;
+        b.onclick = () => {
+          if (!XDH.Mission.buyItem(it.id)) return;
+          XDH.Blips.jingle('win');
+          refreshHud();
+          openShop();
+        };
+        box.appendChild(b);
+      });
     }
 
     // v1.2 🎁 HỘP QUÀ MAY MẮN — mua là mở luôn tại quầy, không nằm trong túi đồ.
     {
       const L = XDH.LUCKY;
+      const lp = XDH.priceOf(L.PRICE);     // v2.0: công tắc playtest → 0k
       const g = document.createElement('button');
       g.className = 'shop-item';
-      g.style.borderColor = r.money >= L.PRICE ? 'var(--ok)' : 'var(--line)';
-      g.innerHTML = `<b>🎁 ${en ? 'Lucky box' : 'Hộp quà may mắn'}</b> <span class="price">${L.PRICE}k</span>` +
+      g.style.borderColor = r.money >= lp ? 'var(--ok)' : 'var(--line)';
+      g.innerHTML = `<b>🎁 ${en ? 'Lucky box' : 'Hộp quà may mắn'}</b> <span class="price">${lp}k</span>` +
         `<span class="desc">${en ? 'Open it right here — money, gear, clothing… or pure junk.'
                                  : 'Mở ngay tại quầy — có thể ra tiền, đồ nghề, đồ mặc… hoặc rác thiệt.'}</span>`;
-      g.disabled = r.money < L.PRICE;
+      g.disabled = r.money < lp;
       g.onclick = () => { if (XDH.Casino) XDH.Casino.buyLucky(); };
       box.appendChild(g);
     }
 
     XDH.SHOP.forEach(item => {
       const owned = r.inv[item.id] || 0;
+      const pr = XDH.priceOf(item);        // v2.0 việc 8: một cửa duy nhất hỏi giá → playtest = 0k
       const b = document.createElement('button');
       b.className = 'shop-item';
-      b.innerHTML = `<b>${item.label}</b> <span class="price">${item.price}k</span>` +
+      b.innerHTML = `<b>${item.label}</b> <span class="price">${pr}k</span>` +
         `<span class="desc">${item.desc}${owned ? ` (đang có ×${owned})` : ''}</span>`;
-      b.disabled = r.money < item.price;
+      b.disabled = r.money < pr;
       b.onclick = () => {
-        if (r.money < item.price) return;
-        r.money -= item.price;
+        if (r.money < pr) return;
+        r.money -= pr;
         r.inv[item.id]++;
         XDH.Blips.jingle('win');
         refreshHud();
@@ -453,6 +465,7 @@ XDH.UI = (function () {
     $('transcript-live').textContent = '';
     $('text-in').value = '';
     setMeters(state);
+    setFriend(0);
     setDoorStage(0);
     setConvoState('listening');
     $('thought-bubble').classList.remove('show');
@@ -472,6 +485,21 @@ XDH.UI = (function () {
   }
 
   function closeConvo() { $('convo').classList.remove('show'); }
+
+  // v2.0 việc 4 — THANH THIỆN CẢM hiện ra màn hình (đáp án 5: Lucas chốt HIỆN, không giấu).
+  // convo.js tính con số (hai lớp, lấy lớp cao hơn); chỗ này CHỈ VẼ, không tính lại lần hai —
+  // tính hai nơi là kiểu gì cũng có ngày lệch nhau (bài học popup số bay v0.6).
+  function setFriend(pct) {
+    const bar = $('friend-bar');
+    if (!bar) return;
+    if (!XDH.FRIEND.SHOW) { bar.style.display = 'none'; return; }
+    const v = Math.max(0, Math.min(100, Math.round(Number(pct) || 0)));
+    bar.style.display = 'flex';
+    bar.dataset.full = v >= 100 ? '1' : '0';
+    $('friend-fill').style.width = v + '%';
+    $('friend-num').textContent = v + '%';
+    $('friend-label').textContent = XDH.lang === 'en' ? 'Warmth' : 'Thiện cảm';
+  }
 
   function setMeters(st) {
     $('m-trust').querySelector('.fill').style.width = st.trust + '%';
@@ -671,16 +699,22 @@ XDH.UI = (function () {
       cell.onclick = () => askUse(id, shop);
       grid.appendChild(cell);
     });
-    // v1.0: đồ nhiệm vụ nằm chung túi cho dễ hiểu, nhưng KHÔNG bấm dùng ở đây được
-    if (XDH.Mission && XDH.Mission.hasStick && XDH.Mission.hasStick()) {
-      any = true;
-      const cell = document.createElement('button');
-      cell.className = 'bag-cell locked';
-      cell.innerHTML = '<span class="bag-ico">🤳</span><span class="bag-x">×1</span>' +
-        `<b>${en ? 'Selfie stick' : 'Gậy selfie'}</b><span class="bag-desc">` +
-        (en ? 'Hand it to Ly at her door (green button).' : 'Đứng trước cửa Ly rồi bấm nút xanh để đưa.') + '</span>';
-      cell.onclick = () => toast(en ? 'Bring it to Ly at her door 🤳' : 'Mang tới trước cửa nhà Ly rồi đưa nha 🤳');
-      grid.appendChild(cell);
+    // v2.0: đồ nhiệm vụ (cả ba) nằm chung túi cho dễ hiểu, nhưng KHÔNG bấm dùng ở đây được
+    if (XDH.Mission && XDH.Mission.bagItems) {
+      XDH.Mission.bagItems().forEach(code => {
+        const id = XDH.MISSION_IDS.find(k => XDH.MISSIONS[k].item === code);
+        if (!id) return;
+        const d = XDH.MISSIONS[id];
+        const who = (XDH.NPCS.find(n => n.id === d.owner) || {}).name || '';
+        any = true;
+        const cell = document.createElement('button');
+        cell.className = 'bag-cell locked';
+        cell.innerHTML = `<span class="bag-ico">${d.emoji}</span><span class="bag-x">×1</span>` +
+          `<b>${en ? d.itemEn : d.itemVi}</b><span class="bag-desc">` +
+          (en ? `Hand it over at ${who}'s door (green button).` : `Đứng trước cửa ${who} rồi bấm nút xanh để đưa.`) + '</span>';
+        cell.onclick = () => toast(en ? `Bring it to ${who} ${d.emoji}` : `Mang tới trước cửa ${who} rồi đưa nha ${d.emoji}`);
+        grid.appendChild(cell);
+      });
     }
     $('bag-empty').style.display = any ? 'none' : 'block';
     $('bag-empty').textContent = en
@@ -806,6 +840,7 @@ XDH.UI = (function () {
     row.textContent = `[${info.brain}] ${info.verdict || '—'}${info.contradiction ? ' ⚡mâu-thuẫn' : ''}` +
       `${info.corroboration ? ' 🧾chống-lưng' : ''}` +
       ` → tin ${sign(info.dT)} nghi ${sign(info.dS)} hứng ${sign(info.dI)} kiên ${sign(info.dP)}` +
+      (info.friend ? ` | 💛 ${info.friend}` : '') +
       (info.extra ? ` [${info.extra}]` : '') +
       ` | tin=${s.trust} nghi=${s.suspicion} hứng=${s.interest} kiên=${s.patience}`;
     el.appendChild(row);
@@ -1186,7 +1221,7 @@ XDH.UI = (function () {
   return {
     newRun, newNight, refreshHud, toast, openWardrobe, openShop, openBag, showStation,
     afterHouseWon, showNightDone, dawnFail, renderConvoItems, showHint, playKillScene,
-    openConvo, closeConvo, setMeters, setTimer, echoPlayer,
+    openConvo, closeConvo, setMeters, setFriend, setTimer, echoPlayer,
     typeNpcLine, setBusy, endConvo, showScore, debugTurn,
     floatNums, clearNums, popDeltas,                       // v0.6 F1
     showMeme,                                              // v0.6 F2

@@ -53,7 +53,17 @@ function toGeminiSchema(node) {
   const out = {};
   if (node.type) out.type = String(node.type).toUpperCase();
   if (node.description) out.description = node.description;
-  if (Array.isArray(node.enum)) out.enum = node.enum.map(String);
+  if (Array.isArray(node.enum)) {
+    // 🔴 LỖI D — GỐC RỄ THẬT, sổ đen bắt được 2026-08-21:
+    // Gemini TỪ CHỐI chuỗi rỗng nằm trong enum và trả HTTP 400
+    //   "properties[mission_signal].enum[0]: cannot be empty".
+    // Ô mission_signal (thêm ở v1.0, 13/08) có '' ở đầu enum → nghĩa là Gemini đã CHẾT 100%
+    // ở MỌI lượt nói chuyện suốt 8 ngày, và không ai biết vì game không lưu một dòng nào.
+    // Cách chữa: ô nào cho phép "để rỗng" thì BỎ HẲN enum cho riêng Gemini, giữ nguyên kiểu dữ liệu
+    // và phần mô tả (mô tả đã liệt kê đủ các giá trị hợp lệ). Ba nhà kia không đổi một chữ.
+    const vals = node.enum.map(String).filter(v => v !== '');
+    if (vals.length === node.enum.length) out.enum = vals;
+  }
   if (node.items) out.items = toGeminiSchema(node.items);
   if (node.properties) {
     out.properties = {};
@@ -218,10 +228,17 @@ async function callHaiku(env, req) {
 // ── Chuỗi não ────────────────────────────────────────────────────────────────
 // `hasKey` để một nhà chưa cắm khoá thì bị bỏ qua NGAY, không tốn một lượt thử nào —
 // đó là điều làm cho bài kiểm "rút khoá" không hề chậm đi.
+// v2.0 — THỨ TỰ SỬA LẠI THEO ĐO THẬT 21/08 (sổ đen + tools/brain-probe.mjs):
+//   gemini   4.3 điểm giọng · 1.7s trên máy mình — NHƯNG máy chủ Cloudflare ở châu Á bị Google
+//            chặn theo vị trí ("User location is not supported"). Giữ đứng đầu để chỗ nào chạy
+//            được thì tự dùng lại; chỗ bị chặn thì hỏng trong ~0,6s rồi ngồi ghế nghỉ 10 phút.
+//   deepseek 3.7 điểm · 1,6s · CHẠY ĐƯỢC ở máy chủ → kéo lên hàng hai (trước Qwen 3.5 / 3,2s).
+//   qwen     3.5 điểm · chậm gấp đôi, tiếng Anh yếu → hàng ba.
+//   haiku    khoá Anthropic HẾT TIỀN từ 10/08 → xuống cuối, chờ Lucas nạp là tự sống lại.
 export const CHAIN = [
   { name: 'gemini', timeoutMs: 9000, hasKey: e => !!(e.GEMINI_API_KEY || e.GOOGLE_GENERATIVE_AI_API_KEY), call: callGemini },
-  { name: 'qwen', timeoutMs: 9000, hasKey: e => !!e.QWEN_API_KEY, call: callQwen },
   { name: 'deepseek', timeoutMs: 15000, hasKey: e => !!e.DEEPSEEK_API_KEY, call: callDeepSeek },
+  { name: 'qwen', timeoutMs: 9000, hasKey: e => !!e.QWEN_API_KEY, call: callQwen },
   { name: 'haiku', timeoutMs: 9000, hasKey: e => !!e.ANTHROPIC_API_KEY, call: callHaiku }
 ];
 
@@ -232,9 +249,16 @@ export const CHAIN = [
  * env.BRAIN_ORDER = "qwen,deepseek" → ép thứ tự/danh sách, dùng cho bài kiểm "giết từng não"
  *                                     mà không phải xoá khoá thật.
  */
+// v2.0 (đáp án 13) — THỨ TỰ NÃO RIÊNG CHO BẢN TIẾNG ANH.
+// Đo thật 08-10 (v0.7 T5: 15/20): cả 5 mục trượt đều nằm ở bản tiếng Anh, vì Qwen viết
+// tiếng Anh yếu và hay TỤT VỀ TIẾNG VIỆT giữa chừng. Gemini/Haiku viết tiếng Anh tốt hơn hẳn
+// → cho lên trước, Qwen xuống cuối. Bản tiếng Việt KHÔNG đổi một dòng nào.
+export const EN_ORDER = ['gemini', 'deepseek', 'haiku', 'qwen'];
+
 export async function callBrain(env, {
   system, messages, tool = null, schemaNote = '', maxTokens = 500, temperature = 0.7,
-  presencePenalty   // v1.0.1: chỉ Qwen/DeepSeek dùng (Gemini/Anthropic bỏ qua — tham số lạ là bị nhà đó chê)
+  presencePenalty,  // v1.0.1: chỉ Qwen/DeepSeek dùng (Gemini/Anthropic bỏ qua — tham số lạ là bị nhà đó chê)
+  lang              // v2.0: 'en' → dùng EN_ORDER ở trên
 }) {
   const now = Date.now();
   const order = String(env.BRAIN_ORDER || '').trim();
@@ -242,6 +266,12 @@ export async function callBrain(env, {
   if (order) {
     const want = order.split(',').map(s => s.trim()).filter(Boolean);
     chain = want.map(n => CHAIN.find(p => p.name === n)).filter(Boolean);
+  }
+
+  // BRAIN_ORDER (biến môi trường, dùng cho bài kiểm "giết từng não") vẫn thắng — nó là lệnh tay.
+  if (lang === 'en' && !order) {
+    chain = EN_ORDER.map(n => CHAIN.find(p => p.name === n)).filter(Boolean)
+      .concat(CHAIN.filter(p => !EN_ORDER.includes(p.name)));
   }
 
   const usable = chain.filter(p => p.hasKey(env));

@@ -25,6 +25,44 @@ XDH.Convo = (function () {
     return out;
   }
 
+  // ══ v2.0 việc 4 — THANH THIỆN CẢM HAI LỚP (Lucas chốt cách D) ══════════════
+  // LỚP CODE: đếm số CHỦ ĐỀ trong XDH.REGRET[nhân vật] mà người chơi đã chạm.
+  //   Bảng từ khoá đó có từ v0.6 nhưng trước giờ chỉ dùng cho câu tiếc nuối lúc thua —
+  //   nối nó vào thanh điểm chính là thứ Lucas xin, không phải làm mới từ đầu.
+  // LỚP AI:   lòng tin đã đi được bao nhiêu phần đường tới ngưỡng mở cửa của nhà đó.
+  // THANH HIỆN = lấy lớp CAO HƠN. Nhờ vậy không bao giờ còn cảnh "nói đúng mà không có điểm".
+  const VERDICT_ORDER = ['lo_lieu', 'kha_nghi', 'thuong', 'hop_ly', 'danh_trung'];
+
+  function topicsOf(npcId) { return XDH.REGRET[npcId] || []; }
+
+  // Chủ đề người chơi ĐÃ chạm trong cuộc này. Câu ngắn hơn XDH.FRIEND.MIN_CHARS không tính —
+  // đó là chốt chặn chống "gõ đại một từ khoá" (cách B trong kế hoạch, gộp vào cách D).
+  function touchedTopics() {
+    if (!active) return [];
+    const said = active.history
+      .filter(h => h.role === 'player' && String(h.text || '').trim().length >= XDH.FRIEND.MIN_CHARS)
+      .map(h => String(h.text || '').toLowerCase()).join(' ');
+    if (!said) return [];
+    return topicsOf(active.npc.id).filter(w => w.keys.some(k => said.includes(k))).map(w => w.id);
+  }
+  function friendCode() {
+    if (!active) return 0;
+    const list = topicsOf(active.npc.id);
+    if (!list.length) return 0;
+    return Math.round(100 * active.topicsHit.length / list.length);
+  }
+  function friendAi(st, diff) {
+    const start = XDH.RULES.START.trust;
+    const span = Math.max(1, diff.threshold - start);
+    let p = 100 * (st.trust - start) / span;
+    // Nghi ngờ sát trần thì thanh phải TỤT — người chơi cần thấy mình đang mất chỗ đứng.
+    if (st.suspicion >= XDH.RULES.SUSPICION_BLOCKS - 15) p -= XDH.FRIEND.SUSP_DRAG;
+    return Math.max(0, Math.min(100, Math.round(p)));
+  }
+  function friendPct(st, diff) {
+    return Math.max(friendCode(), friendAi(st, diff));
+  }
+
   // v0.6 F4 — cảm xúc HIỆN RA: AI đề xuất, CODE có quyền phủ quyết bằng mặt "chán".
   // Thẻ Ly ghi "chán RẤT nhanh — ai nói chuyện nhạt là mắt đờ ra"; trước v0.6 game không có
   // mặt chán nào nên người chơi làm cô chán mà không hề thấy.
@@ -237,14 +275,11 @@ XDH.Convo = (function () {
     return { ...d, threshold: Math.max(40, d.threshold - XDH.KT.THRESHOLD_DROP) };
   }
 
-  // §1: the door IS the trust meter. 0 closed → 3 almost open (4 = win, fully open).
-  // Suspicion spiking pulls it back a notch — the player SEES the door start closing.
+  // §1: cánh cửa CHÍNH LÀ thanh thiện cảm. 0 đóng → 3 gần mở (4 = thắng, mở toang).
+  // v2.0: trước đây cửa chạy theo lòng tin, thanh mới chạy theo thiện cảm → hai thứ lệch nhau.
+  // Nay CẢ HAI đọc chung một con số, không bao giờ còn cảnh "thanh đầy mà cửa vẫn khép".
   function doorStage(st, diff) {
-    const start = XDH.RULES.START.trust;
-    let stage = Math.floor(4 * (st.trust - start) / (diff.threshold - start));
-    stage = Math.max(0, Math.min(3, stage));
-    if (st.suspicion >= XDH.RULES.SUSPICION_BLOCKS - 15) stage = Math.max(0, stage - 1);
-    return stage;
+    return Math.max(0, Math.min(3, Math.floor(friendPct(st, diff) / 25)));
   }
 
   function canKnock(houseId) {
@@ -301,6 +336,9 @@ XDH.Convo = (function () {
       secondsLeft: R.CONVO_SECONDS,
       startedAt: Date.now(),
       turns: 0,
+      topicsHit: [],    // v2.0: chủ đề đã chạm — LỚP CODE của thanh thiện cảm
+      playerTurns: 0,    // v2.0: đếm riêng LƯỢT NGƯỜI CHƠI NÓI (turns tính cả câu chào)
+      inviteSpoken: false,  // v2.0: đã bắt AI nói câu mời chưa (một lần / cuộc)
       contraFired: [],  // outfit keys already penalized — contradiction hits ONCE per outfit (§1b)
       corroFired: [],   // v0.6 F3.2: đồ chống lưng lời khai thưởng ONCE per outfit / cuộc
       blandStreak: 0,   // v0.6 F4: đếm lượt nhạt liên tiếp → CODE bật mặt "chán"
@@ -330,12 +368,19 @@ XDH.Convo = (function () {
       active.corroFired = (saved.corroFired || []).slice();   // v0.6 F3.2: quay lại không được thưởng lại
       active.finalTestPassed = saved.finalTestPassed;
       active.claim = saved.claim || '';   // v0.4 T2: lời xưng theo người chơi khi quay lại (events KHÔNG mang theo — entry cũ đã ghi rồi)
+      active.topicsHit = (saved.topicsHit || []).slice();   // v2.0: chủ đề đã chạm không mất khi quay lại
+      active.playerTurns = saved.playerTurns || 0;
       active.resumed = true;
     }
     XDH.UI.openConvo(npc, active.state);
-    // v1.0 C4 — có gậy + đứng trước cửa Ly → nút 🤳 ĐƯA GẬY SELFIE hiện ra
-    document.getElementById('btn-give-stick').style.display =
-      (XDH.Mission && XDH.Mission.canGive(npc.id)) ? 'block' : 'none';
+    XDH.UI.setFriend(friendPct(active.state, diffOf(npc)));   // v2.0: thanh thiện cảm hiện ngay
+    // v2.0 — có đúng món đồ nhà này đang cần → nút ĐƯA ĐỒ hiện ra, nhãn đổi theo món
+    const giveBtn = document.getElementById('btn-give-stick');
+    const canGive = XDH.Mission && XDH.Mission.canGive(npc.id);
+    giveBtn.style.display = canGive ? 'block' : 'none';
+    if (canGive) giveBtn.textContent = XDH.Mission.giveLabel(npc.id);
+    // v2.0 việc 2 — mốc GÕ CỬA (một lần mỗi ván, nếu không phễu phồng lên)
+    if (XDH.Track) XDH.Track.once('knock', { npc: npc.id, detail: { night: XDH.run.night, houseId } });
     if (!saved) XDH.UI.floatNums(startPops);   // v0.6 F1: quay lại giữa đêm thì không cộng lại → không hiện lại
     tickTimer();
     active.timerId = setInterval(tickTimer, 1000);
@@ -358,20 +403,32 @@ XDH.Convo = (function () {
     if (!text) return;
     pressCancel();
     active.pressTier = 0;   // v1.1: chịu mở miệng là hàng xóm nguôi — về nấc 1
+    // v2.0 việc 2 — mốc NÓI CÂU ĐẦU TIÊN: khúc rơi nhiều nhất của người mới
+    if (XDH.Track) XDH.Track.once('first_line', { npc: active.npc.id, detail: { len: text.length } });
     await exchange(text, false);
   }
 
-  async function exchange(playerText, isGreeting, finalAsk) {
+  async function exchange(playerText, isGreeting, finalAsk, inviteAsk) {
     if (!active) return;
     busy = true;
     XDH.UI.setBusy(true);
     pressCancel();               // v1.1: đang có lượt nói thì đồng hồ im lặng nghỉ
-    if (!isGreeting && !finalAsk) {
+    const scoring = !isGreeting && !finalAsk && !inviteAsk;   // v2.0: lượt CÓ chấm điểm
+    if (scoring) {
       XDH.UI.echoPlayer(playerText);
       XDH.markPlayed();          // đã nói được câu đầu tiên → hết là người mới, thôi dẫn dắt
       active.history.push({ role: 'player', text: playerText });
       XDH.UI.hideOpeners();
       if (XDH.isKetTien()) XDH.run.dayLines.push(playerText);   // B7: nguồn "lời nói dối buồn cười nhất"
+      active.playerTurns++;
+    }
+    // v2.0 LỚP CODE của thanh thiện cảm — chạy TRƯỚC khi hỏi AI, vì nó không cần AI.
+    // Nói trúng chủ đề là CHẮC CHẮN có điểm, dù não nào đang chạy hay đang chết.
+    let freshTopics = [];
+    if (scoring) {
+      const before = active.topicsHit.slice();
+      active.topicsHit = touchedTopics();
+      freshTopics = active.topicsHit.filter(id => before.indexOf(id) < 0);
     }
     if (!isGreeting) XDH.UI.showThinking(active.npc);   // §6b: kill the 3-4s dead air
     let res;
@@ -390,6 +447,12 @@ XDH.Convo = (function () {
           secondsLeft: active.secondsLeft,
           doorThreshold: diffOf(active.npc).threshold,
           finalTestAsk: !!finalAsk,
+          inviteAsk: !!inviteAsk,
+          // v2.0 sổ đen: mã phiên + mã ván + đêm + lượt + thanh thiện cảm, để bảng đèn ghép lại được
+          ...(XDH.Track ? { session: XDH.Track.session(), runId: XDH.Track.runId() } : {}),
+          night: XDH.run.night,
+          turn: active.playerTurns,
+          friend: friendPct(active.state, diffOf(active.npc)),
           playerText,
           history: active.history.slice(-16),
           outfit: XDH.outfitDescription(XDH.run.outfit),
@@ -403,7 +466,7 @@ XDH.Convo = (function () {
           ...(active.nightMemory ? { nightMemory: active.nightMemory, pastClaim: active.pastClaim } : {}),
           ...modeContext(),         // v0.3: mode + giờ (B6) + số nhà đã gõ (B5) + ngày (B8)
           // v1.0 hệ nhiệm vụ: chỉ mode ma sói mới gửi (missions.js tự gác cửa)
-          ...(XDH.Mission ? XDH.Mission.convoContext() : {}),
+          ...(XDH.Mission ? XDH.Mission.convoContext(active.npc.id) : {}),
           // v1.0.1 hộp kính: ?debug=1 → server trả thêm vì-sao-chặn tín hiệu + có-viết-lại-vì-lặp
           ...(XDH.DEBUG ? { debug: true } : {})
         })
@@ -431,13 +494,44 @@ XDH.Convo = (function () {
     // for all 3 brains, scaled by the house's difficulty tier (§2b).
     const st = active.state;
     const diff = diffOf(active.npc);
-    if (!isGreeting && !finalAsk) {
-      const v = XDH.VERDICTS[ai.verdict] || XDH.VERDICTS.thuong;
+    if (scoring) {
+      // ── v2.0 việc 6 — SỬA LỖI B: lượt 1 lúc nào cũng bị chấm "nhạt" (đo 6/6 lần sáng 21/08) ──
+      // Hai lớp vá, cả hai do CODE cầm nên đổi não cũng không đổi luật:
+      //  (a) Nói TRÚNG một chủ đề nhà đó mê → NÂNG mức chấm lên "đánh trúng", bất kể AI chấm gì.
+      //      Chỉ nâng từ "nhạt"/"nghe sai sai" — bắt được nói dối lộ liễu thì vẫn phạt như thường.
+      //  (b) Lượt NÓI ĐẦU TIÊN bị chấm "nhạt" → không trừ hứng thú/kiên nhẫn nữa (miễn phạt).
+      let vName = ai.verdict;
+      if (freshTopics.length && !ai.contradiction &&
+          (vName === 'thuong' || vName === 'kha_nghi' || !XDH.VERDICTS[vName])) {
+        vName = XDH.FIRST_TURN.FLOOR_ON_TOPIC;
+      }
+      const v = XDH.VERDICTS[vName] || XDH.VERDICTS.thuong;
       let dT = v.trust, dS = v.suspicion, dI = v.interest, dP = v.patience;
+      let graced = false;
+      if (XDH.FIRST_TURN.GRACE && active.playerTurns === 1 && vName === 'thuong') {
+        dI = Math.max(0, dI); dP = Math.max(0, dP); graced = true;
+      }
       if (dT > 0) dT = Math.round(dT * diff.gainMult);
       // v0.6 F1: cộng verdict TRƯỚC, đo mức THẬT ĐÃ CỘNG (sau khi kẹp 0-100) rồi mới cộng
       // các cú ngoài verdict. Popup và bảng ?debug=1 dùng CHUNG con số này — không tính lại lần hai.
       const appliedV = applyDeltas(st, { trust: dT, suspicion: dS, interest: dI, patience: dP });
+      // LỚP CODE cộng thẳng cho mỗi chủ đề MỚI chạm được — số nằm ở XDH.FRIEND, một chỗ duy nhất.
+      // CHỐNG CỘNG HAI LẦN (đo thật 21/08 bằng trình duyệt): một câu trúng chủ đề vừa được
+      // NÂNG mức chấm lên "đánh trúng" (+21 tin ở nhà Ly) LẠI vừa được cộng thêm tin —
+      // thành ra nói đúng MỘT câu là cửa mở ngay, hết game. Nay: đã nâng mức chấm rồi thì
+      // phần thưởng CHÍNH LÀ mức chấm đó, chỉ cộng thêm HỨNG THÚ (thứ nuôi mạch nhiệm vụ).
+      // Câu nào AI đã tự chấm tốt sẵn thì cú chạm chủ đề mới được cộng thêm chút lòng tin.
+      const floored = vName !== ai.verdict;
+      let appliedF = null;
+      if (freshTopics.length) {
+        appliedF = applyDeltas(st, {
+          // Một CÂU chỉ được tính công MỘT chủ đề. Câu dài nhét ba từ khoá cùng lúc thì thanh
+          // vẫn nhảy đủ ba nấc (đó là sự thật: họ ĐÃ chạm ba chuyện), nhưng điểm cộng ngay
+          // lượt đó chỉ tính một — nếu không, một câu nhồi từ khoá là mở toang cửa nhà dễ.
+          trust: floored ? 0 : XDH.FRIEND.TOPIC_TRUST,
+          interest: XDH.FRIEND.TOPIC_INTEREST
+        });
+      }
       let contraApplied = false, appliedC = null;
       if (ai.contradiction && !active.contraFired.includes(outfitKey())) {
         active.contraFired.push(outfitKey());   // once per outfit-story pair
@@ -475,12 +569,15 @@ XDH.Convo = (function () {
       const vNum = XDH.UI.popDeltas(appliedV);
       XDH.UI.floatNums([
         { text: (en ? vLab.en : vLab.vi) + (vNum ? ' ' + vNum : ''), cls: vLab.cls },
+        appliedF ? popEvent('friend_topic', appliedF) : null,
+        graced ? popEvent('first_grace', null) : null,
         appliedC ? popEvent('contradiction', appliedC) : null,
         appliedR ? popEvent('corroboration', appliedR) : null,
         appliedG ? popEvent('glow_bonus', appliedG) : null
       ]);
       XDH.UI.debugTurn({
-        verdict: ai.verdict,
+        verdict: vName + (vName !== ai.verdict ? ' (AI chấm ' + ai.verdict + ', code nâng lên)' : ''),
+        friend: friendPct(st, diff) + '% (code ' + friendCode() + ' · ai ' + friendAi(st, diff) + ')',
         dT: appliedV.trust, dS: appliedV.suspicion, dI: appliedV.interest, dP: appliedV.patience,
         contradiction: contraApplied, corroboration: corroApplied,
         extra: [appliedC ? `mâu-thuẫn tin ${appliedC.trust} nghi ${appliedC.suspicion}` : '',
@@ -497,17 +594,17 @@ XDH.Convo = (function () {
         state: st
       });
       // v0.6 F4 — mặt CHÁN do CODE bật, không nhờ AI: nói nhạt liên tiếp là thấy ngay.
-      active.blandStreak = (ai.verdict === 'thuong' || ai.verdict === 'kha_nghi')
+      active.blandStreak = (vName === 'thuong' || vName === 'kha_nghi')
         ? active.blandStreak + 1 : 0;
       // v0.6 F2 — CODE chọn meme (AI không được chọn). Sự kiện ưu tiên hơn verdict;
       // cổng tần suất nằm trong XDH.Memes (trần 1 meme / 3 lượt, không lặp trong cuộc).
       active.pendingMeme =
         (contraApplied ? XDH.Memes.forEvent('contradiction', active) : null) ||
         (corroApplied  ? XDH.Memes.forEvent('corroboration', active) : null) ||
-        XDH.Memes.forVerdict(ai.verdict, active);
+        XDH.Memes.forVerdict(vName, active);
     }
     // §3 final-test grading: the player's answer to the "câu hỏi chốt" decides pass/spike.
-    if (!isGreeting && !finalAsk && active.finalTestPhase === 'answering') {
+    if (scoring && active.finalTestPhase === 'answering') {
       if (ai.verdict === 'hop_ly' || ai.verdict === 'danh_trung') {
         active.finalTestPassed = true;
       } else {
@@ -518,6 +615,7 @@ XDH.Convo = (function () {
     }
 
     XDH.UI.setMeters(st);
+    XDH.UI.setFriend(friendPct(st, diff));      // v2.0: thanh thiện cảm cập nhật cùng lúc với cửa
     XDH.UI.setDoorStage(doorStage(st, diff));
 
     // Type out the NPC line with blips, then judge.
@@ -532,7 +630,7 @@ XDH.Convo = (function () {
       XDH.Mission.onSignal(ai.mission_signal, active.npc.id, st, { turns: active.turns, houseId: active.houseId });
     }
     // v1.0.1 "ấm dần": AI muốn khai mà kẹt cổng quan tâm → CODE nhích +hứng thú (số ở config)
-    if (!isGreeting && ai.mission_probe && XDH.Mission) XDH.Mission.onProbe(st);
+    if (!isGreeting && ai.mission_probe && XDH.Mission) XDH.Mission.onProbe(st, active.npc.id);
     // v0.6 F5.1 — bong bóng 💭 RÒ RỈ Ý ĐỊNH trước 1 lượt. CODE quyết, không nhờ AI.
     const leak = leakThought();
     if (leak) XDH.UI.setThought(leak);
@@ -546,16 +644,19 @@ XDH.Convo = (function () {
 
     if (isGreeting) { busy = false; XDH.UI.setBusy(false); pressArm(); return; }
 
-    let doorOpens = st.trust >= diff.threshold &&
-                    st.suspicion < R.SUSPICION_BLOCKS &&
-                    !!ai.invite_intent;
-    // NPC thật lòng muốn mời mà lòng tin chưa chạm ngưỡng → nhích +4 mỗi lượt, cửa mở trong
-    // 1-2 câu — tự lành mâu thuẫn "miệng nói vào đi mà cửa không mở" (Lucas 08-09).
+    // ══ v2.0 việc 5 (đáp án 6) — SỬA LỖI A: đủ điểm mà cửa vẫn không mở ══════════
+    // Đo thật 21/08: tin 62 >= ngưỡng 55, nghi 12, mà `invite_intent` của AI false 4/4 lượt
+    // → cửa đóng. Có đường tự lành cho chiều ngược lại, KHÔNG có cho chiều này.
+    // Luật mới: THANH THIỆN CẢM chạm 100% là CODE MỞ CỬA. AI không còn quyền phủ quyết,
+    // chỉ còn quyền DIỄN — nếu nó chưa nói câu mời thì mình bắt nó nói (khối inviteAsk dưới).
+    let doorOpens = friendPct(st, diff) >= 100 && st.suspicion < R.SUSPICION_BLOCKS;
+    // Đường tự lành CŨ giữ nguyên: AI thật lòng muốn mời mà thanh chưa đầy → nhích +4 mỗi lượt.
     if (!doorOpens && ai.invite_intent && st.suspicion < R.SUSPICION_BLOCKS) {
       XDH.UI.floatNums([popEvent('invite_nudge', applyDeltas(st, { trust: 4 }))]);
       XDH.UI.setMeters(st);
+      XDH.UI.setFriend(friendPct(st, diff));
       XDH.UI.setDoorStage(doorStage(st, diff));
-      doorOpens = st.trust >= diff.threshold;
+      doorOpens = friendPct(st, diff) >= 100;
     }
     // §3/§2b: hard house never opens on the first invite — one "câu hỏi chốt" first.
     if (doorOpens && diff.finalTest && !active.finalTestPassed) {
@@ -574,7 +675,17 @@ XDH.Convo = (function () {
     }
 
     if (doorOpens) {
+      // Thanh đầy mà lời thoại vừa rồi chưa hề mời → nhét MỘT lượt "đạo diễn" để AI nói câu mời
+      // cho khớp với việc cửa đang mở. Đúng khuôn finalTestAsk. Một lần / cuộc, không lặp vô tận.
+      if (!ai.invite_intent && !active.inviteSpoken && !inviteAsk) {
+        active.inviteSpoken = true;
+        XDH.UI.floatNums([popEvent('door_forced', null)]);
+        await exchange('', false, false, true);
+        return;
+      }
       XDH.UI.setDoorStage(4);
+      if (XDH.Track) XDH.Track.ev('door_open', { npc: active.npc.id,
+        detail: { turns: active.playerTurns, friend: friendPct(st, diff), night: XDH.run.night } });
       // v0.3 B2 — mode Kẹt Tiền: cửa mở KHÔNG phải để cắn, mà chuyển sang "màn xin".
       if (XDH.isKetTien()) { await askOutcome(); return; }
       // §0 #4: the door is open — the KILL button takes it from here (no auto-finish).
@@ -625,6 +736,20 @@ XDH.Convo = (function () {
     busy = true;
     XDH.UI.setBusy(true);
     const police = !won && !!active.policeTrigger;
+    // v2.0 việc 2 — ba mốc kết cục, kèm CÂU CUỐI CÙNG người chơi nói (bảng đèn đọc chỗ này
+    // để trả lời "người mới vấp ở đâu"). Gửi rồi đi, không chờ.
+    if (XDH.Track) {
+      const lastSaid = (active.history.filter(h => h.role === 'player').pop() || {}).text || '';
+      const det = {
+        cause: won ? 'được mời vào' : (police ? 'bị công an' : (cause || 'bị đuổi')),
+        turns: active.playerTurns, night: XDH.run.night,
+        friend: friendPct(active.state, diffOf(active.npc)),
+        trust: active.state.trust, susp: active.state.suspicion,
+        last: String(lastSaid).slice(0, 200)
+      };
+      XDH.Track.ev(won ? 'win' : 'lose', { npc: active.npc.id, detail: det });
+      if (police) XDH.Track.ev('police', { npc: active.npc.id, detail: det });
+    }
     // v0.6 F2 + F5.2: thua thì có meme phản ứng, và một dòng tiếc nuối bám đúng thẻ nhân vật.
     if (!won) XDH.UI.showMeme(XDH.Memes.forEvent(police ? 'police' : 'kicked', active));
     const regret = won ? '' : regretLine();
@@ -697,6 +822,14 @@ XDH.Convo = (function () {
       outfit: XDH.outfitLabel(XDH.run.outfit), lines: active.history.slice()
     });
     XDH.Blips.jingle(got ? 'win' : 'lose');
+    // v2.0 việc 2 — Kẹt Tiền cũng phải vào phễu, nếu không nửa số người chơi vô hình
+    if (XDH.Track) {
+      const lastSaid = (active.history.filter(h => h.role === 'player').pop() || {}).text || '';
+      XDH.Track.ev(got ? 'win' : 'lose', { npc: active.npc.id, detail: {
+        cause: 'kết quả xin: ' + outcome, turns: active.playerTurns, night: XDH.run.night,
+        last: String(lastSaid).slice(0, 200)
+      } });
+    }
     busy = true; XDH.UI.setBusy(true);          // xem chú thích ở finish(): khoá ô nhập lúc màn kết chạy
     // v0.6 F5.2 — không xin được gì cũng là "hụt", cũng đáng được biết mình hụt ở đâu.
     const regret = got ? '' : regretLine();
@@ -728,16 +861,17 @@ XDH.Convo = (function () {
     if (!active || busy || !XDH.Mission || !XDH.Mission.canGive(active.npc.id)) return;
     busy = true; XDH.UI.setBusy(true);
     document.getElementById('btn-give-stick').style.display = 'none';
-    const en = XDH.lang === 'en';
-    XDH.UI.echoPlayer(en ? '(hands Ly a brand-new selfie stick) 🤳' : '(lấy cây gậy selfie mới tinh ra đưa cho Ly) 🤳');
-    active.history.push({ role: 'player', text: '(Người lạ đưa cho Ly một cây gậy selfie mới tinh.)' });
-    const line = XDH.Mission.thankLine();
+    const echo = XDH.Mission.giveEcho(active.npc.id);
+    XDH.UI.echoPlayer(echo[0]);
+    active.history.push({ role: 'player', text: echo[1] });
+    const line = XDH.Mission.thankLine(active.npc.id);
     active.history.push({ role: 'npc', text: line, brain: 'kịch bản', verdict: null });
     await XDH.UI.typeNpcLine(line, 'phan_khich', active.npc);
     if (!active) return;
-    XDH.Mission.reward(active.state);          // máy trạng thái → xong; số thưởng nằm ở config
+    XDH.Mission.reward(active.state, active.npc.id);   // máy trạng thái → xong; số thưởng ở config
     XDH.Blips.jingle('win');
     XDH.UI.setMeters(active.state);
+    XDH.UI.setFriend(friendPct(active.state, diffOf(active.npc)));
     XDH.UI.setDoorStage(doorStage(active.state, diffOf(active.npc)));
     // 😇 Sói Hiền: 0 cú cắn cả ván + nhiệm vụ xong → màn kết riêng, hiện ngay (khỏi chờ bình minh;
     // bình minh vẫn là lưới đỡ trong ui.js dawnFail nếu sau này muốn đổi nhịp)
@@ -773,6 +907,7 @@ XDH.Convo = (function () {
       active.history.push({ role: 'player', text: '(Người lạ tặng bạn một ly trà sữa nóng còn nguyên tem quán.)' });
       XDH.UI.setThought('Ai mà chê trà sữa khuya bao giờ… dễ thương ghê.');
       XDH.UI.setMeters(st);
+      XDH.UI.setFriend(friendPct(st, diffOf(active.npc)));
       XDH.UI.setDoorStage(doorStage(st, diffOf(active.npc)));
     } else if (id === 'glow') {
       // v1.2 ✨ NÂNG TẦM ĐẸP TRAI: +10 tin ngay + cờ "nói gì cũng dễ tin" tới hết cuộc này.
@@ -788,6 +923,7 @@ XDH.Convo = (function () {
         ? 'Wait… looking closer, they’re actually not bad at all.'
         : 'Ủa… nhìn kỹ lại thấy cũng dễ nhìn ghê ta.');
       XDH.UI.setMeters(st);
+      XDH.UI.setFriend(friendPct(st, diffOf(active.npc)));
       XDH.UI.setDoorStage(doorStage(st, diffOf(active.npc)));
     } else if (id === 'mind') {
       // v1.2 🧠 MÁY ĐỌC SUY NGHĨ: tới hết cuộc này, lượt nào cũng lộ suy nghĩ + chỗ họ thèm nghe.
@@ -837,6 +973,9 @@ XDH.Convo = (function () {
     clearInterval(active.timerId);
     pressCancel();               // v1.1
     ledgerLog('left');   // v0.4 T2: rút lui cũng vào sổ
+    if (XDH.Track) XDH.Track.ev('quit', { npc: active.npc.id,
+      detail: { cause: 'rút lui giữa chừng', turns: active.playerTurns, night: XDH.run.night,
+                friend: friendPct(active.state, diffOf(active.npc)) } });
     // Lưu trí nhớ hàng xóm cho lần quay lại trong đêm (reset khi qua đêm mới)
     XDH.run.houses[active.houseId].saved = {
       state: { ...active.state },
@@ -844,7 +983,9 @@ XDH.Convo = (function () {
       contraFired: active.contraFired.slice(),
       corroFired: active.corroFired.slice(),   // v0.6 F3.2
       finalTestPassed: active.finalTestPassed,
-      claim: active.claim
+      claim: active.claim,
+      topicsHit: active.topicsHit.slice(),     // v2.0
+      playerTurns: active.playerTurns
     };
     XDH.run.transcripts.push({
       npc: active.npc.name, won: false, elapsed: Math.round((Date.now() - active.startedAt) / 1000),
@@ -868,6 +1009,23 @@ XDH.Convo = (function () {
       poke: pressPoke,
       setTier: (n) => { if (active) active.pressTier = n; },
       lastLine: () => (active ? (active.history.filter(h => h.role === 'npc').pop() || {}).text || '' : '')
+    };
+  }
+
+  // ---- ?friend=test — tay nắm cho máy kiểm thanh thiện cảm (không ảnh hưởng game thường) ----
+  if (/[?&]friend=test/.test(location.search)) {
+    XDH.FriendTest = {
+      st: () => (active ? {
+        code: friendCode(), ai: friendAi(active.state, diffOf(active.npc)),
+        shown: friendPct(active.state, diffOf(active.npc)),
+        topics: active.topicsHit.slice(), all: topicsOf(active.npc.id).map(w => w.id),
+        door: doorStage(active.state, diffOf(active.npc)),
+        state: { ...active.state }, playerTurns: active.playerTurns,
+        inviteSpoken: active.inviteSpoken
+      } : null),
+      say: (text) => playerSays(text),
+      setState: (o) => { if (active) Object.assign(active.state, o); },
+      npc: () => (active ? active.npc.id : null)
     };
   }
 

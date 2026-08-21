@@ -11,9 +11,11 @@ export async function loadApi() {
   const src = path.resolve(HERE, '../functions/api');
   const tmp = path.join(HERE, '.tmp');
   fs.mkdirSync(tmp, { recursive: true });
-  for (const f of ['_personas.js', '_brain.js', 'converse.js']) {
+  // v2.0: thêm _ledger.js (sổ đen). Nó tự tắt khi không có D1 nên chạy trong Node vô hại.
+  for (const f of ['_personas.js', '_brain.js', '_ledger.js', 'converse.js']) {
     const code = fs.readFileSync(path.join(src, f), 'utf8')
       .replaceAll("'./_personas.js'", "'./_personas.mjs'")
+      .replaceAll("'./_ledger.js'", "'./_ledger.mjs'")
       .replaceAll("'./_brain.js'", "'./_brain.mjs'");
     fs.writeFileSync(path.join(tmp, f.replace(/\.js$/, '.mjs')), code);
   }

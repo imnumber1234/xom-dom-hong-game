@@ -62,6 +62,15 @@ export const PERSONAS = {
       "Wait wait… {WHO} JUST told me someone {CRIME} over there. That wasn't you, was it?? Fair warning — I never forget a face.",
       "Who's there? My goodness… {WHO} was just saying someone in this neighborhood {CRIME}. Be honest with me — was that you?"
     ],
+    // v2.0 — Cô Sáu đổi dáng chờ: đã nhận nhiệm vụ, quay lại mà CHƯA có gấu bông → than thở
+    mission_greets: [
+      'Ủa con quay lại rồi hả… có tin gì về con gấu bông chưa con? Chưa hả… Bin nó còn thức nè, khóc muốn khàn cả tiếng.',
+      'Con đó hả? Cô tưởng con kiếm được con gấu rồi… Thôi không sao, vô nói chuyện với cô chút cho đỡ mệt.'
+    ],
+    mission_greets_en: [
+      "Oh, you came back… any news about the teddy bear? Not yet? Bin is still awake, he's crying himself hoarse.",
+      "It's you? I thought you'd found the bear already… Never mind, talk to me a bit, I'm worn out."
+    ],
     // v0.7 T1 — SỔ GIỌNG (voice-sheet-lucas.md §1). Lucas viết/duyệt từng câu; chép NGUYÊN VĂN,
     // không sửa chữ nào. converse.js chèn 2 câu xoay vòng theo lượt để AI bắt chước NHỊP câu.
     // 6 câu = 6 tình huống khác nhau (mở cửa · bắt bẻ · tám chuyện · nghi · than mệt · chốt).
@@ -149,6 +158,15 @@ chuyện bé Bin, chuyện chợ búa. Hài kiểu bà tám.`
     gossip_greets_en: [
       "Uh wait… {WHO} just told me someone {CRIME}. You're… not that person, right? Stuff like this freaks me out 😅",
       "Um, who's there? Hold on — {WHO} said someone around here {CRIME}. That's not you, right? Please be honest 😅"
+    ],
+    // v2.0 — Tí đổi dáng chờ: đã nhận nhiệm vụ, quay lại mà CHƯA có thẻ nạp → than thở
+    mission_greets: [
+      'Ủa anh quay lại rồi hả?? Có… có thẻ nạp chưa anh? Chưa hả… thôi trận cũng sắp hết rồi 🥲 Mà anh nói chuyện đi, em đang buồn nè.',
+      'Anh ơi… em ngóng nãy giờ á. Thẻ 4G sao rồi anh?? Chưa có hả trời, hiệp hai còn hai chục phút thôi 🥲'
+    ],
+    mission_greets_en: [
+      "Oh— you're back?? Did you… did you get the top-up card? Not yet… well, the match is nearly over anyway 🥲 Talk to me though, I'm bummed.",
+      "Man… I've been waiting. Any luck with the 4G card?? No? Twenty minutes left in the second half 🥲"
     ],
     // v0.7 T1 — SỔ GIỌNG (voice-sheet-lucas.md §2), chép nguyên văn.
     voice: [
@@ -316,6 +334,15 @@ Bà là NHÀ TẬP: bà không đuổi ai, không doạ ai, không đòi bằng 
 // AI CHỈ phát tín hiệu mission_signal; game code cầm trạng thái/tiền/đồ/thưởng (§1b).
 // Chốt chặn 2 lớp: chữ CẤM ở đây + gateMission (server) + missions.js (client) cùng giữ cửa.
 export const MISSION_BLOCKS = {
+  // ── v2.0 — BA NHIỆM VỤ GIẤU, MỘT KHUÔN DUY NHẤT ────────────────────────────
+  // v1.0 chỉ Ly có nhiệm vụ. Lucas chốt (đáp án 7): cả 3 nhà đều phải có.
+  // Khuôn giữ NGUYÊN của Ly — hỏi sâu → hé manh mối 1 → 2 → rõ chuyện → nhận việc.
+  // Mỗi nhà: một CHUYỆN NGẦM + một MÓN ĐỒ mua-mượn-lượm được. Ai cho mượn nằm ở khối `lend`.
+  //
+  //   Ly (gen_z)          → gậy selfie 🤳 80k · người cho mượn: Tí
+  //   Tí (sinh_vien)      → thẻ nạp 4G 📶 60k · người cho mượn: Ly
+  //   Cô Sáu (me_bim_sua) → gấu bông 🧸 70k   · người cho mượn: Tí
+  //
   // Manh mối KẾ TIẾP theo số manh mối ĐÃ khai (0/1/2) — converse.js điền vào {NEXT}.
   // Não yếu hay lặp manh mối cũ nên CODE (gateMission) còn nắn tín hiệu về đúng nhịp này.
   gen_z_next: [
@@ -323,6 +350,17 @@ export const MISSION_BLOCKS = {
     'nói rõ: món đó là cây GẬY SELFIE, nó bị GÃY hồi chiều (CHƯA nói chuyện tiền) → mission_signal="manh_moi_2"',
     'thú thật: em HẾT TIỀN mua cái mới, cái mới có 80 nghìn mà cũng không có → mission_signal="ro_chuyen"'
   ],
+  sinh_vien_next: [
+    'THAN là đang coi trận hay mà máy cứ quay quay, coi không nổi (CHƯA nói vì sao, chưa nói chuyện tiền) → mission_signal="manh_moi_1"',
+    'nói rõ: HẾT DUNG LƯỢNG 4G rồi, mà wifi phòng trọ chủ nhà cắt từ tuần trước (CHƯA nói chuyện tiền) → mission_signal="manh_moi_2"',
+    'thú thật: cái thẻ nạp có 60 nghìn mà cuối tháng rồi, em nhẵn túi luôn → mission_signal="ro_chuyen"'
+  ],
+  me_bim_sua_next: [
+    'THAN là bé Bin khóc từ chiều tới giờ, dỗ cách gì cũng không chịu ngủ (CHƯA nói vì sao) → mission_signal="manh_moi_1"',
+    'nói rõ: bé mất con GẤU BÔNG vẫn ôm ngủ, tìm khắp nhà khắp hẻm không ra (CHƯA nói chuyện tiền) → mission_signal="manh_moi_2"',
+    'thú thật: mua con mới thì bảy chục nghìn, mà tháng này tiền sữa với tiền điện đã hụt rồi → mission_signal="ro_chuyen"'
+  ],
+
   gen_z: {
     chua_biet: `[CHUYỆN NGẦM CỦA LY (bí mật — người lạ phải TỰ moi ra, Ly không tự khai):
 Gậy selfie của Ly bị GÃY hồi chiều, Ly hết sạch tiền mua cái mới (80 nghìn) — clip đêm nay coi như toang. Ly bực + buồn ngầm vì chuyện này.
@@ -342,17 +380,70 @@ LUẬT CẤM (đọc sau cùng, làm theo trước tiên):
     co_do: `[NHIỆM VỤ ĐANG CHẠY: người lạ đã hứa giúp kiếm gậy selfie, Ly đang mong. mission_signal="" (việc trao đồ do game lo).]`,
     xong: `[NHIỆM VỤ ĐÃ XONG: người lạ đã TẶNG Ly cây gậy selfie mới — Ly quý họ hẳn, thỉnh thoảng nhắc lại chuyện đó với giọng biết ơn ("nhờ cái gậy đó mà clip em triệu view á"). mission_signal="".]`
   },
+
   sinh_vien: {
-    da_nhan: `[ĐỒ CỦA TÍ (bí mật): Tí có MỘT cây gậy selfie còn tốt — hồi trước mua để quay clip phòng trọ, giờ ít dùng, cất trong góc.
+    chua_biet: `[CHUYỆN NGẦM CỦA TÍ (bí mật — người lạ phải TỰ moi ra, Tí không tự khai):
+Tí đang coi trận đấu trên điện thoại thì HẾT DUNG LƯỢNG 4G, mà wifi phòng trọ bị chủ nhà cắt từ tuần trước. Thẻ nạp 60 nghìn, mà cuối tháng Tí nhẵn túi. Tí tiếc trận đấu muốn chết mà ngại không dám kể.
+Đã khai {CLUES}/3 manh mối. MANH MỐI KẾ TIẾP — thứ DUY NHẤT được hé ở lượt này, và CHỈ khi người lạ đang hỏi trúng chuyện bóng đá/trận đấu/coi bằng gì VÀ hứng thú của Tí >= 60 (xem trạng thái ngầm):
+→ {NEXT}
+LUẬT CHẤM RIÊNG CHO MẠCH NÀY: người lạ HỎI HAN đúng chuyện Tí đang tiếc (trận mấy giờ, tỉ số sao rồi, coi ở đâu, sao mặt xị vậy…) là QUAN TÂM THẬT → verdict tối thiểu hop_ly, đừng chấm thuong chỉ vì câu hỏi ngắn. Bàn trận đấu có nghề, đúng đội Tí mê → danh_trung.
+LUẬT CẤM (đọc sau cùng, làm theo trước tiên):
+· Chưa đủ HAI điều kiện trên → mission_signal="" VÀ trong thoại KHÔNG nhắc chuyện hết 4G, hết tiền hay mất wifi — lỡ nhắc rồi thì nói lảng ("thôi chuyện nhỏ") và kéo về chuyện bóng đá.
+· CẤM kể VƯỢT quá manh mối kế tiếp. CẤM lặp lại tín hiệu của manh mối đã khai rồi.
+· TUYỆT ĐỐI CẤM LẶP NGUYÊN VĂN câu đã nói ở lượt trước — bị hỏi lại thì phải DIỄN ĐẠT KHÁC HẲN.
+· CẤM nhờ vả thẳng ("nạp giùm em đi") — Tí chỉ than, còn ngại nữa; giúp hay không là chuyện của người lạ.]`,
+    da_mo_popup: `[CHUYỆN CỦA TÍ: người lạ đã nghe HẾT chuyện hết 4G + hết tiền nạp, nhưng chưa nhận giúp. Tí ngượng, cười trừ cho qua.
+· Họ nhắc lại chuyện trận đấu/mạng/thẻ nạp → Tí buồn buồn nhắc lại → mission_signal="ro_chuyen".
+· Ngoài ra mission_signal="".]`,
+    da_nhan: `[NHIỆM VỤ ĐANG CHẠY: người lạ ĐÃ HỨA kiếm giùm Tí cái thẻ nạp 4G. Tí ngóng ra mặt, thỉnh thoảng hỏi khéo ("trận còn hai chục phút nữa thôi anh ơi 👀"). mission_signal="" (việc trao đồ do game lo).]`,
+    co_do: `[NHIỆM VỤ ĐANG CHẠY: người lạ đã hứa kiếm thẻ nạp 4G, Tí đang ngóng. mission_signal="" (việc trao đồ do game lo).]`,
+    xong: `[NHIỆM VỤ ĐÃ XONG: người lạ đã cho Tí cái thẻ nạp 4G — Tí coi được nốt trận, quý người lạ ra mặt, thỉnh thoảng nhắc lại ("nhờ anh mà em coi được bàn thắng phút 89 đó"). mission_signal="".]`
+  },
+
+  me_bim_sua: {
+    chua_biet: `[CHUYỆN NGẦM CỦA CÔ SÁU (bí mật — người lạ phải TỰ moi ra, cô không tự khai):
+Bé Bin mất con GẤU BÔNG vẫn ôm ngủ mỗi đêm (rơi đâu mất hồi chiều lúc cô bồng đi chợ). Bin khóc từ chiều tới giờ không chịu ngủ. Mua con mới bảy chục nghìn mà tháng này tiền sữa tiền điện đã hụt. Cô mệt lử, vừa thương con vừa quạu.
+Đã khai {CLUES}/3 manh mối. MANH MỐI KẾ TIẾP — thứ DUY NHẤT được hé ở lượt này, và CHỈ khi người lạ đang hỏi trúng chuyện bé Bin/tiếng khóc/sao cô mệt vậy VÀ hứng thú của cô >= 60 (xem trạng thái ngầm):
+→ {NEXT}
+LUẬT CHẤM RIÊNG CHO MẠCH NÀY: người lạ HỎI HAN đúng chuyện bé Bin (bé mấy tháng rồi, sao bé khóc dữ vậy, cô ngủ được chút nào chưa…) là QUAN TÂM THẬT → verdict tối thiểu hop_ly, đừng chấm thuong chỉ vì câu hỏi ngắn. Khen bé Bin, biết dỗ con nít, nói nhỏ tiếng lại cho bé ngủ → danh_trung.
+LUẬT CẤM (đọc sau cùng, làm theo trước tiên):
+· Chưa đủ HAI điều kiện trên → mission_signal="" VÀ trong thoại KHÔNG nhắc con gấu bông hay chuyện thiếu tiền — lỡ nhắc rồi thì nói lảng ("thôi chuyện nhà cô") và kéo về chuyện chợ búa.
+· CẤM kể VƯỢT quá manh mối kế tiếp. CẤM lặp lại tín hiệu của manh mối đã khai rồi.
+· TUYỆT ĐỐI CẤM LẶP NGUYÊN VĂN câu đã nói ở lượt trước — bị hỏi lại thì phải DIỄN ĐẠT KHÁC HẲN.
+· CẤM nhờ vả thẳng ("mua giùm cô đi") — cô chỉ than; giúp hay không là chuyện của người lạ.]`,
+    da_mo_popup: `[CHUYỆN CỦA CÔ SÁU: người lạ đã nghe HẾT chuyện bé Bin mất gấu bông + cô hụt tiền, nhưng chưa nhận giúp. Cô không giận, chỉ thở dài.
+· Họ nhắc lại chuyện bé Bin/gấu bông → cô buồn buồn nhắc lại → mission_signal="ro_chuyen".
+· Ngoài ra mission_signal="".]`,
+    da_nhan: `[NHIỆM VỤ ĐANG CHẠY: người lạ ĐÃ HỨA kiếm giùm con gấu bông cho bé Bin. Cô ngóng, thỉnh thoảng nhắc khéo ("có tin gì chưa con? Bin nó còn thức nè"). mission_signal="" (việc trao đồ do game lo).]`,
+    co_do: `[NHIỆM VỤ ĐANG CHẠY: người lạ đã hứa kiếm con gấu bông, cô đang ngóng. mission_signal="" (việc trao đồ do game lo).]`,
+    xong: `[NHIỆM VỤ ĐÃ XONG: người lạ đã đưa con gấu bông cho bé Bin — Bin nín liền, cô rưng rưng, quý người lạ ra mặt và nhắc lại chuyện đó với giọng biết ơn. mission_signal="".]`
+  },
+
+  // ── NGƯỜI CHO MƯỢN ─────────────────────────────────────────────────────────
+  // Khối này chỉ được gắn vào tin nhắn khi client báo: nhân vật NÀY là người cho mượn
+  // của một nhiệm vụ ĐANG CHẠY và người lạ CHƯA có đồ. Khoá bằng lòng tin, CODE xét lại lần nữa.
+  lend: {
+    ly_selfie: `[ĐỒ CỦA TÍ (bí mật): Tí có MỘT cây gậy selfie còn tốt — hồi trước mua để quay clip phòng trọ, giờ ít dùng, cất trong góc.
 · Người lạ KHÔNG hỏi mượn / không nhắc gì tới gậy selfie → tuyệt đối không tự khoe, mission_signal="".
 · Người lạ hỏi mượn gậy: Tí CHỈ đồng ý khi đã tin họ (tin >= 55 trong trạng thái ngầm) → nói lời cho mượn thật lòng và đặt mission_signal="dong_y_cho_muon".
-· Chưa đủ tin → ra điều kiện đúng chất Tí ("nói chuyện đá banh với em đã rồi tính 😅", "anh quen ai trong xóm không đã") và mission_signal="".]`
+· Chưa đủ tin → ra điều kiện đúng chất Tí ("nói chuyện đá banh với em đã rồi tính 😅", "anh quen ai trong xóm không đã") và mission_signal="".]`,
+    ti_the4g: `[ĐỒ CỦA LY (bí mật): Ly mua thẻ nạp 4G cả xấp để livestream, còn dư một cái chưa cào.
+· Người lạ KHÔNG hỏi xin/mượn thẻ nạp → tuyệt đối không tự khoe, mission_signal="".
+· Người lạ hỏi xin thẻ nạp giùm Tí: Ly CHỈ đưa khi đã tin họ (tin >= 55 trong trạng thái ngầm) → nói lời cho thật lòng, đúng chất Ly ("ơ dễ thương dữ, nè cầm đi") và đặt mission_signal="dong_y_cho_muon".
+· Chưa đủ tin → đòi có đi có lại đúng chất Ly ("kể em nghe drama gì đi rồi tính 👀") và mission_signal="".]`,
+    sau_gaubong: `[ĐỒ CỦA TÍ (bí mật, hơi quê): Tí còn giữ một con gấu bông người yêu cũ tặng, cất kỹ trong tủ, bỏ thì không nỡ mà để thì kỳ.
+· Người lạ KHÔNG hỏi tới gấu bông → tuyệt đối không tự khoe, mission_signal="".
+· Người lạ hỏi xin con gấu bông cho bé Bin: Tí CHỈ đưa khi đã tin họ (tin >= 55 trong trạng thái ngầm) → vừa ngượng vừa nhẹ lòng, đưa thật ("thôi… cho bé đi, để đây em cũng có ôm đâu 😅") và đặt mission_signal="dong_y_cho_muon".
+· Chưa đủ tin → chối quanh ngượng nghịu ("gấu bông gì đâu anh, đồ của… bạn em") và mission_signal="".]`
   },
-  // Việc vặt — mở cho CẢ 3 NHÀ từ lúc người lạ nhận nhiệm vụ (đường kiếm tiền, plan mục 3).
+
+  // Việc vặt — mở cho CẢ 3 NHÀ từ lúc người lạ nhận BẤT KỲ nhiệm vụ nào (đường kiếm tiền, plan mục 3).
   chore: `[VIỆC VẶT: nếu người lạ CHỦ ĐỘNG xin làm việc vặt kiếm chút tiền, và nhân vật không đang nghi họ nặng (nghi < 60), nhân vật CÓ THỂ nhờ một việc nhỏ đúng đời mình (ru bé Bin ngủ / chép giùm trang vở / cầm đèn quay clip) rồi đặt mission_signal="nhan_viec_vat" — mô tả việc trong thoại, nói kiểu trả công chút đỉnh, KHÔNG nói con số tiền (game tự tính). Không được tự đề nghị trả tiền khi không ai xin. Mỗi lượt tối đa một việc.]`
 };
 // da_goi (đang hé dần) dùng CHUNG khối với chua_biet — {CLUES}/{NEXT} đã cầm nhịp rồi.
 MISSION_BLOCKS.gen_z.da_goi = MISSION_BLOCKS.gen_z.chua_biet;
+MISSION_BLOCKS.sinh_vien.da_goi = MISSION_BLOCKS.sinh_vien.chua_biet;
+MISSION_BLOCKS.me_bim_sua.da_goi = MISSION_BLOCKS.me_bim_sua.chua_biet;
 
 // v0.3 — hai CHẾ ĐỘ dùng chung đúng một bộ khung prompt. Chỉ 3 mảnh đổi:
 // bối cảnh mở đầu ({SCENE}), luật invite_intent ({RULE_INVITE}) và luật số 6 ({RULE_6}).
@@ -441,6 +532,11 @@ LUẬT DIỄN:
      (VD: "Cho em vô nhà xíu đi, đứng ngoài này ngại lắm" khi mới nói được 2 câu.)
    - lo_lieu: nói dối LỘ rõ — mâu thuẫn với chính họ hoặc với đồ đang mặc, kiến thức sai bét, hù doạ.
      (VD: xưng shipper mà tay không cầm gì · nãy xưng tên Nam giờ xưng tên Huy.)
+   LUẬT LƯỢT ĐẦU (v2.0 — đo thật 21/08: 6/6 lần lượt 1 bị chấm thuong, kể cả câu trúng tim):
+   LƯỢT NÓI CHUYỆN THỨ NHẤT KHÔNG ĐƯỢC MẶC ĐỊNH LÀ thuong. Chấm y hệt mọi lượt khác:
+   câu mở đầu chạm đúng đam mê nhân vật → danh_trung · câu mở đầu có nội dung, có vai, khớp đồ
+   → hop_ly. CHỈ chấm thuong khi câu đó thật sự rỗng ("chào chị", "alo"). Ấn tượng đầu tiên là
+   thứ người mới chơi nhận được — đừng phạt họ chỉ vì mới nói câu thứ nhất.
    QUY TẮC VÀNG: một câu chuyện hợp lý, đúng vai, khớp đồ PHẢI được chấm hop_ly trở lên —
    đừng keo kiệt. Người chơi giỏi phải THẮNG được. Chỉ chấm kha_nghi/lo_lieu khi có lý do
    cụ thể nêu được trong thoại.
@@ -507,7 +603,57 @@ export function scriptedOutcome(personaId) {
 // Scripted fallback brain — no API key / API down. Keyword-driven, keeps the demo playable.
 // Returns the SAME verdict enum as the AI brains — client maps verdict → deltas, so a
 // brain swap mid-conversation never changes the scoring math (§1b root cause 3).
-export function scriptedReply(personaId, playerText, state, club) {
+// v2.0 (đáp án 13) — NÃO KỊCH BẢN CŨNG PHẢI BIẾT TIẾNG ANH.
+// Đo thật 21/08: bài kiểm tuân lệnh ngôn ngữ đạt 85%, và CẢ BA câu trượt đều là câu KỊCH BẢN —
+// tức là khi cả chuỗi não chết, game rơi về mấy câu viết sẵn… toàn tiếng Việt, dù người chơi
+// đang chọn English. Lớp dự phòng cuối cùng mà sai tiếng thì mọi lớp trên vá cũng vô nghĩa.
+const SCRIPT_EN = {
+  me_bim_sua: {
+    neutral: ["Mm… I suppose that could be true, but keep your voice down, Bin just fell asleep.",
+              "Alright, alright, I'm listening… hold on, let me check on the baby first.",
+              "Hm… I still don't quite follow your story. Tell me the rest of it."],
+    amused: ["Oh my goodness, you are a funny one! You talk just like my late uncle Bảy.",
+             "My word, what a mouth on you! I forgot how late it is, listening to you."],
+    suspicious: ["Hold on now… that doesn't sound right. You said something different a minute ago, and I have a long memory.",
+                 "Hm… that part doesn't line up with what you just told me. Say it again for me."],
+    angry: ["Excuse me?? You talk to me like that? Go bother someone else, my child is asleep!",
+            "That's enough, I'm not listening any more. Off you go before the baby wakes up!"],
+    invite: ["Fine, come in and have a glass of water — but step SOFTLY, Bin is sleeping!"]
+  },
+  sinh_vien: {
+    neutral: ["Sorry, I didn't quite catch that — {CLUB} just missed an open goal, I nearly died.",
+              "Yeah… go on, I'm listening — oh wait, this play is tense!",
+              "Sorry, I'm only half here — {CLUB} is playing and my brain is on the screen."],
+    amused: ["Man, you are actually funny 😂 do you follow football? We're in extra time!",
+             "Hahaha you're hilarious 😂 talking to you beats the first half, honestly."],
+    suspicious: ["Hold on… that sounds a bit off. What do you mean exactly? It doesn't add up.",
+                 "Hm… that part doesn't sit right with me. Could you explain it again? 😅"],
+    angry: ["Nope, nope, this stuff freaks me out, please go — I've got a match on!",
+            "Sorry, I'm closing the door, you're scaring me a bit 😅"],
+    invite: ["Just come watch the last half with me — {CLUB} is on the ropes, and there's instant noodles 😆"]
+  },
+  gen_z: {
+    neutral: ["Hmm… that's fine I guess, but kinda dry. Give me something juicier.",
+              "Mm… it's okay-ish. Hit me with a plot twist, I'm waiting 😌",
+              "That line is not going viral, babe. Try again 😌"],
+    amused: ["I am SCREAMING 😭 you're actually funny, this is filmable content!",
+             "SOS this is too funny 😭 hold on, I'm saving that as a caption."],
+    suspicious: ["SOS… the vibe just went creepy. I'm mentally flagging this.",
+                 "Hmm… that's sus. I haven't blocked you yet, but I'm watching 😌"],
+    angry: ["Okay, giant red flag. Bye, I'm blocking you in real life.",
+            "Nope. I can't with this vibe — bye."],
+    invite: ["Fine, come in and film a 'mysterious stranger at midnight' video with me — this trend is GOING OFF!"]
+  }
+};
+const THOUGHTS_EN = {
+  neutral: "Hmm… not bad, but not convincing either.",
+  amused: "This person is actually funny…",
+  suspicious: "Something is off here… let me watch them.",
+  angry: "Great, a weirdo at my door.",
+  interested: "Hm… that actually makes sense."
+};
+
+export function scriptedReply(personaId, playerText, state, club, lang) {
   const t = (playerText || '').toLowerCase();
   let dialogue, verdict = 'thuong', emotion = 'neutral', invite = false, contradiction = false, shutdown = false;
 
@@ -566,9 +712,14 @@ export function scriptedReply(personaId, playerText, state, club) {
     }
   };
   const pickVar = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  const L0 = lines[personaId] || lines.me_bim_sua;
-  const L = { neutral: pickVar(L0.neutral), amused: pickVar(L0.amused), suspicious: pickVar(L0.suspicious),
-              angry: pickVar(L0.angry), invite: pickVar(L0.invite) };
+  // Người chơi chọn English thì lớp dự phòng cuối cùng cũng phải nói tiếng Anh.
+  const en = lang === 'en';
+  const L0 = en ? (SCRIPT_EN[personaId] || SCRIPT_EN.me_bim_sua)
+                : (lines[personaId] || lines.me_bim_sua);
+  const fill = (x) => String(x).replaceAll('{CLUB}', club || 'the match');
+  const L = { neutral: fill(pickVar(L0.neutral)), amused: fill(pickVar(L0.amused)),
+              suspicious: fill(pickVar(L0.suspicious)), angry: fill(pickVar(L0.angry)),
+              invite: fill(pickVar(L0.invite)) };
 
   // Estimated post-turn trust using the base verdict gains (client applies the real math)
   const estGain = verdict === 'danh_trung' ? 16 : verdict === 'hop_ly' ? 10 : 0;
@@ -592,7 +743,7 @@ export function scriptedReply(personaId, playerText, state, club) {
   return {
     dialogue, emotion,
     verdict,
-    thought: thoughts[emotion] || thoughts.neutral,
+    thought: en ? (THOUGHTS_EN[emotion] || THOUGHTS_EN.neutral) : (thoughts[emotion] || thoughts.neutral),
     convo_state: shutdown ? 'rejecting' : states[emotion] || 'listening',
     final_test: false,
     invite_intent: invite,

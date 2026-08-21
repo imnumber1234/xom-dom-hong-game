@@ -1,5 +1,5 @@
 {
-  "at": "2026-08-13T04:26:24.831Z",
+  "at": "2026-08-21T02:23:31.767Z",
   "checks": [
     {
       "id": 1,
@@ -89,7 +89,7 @@
       "id": 15,
       "what": "Não kịch bản (FORCE_SCRIPTED) trả mission_signal=\"\" — không vỡ hợp đồng khi não chết",
       "pass": true,
-      "evidence": "{\"dialogue\":\"Hmm… ok cũng được á, mà hơi nhạt xíu nha. Cho em cái gì cuốn hơn đi.\",\"emotion\":\"neutral\",\"verdict\":\"thuong"
+      "evidence": "{\"dialogue\":\"Ừm… nghe tạm tạm á. Thêm plot twist đi anh/chị, em đang chờ nè 😌\",\"emotion\":\"neutral\",\"verdict\":\"thuong\",\""
     },
     {
       "id": 16,

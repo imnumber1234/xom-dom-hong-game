@@ -1,0 +1,148 @@
+{
+ "base": "https://hop-kinh.xom-dom-hong.pages.dev",
+ "pass": 28,
+ "total": 28,
+ "checks": [
+  {
+   "what": "A1 — ban thu tu bat cong tac playtest",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "A2 — tien khoi diem cao (2000k)",
+   "ok": true,
+   "ev": "2000"
+  },
+  {
+   "what": "A3 — MOI mon do nghe trong cua hang 0k",
+   "ok": true,
+   "ev": "[0, 0, 0, 0, 0, 0]"
+  },
+  {
+   "what": "A4 — hop qua may man cung 0k",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "A5 — tu do mo HET, ke ca 3 mon giay to phai nhat",
+   "ok": true,
+   "ev": "con khoa 0"
+  },
+  {
+   "what": "A6 — phu hieu 'BAN THU' hien o goc man hinh",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "A7 — ?playtest=0 tat duoc cong tac",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "B1 — mo game co ban cot moc len may chu",
+   "ok": true,
+   "ev": "3"
+  },
+  {
+   "what": "B2 — moi phien co ma rieng de ghep lai duoc o bang den",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "B3 — moi van co ma rieng",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "C — nha gen_z: hoi sau ra duoc nhiem vu giau (popup 📱 bat len)",
+   "ok": true,
+   "ev": "stage=da_mo_popup"
+  },
+  {
+   "what": "C — nha gen_z: nhan viec xong thi cua hang ban dung mon do",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "C — nha sinh_vien: hoi sau ra duoc nhiem vu giau (popup 📱 bat len)",
+   "ok": true,
+   "ev": "stage=da_mo_popup"
+  },
+  {
+   "what": "C — nha sinh_vien: nhan viec xong thi cua hang ban dung mon do",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "C — nha me_bim_sua: hoi sau ra duoc nhiem vu giau (popup 📱 bat len)",
+   "ok": true,
+   "ev": "stage=da_mo_popup"
+  },
+  {
+   "what": "C — nha me_bim_sua: nhan viec xong thi cua hang ban dung mon do",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "C+ — Ti duoc gui khoi 'nguoi cho muon' cua nhiem vu Ly (khong phai chuyen cua Ti)",
+   "ok": true,
+   "ev": "{\"missions\": {\"choreOpen\": true, \"own\": {\"id\": \"ti_the4g\", \"stage\": \"da_nhan\", \"clues\": 2}, \"lend\": {\"id\": \"ly_selfie\", "
+  },
+  {
+   "what": "C+ — moi nha chi giu CHUYEN CUA MINH",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "C+ — cam dung mon do thi nut DUA DO sang len o dung nha",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "D0 — go dung nha Ly",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "D1 — thanh thien cam HIEN ra man hinh (khong can ?debug=1)",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "D2 — moi mo cuoc thi thanh o muc thap",
+   "ok": true,
+   "ev": "{\"code\": 0, \"ai\": 0, \"shown\": 0, \"topics\": [], \"all\": [\"content\", \"y_tuong\", \"drama\", \"tu_tin\"], \"door\": 0, \"s"
+  },
+  {
+   "what": "D3 — noi trung tu khoa thi thanh thien cam DI LEN",
+   "ok": true,
+   "ev": "{\"code\": 50, \"ai\": 100, \"shown\": 100, \"topics\": [\"content\", \"y_tuong\"], \"all\": [\"content\", \"y_tuong\", \"drama\", \"tu_tin\"], \"door\": "
+  },
+  {
+   "what": "D4 — cham 100% thi CUA MO (khong con phu thuoc AI gat)",
+   "ok": true,
+   "ev": "shown=100"
+  },
+  {
+   "what": "D5 — nhan vat NOI CAU MOI cho khop luc cua mo",
+   "ok": true,
+   "ev": "Ơ ừ thì vô đi anh, em vừa quay xong cảnh mở cửa — vibe ma mị mà slay thiệt đó! 😌"
+  },
+  {
+   "what": "E1 — che do Ket Tien: may quay so KHONG moc ngoai xom",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "E2 — goi thang cua may quay so o Ket Tien cung bi chan",
+   "ok": true,
+   "ev": ""
+  },
+  {
+   "what": "Z — 0 loi do trong bang dieu khien trinh duyet",
+   "ok": true,
+   "ev": ""
+  }
+ ],
+ "errors": []
+}

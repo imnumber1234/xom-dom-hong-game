@@ -1,0 +1,186 @@
+{
+ "pass": 30,
+ "total": 30,
+ "checks": [
+  {
+   "#": 1,
+   "mục": "Mỗi nhà chỉ khai được CHUYỆN CỦA CHÍNH MÌNH (Ly · Tí · Cô Sáu)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 2,
+   "mục": "Kể chuyện của nhà KHÁC → chặn (Tí không được kể chuyện gậy selfie của Ly)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 3,
+   "mục": "Cả ba nhà đều bị khoá bởi ngưỡng quan tâm 60",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 4,
+   "mục": "Não lặp manh mối cũ → CODE nắn về manh mối kế tiếp (cả ba nhà)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 5,
+   "mục": "Cho mượn: đúng nhà + tin >= 55 mới qua; sai nhà hoặc \"đồng ý mồm\" thì chặn",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 6,
+   "mục": "Việc vặt mở cho cả 3 nhà khi ĐÃ nhận bất kỳ nhiệm vụ nào, chưa nhận thì chặn",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 7,
+   "mục": "Kẹt Tiền vẫn KHÔNG có nhiệm vụ (không đổi một dòng nào của chế độ đó)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 8,
+   "mục": "Đường CŨ của v1.0 (body.mission) vẫn chạy — bài kiểm cũ không gãy",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 9,
+   "mục": "Cả ba nhà đều có ĐỦ 6 giai đoạn khối nhiệm vụ",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 10,
+   "mục": "Cả ba nhà đều có 3 manh mối theo đúng thứ tự",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 11,
+   "mục": "Ba khối NGƯỜI CHO MƯỢN có đủ (Tí cho Ly · Ly cho Tí · Tí cho Cô Sáu)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 12,
+   "mục": "Mọi khối nhiệm vụ là tiếng Việt CÓ DẤU (luật cứng toàn workspace)",
+   "đạt": "✅",
+   "bằng chứng": "22 khối"
+  },
+  {
+   "#": 13,
+   "mục": "Bảng \"ai giữ nhiệm vụ nào\" giống hệt nhau ở máy chủ và máy chơi",
+   "đạt": "✅",
+   "bằng chứng": "{\"ly_selfie\":\"gen_z\",\"ti_the4g\":\"sinh_vien\",\"sau_gaubong\":\"me_bim_sua\"} vs {\"ly_selfie\":\"g"
+  },
+  {
+   "#": 14,
+   "mục": "Ba nhiệm vụ có đủ mã món · giá · người cho mượn · tiền thưởng",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 15,
+   "mục": "missions.js đã bỏ hết chỗ gọi tên cũ chỉ-dành-cho-Ly (canBuyStick/buyStick)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 16,
+   "mục": "Sổ đen đoán đúng thứ tiếng của câu trả lời (dùng cho bài kiểm tuân lệnh)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 17,
+   "mục": "Sổ đen KHÔNG bao giờ làm vỡ game khi chưa gắn D1 (chạy máy mình)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 18,
+   "mục": "Ghi sổ kiểu \"gửi rồi đi\" — converse.js không await một lần nào",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 19,
+   "mục": "Chín cột mốc phía máy chơi đủ mặt trong sổ đen + trong máy chơi",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 20,
+   "mục": "Cửa mở KHÔNG còn cần AI gật (bỏ hẳn quyền phủ quyết của invite_intent)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 21,
+   "mục": "Chạm 100% mà AI chưa mời → game BẮT AI nói câu mời (khuôn finalTestAsk)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 22,
+   "mục": "Cả chuỗi não chết đúng lúc mở cửa → vẫn có câu mời kịch bản (không kẹt cửa)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 23,
+   "mục": "Thanh thiện cảm hai lớp: lớp CODE đọc XDH.REGRET, lớp AI đọc lòng tin, lấy cao hơn",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 24,
+   "mục": "Lượt đầu: chạm chủ đề thì NÂNG mức chấm · bị chấm nhạt thì MIỄN phạt",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 25,
+   "mục": "Công tắc playtest: link chính LUÔN tắt, bản thử tự bật, ?playtest=0 tắt được",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 26,
+   "mục": "Mọi giá ĐỒ NGHỀ đi qua MỘT cửa XDH.priceOf (chừa giá bữa ăn của Kẹt Tiền)",
+   "đạt": "✅",
+   "bằng chứng": "ui.js 2 chỗ"
+  },
+  {
+   "#": 27,
+   "mục": "Máy quay số TẮT ở Kẹt Tiền — hai lớp: không mọc ngoài xóm + chặn ở cửa mở",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 28,
+   "mục": "Chuỗi não: Gemini hết bị chuỗi rỗng trong enum giết + tiếng Anh có thứ tự riêng",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 29,
+   "mục": "Thanh thiện cảm có mặt trong trang + luôn hiện (không cần ?debug=1)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  },
+  {
+   "#": 30,
+   "mục": "track.js được nạp và nạp SAU config.js (nó cần XDH đã có)",
+   "đạt": "✅",
+   "bằng chứng": ""
+  }
+ ]
+}

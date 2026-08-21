@@ -12,6 +12,26 @@ XDH.setLang = function (l) {
   if (XDH.applyLang) XDH.applyLang();   // ui.js swaps visible strings
 };
 
+// ====== v2.0 việc 8 — CÔNG TẮC "MỞ HẾT, MIỄN PHÍ HẾT" (đáp án 9) ======
+// Bật lên thì: mọi món trong cửa hàng 0đ · tủ đồ mở HẾT kể cả 3 món giấy tờ phải nhặt ·
+// tiền khởi điểm cao · máy quay số vẫn chạy như thường. Tắt đi là mọi thứ về y như cũ,
+// không một dòng luật nào bị đổi vĩnh viễn — giá gốc vẫn nằm nguyên ở XDH.SHOP.
+//
+// MẶC ĐỊNH: tự bật ở BẢN THỬ (mọi địa chỉ *.xom-dom-hong.pages.dev có tên nhánh ở đầu)
+// và khi chạy trên máy mình; TỰ TẮT ở LINK CHÍNH. Muốn ép thì:
+//   XDH.PLAYTEST_FORCE = true / false ở dòng ngay dưới, hoặc thêm ?playtest=1 / ?playtest=0.
+XDH.PLAYTEST_FORCE = null;         // null = để máy tự quyết theo địa chỉ
+XDH.LIVE_HOST = 'xom-dom-hong.pages.dev';
+XDH.PLAYTEST = (function () {
+  if (/[?&]playtest=1/.test(location.search)) return true;
+  if (/[?&]playtest=0/.test(location.search)) return false;
+  if (XDH.PLAYTEST_FORCE !== null) return XDH.PLAYTEST_FORCE;
+  var h = location.hostname;
+  if (h === XDH.LIVE_HOST) return false;                       // LINK CHÍNH: không bao giờ miễn phí
+  return h === 'localhost' || h === '127.0.0.1' || /\.pages\.dev$/.test(h);
+})();
+XDH.PLAYTEST_MONEY = 2000;         // tiền khởi điểm khi bật công tắc
+
 // ====== v0.6 F1 — POPUP SỐ BAY (plan-v0.6-feel.md §1) ======
 // Q2 = A: KHÔNG dựng thanh đo thường trực. Chỉ hiện MỨC THAY ĐỔI rồi tan trong ~1,2 giây.
 // Q1 = A: hiện cả TÊN mức chấm lẫn CON SỐ — tên dạy luật chơi nhanh gấp đôi số trần.
@@ -219,6 +239,14 @@ XDH.LUCKY = {
          "a stranger's passport photo", 'a sock… still just the ONE']
   }
 };
+// v2.0 việc 8 — MỘT CỬA DUY NHẤT hỏi giá. Mọi chỗ tính tiền phải đi qua đây, đừng đọc
+// thẳng `it.price` nữa, nếu không công tắc playtest sẽ sót chỗ (đúng cái bẫy của v1.2).
+XDH.priceOf = function (v) {
+  var n = (v && typeof v === 'object') ? Number(v.price) : Number(v);
+  if (!isFinite(n)) n = 0;
+  return XDH.PLAYTEST ? 0 : n;
+};
+
 XDH.GIFT_TRUST = 8;         // code-owned one-time boost when the milk-tea gift is used
 
 // §1b — AI judges (verdict), CODE scores. Same table for all 3 brains, so a mid-convo
@@ -277,6 +305,7 @@ XDH.CHASE = { MS: 20000, COP_SPEED: 220, PLAYER_SPEED: 220 };
 
 XDH.isUnlocked = function (slot, id) {
   if (id === 'none') return true;
+  if (XDH.PLAYTEST) return true;   // v2.0 việc 8: bật công tắc là mở HẾT, kể cả 3 món giấy tờ
   if (XDH.WARDROBE_LOCK.ALL_OPEN && !XDH.WARDROBE_LOCK.LOOT_ONLY.includes(id)) return true;
   const u = XDH.run && XDH.run.unlocked;
   return !!(u && u[slot] && u[slot].includes(id));
@@ -525,6 +554,11 @@ XDH.PRESS_LINES = {
 // ?test=1 → vào ván có sẵn tiền để thử hết đồ nghề. Link chính KHÔNG đổi (vẫn 0k).
 XDH.TEST = /[?&]test=1/.test(location.search);
 XDH.TEST_MONEY = 500;
+// Tiền khởi điểm: công tắc playtest thắng ?test=1 (nhiều hơn), không có gì thì 0k như cũ.
+XDH.startMoney = function () {
+  if (XDH.PLAYTEST) return XDH.PLAYTEST_MONEY;
+  return XDH.TEST ? XDH.TEST_MONEY : 0;
+};
 
 XDH.GLOW = { TRUST_NOW: 10, BONUS_TRUST: 4 };   // ✨ +10 tin ngay, câu chấm tốt cộng thêm tới hết cuộc
 XDH.MIND = { CRAVE_EVERY: 1 };                  // 🧠 bật là lượt nào cũng lộ suy nghĩ + chỗ họ đang thèm nghe
@@ -539,3 +573,94 @@ XDH.SLOT = {
   POS: [1080, 590],        // chỗ đứng trong xóm (cạnh xe bánh mì)
   SPIN_MS: 900
 };
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// v2.0 — THANH THIỆN CẢM · BA NHIỆM VỤ · SỔ ĐEN (plan-v2.0-dong-co-va-hop-kinh.md)
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── việc 4: THANH THIỆN CẢM HAI LỚP (đáp án 4 + 5) ──────────────────────────
+// Lucas chốt cách D: CODE chấm từ khoá (chắc chắn) + AI chấm cảm giác (mềm), LẤY ĐIỂM CAO HƠN.
+// Vì sao hai lớp: đo thật 21/08 cho thấy nói ĐÚNG chuyện mà vẫn có thể không được điểm nào,
+// vì mọi thứ treo hết vào cách AI chấm. Lớp CODE là cái sàn — nói trúng là CHẮC CHẮN có điểm.
+//
+// · Lớp CODE  = số CHỦ ĐỀ trong XDH.REGRET[npc] mà người chơi đã chạm / tổng số chủ đề.
+//               Bảng từ khoá đó có sẵn từ v0.6, trước giờ chỉ dùng cho câu tiếc nuối lúc thua.
+// · Lớp AI    = lòng tin đã đi được bao nhiêu phần đường tới ngưỡng mở cửa của nhà đó.
+// · Thanh hiện= lớp nào cao hơn thì lấy lớp đó. Chạm 100% là CỬA MỞ (việc 5).
+XDH.FRIEND = {
+  SHOW: true,            // đáp án 5: HIỆN thanh ra màn hình, không giấu nữa
+  MIN_CHARS: 10,         // câu ngắn hơn thế này không được tính chạm chủ đề (chặn spam từ khoá)
+  // 3 chứ không phải 5: nhà dễ (Ly) có khoảng cách 30 → 55, mà một câu "đánh trúng" đã +21.
+  // Để 5 là một câu duy nhất mở toang cửa (đo thật 21/08). Để 3 thì giữ đúng nhịp CŨ: 2 câu hay.
+  TOPIC_TRUST: 3,        // chạm chủ đề mới mà AI ĐÃ tự chấm tốt → cộng thêm ngần này lòng tin
+  TOPIC_INTEREST: 8,     // … và ngần này hứng thú
+  SUSP_DRAG: 25          // nghi ngờ sát trần thì thanh bị kéo xuống ngần này phần trăm
+};
+
+// ── việc 6: ẤN TƯỢNG ĐẦU TIÊN (sửa lỗi B) ───────────────────────────────────
+// Đo thật 21/08: 6/6 lần lượt 1 bị chấm "nhạt" → hứng thú −4 ngay câu chào, kể cả câu trúng tim.
+// Hai lớp vá, cả hai đều do CODE cầm nên đổi não cũng không đổi luật:
+//   1. Chạm đúng chủ đề của nhà đó → NÂNG mức chấm lên "đánh trúng", bất kể AI chấm gì.
+//   2. Lượt 1 mà bị chấm "nhạt" thì KHÔNG trừ hứng thú/kiên nhẫn (miễn phạt ấn tượng đầu).
+XDH.FIRST_TURN = { GRACE: true, FLOOR_ON_TOPIC: 'danh_trung' };
+
+// ── việc 7: BA NHIỆM VỤ GIẤU, MỘT KHUÔN (đáp án 7) ──────────────────────────
+// Bản sao cứng của MISSION_OWNER bên máy chủ (_personas.js + converse.js) — ĐỔI THÌ ĐỔI CẢ HAI.
+// item   = mã món đồ trong túi · price = giá ở xe bánh mì · lender = nhà cho mượn/cho luôn.
+XDH.MISSIONS = {
+  ly_selfie: {
+    owner: 'gen_z', item: 'gay_selfie', emoji: '🤳', price: 80, rewardK: 50, rewardTrust: 12,
+    lender: 'sinh_vien',
+    itemVi: 'gậy selfie', itemEn: 'selfie stick',
+    titleVi: 'Chuyện của Ly 🎬', titleEn: "Ly's problem 🎬",
+    bodyVi: 'Gậy selfie <b>gãy</b>, hết tiền mua cái mới (<b>80k</b>). Không có nó, clip đêm nay của Ly coi như bỏ.',
+    bodyEn: 'Her selfie stick <b>snapped</b> and she is broke — a new one costs <b>80k</b>. Without it, tonight\'s clip is dead.',
+    askVi: 'Nhận giúp Ly kiếm gậy selfie mới?', askEn: 'Help Ly get a new selfie stick?',
+    hintVi: '💰 mua ở xe bánh mì (80k) · 🤝 mượn Tí · 🗑️ lục thùng rác',
+    hintEn: '💰 buy at the bánh mì cart (80k) · 🤝 borrow from Tí · 🗑️ dig the trash bins',
+    thankVi: 'TRỜI ƠI GẬY SELFIE MỚI?? Anh/chị đỉnh thiệt sự luôn á!! Khoan— đứng yên, em quay cái story cảm ơn liền. Nè, cầm đỡ 50k tiền trà sữa, đừng có từ chối nha — em tin anh/chị nhất xóm luôn 😭🤳',
+    thankEn: "OH MY GOD A NEW SELFIE STICK?? You are actually the GOAT!! Wait— hold still, I'm filming a thank-you story right now. Here, take 50k bubble-tea money, no refusing — you're officially my most trusted neighbor 😭🤳"
+  },
+  ti_the4g: {
+    owner: 'sinh_vien', item: 'the_4g', emoji: '📶', price: 60, rewardK: 40, rewardTrust: 12,
+    lender: 'gen_z',
+    itemVi: 'thẻ nạp 4G', itemEn: '4G top-up card',
+    titleVi: 'Chuyện của Tí ⚽', titleEn: "Tí's problem ⚽",
+    bodyVi: 'Đang coi trận thì <b>hết dung lượng 4G</b>, wifi phòng trọ bị cắt từ tuần trước. Thẻ nạp <b>60k</b> mà cuối tháng Tí nhẵn túi.',
+    bodyEn: 'His <b>4G data ran out</b> mid-match and the room wifi was cut last week. A top-up card is <b>60k</b> and he is flat broke.',
+    askVi: 'Nhận kiếm giùm Tí cái thẻ nạp 4G?', askEn: 'Get Tí a 4G top-up card?',
+    hintVi: '💰 mua ở xe bánh mì (60k) · 🤝 xin Ly · 🗑️ lục thùng rác',
+    hintEn: '💰 buy at the bánh mì cart (60k) · 🤝 ask Ly · 🗑️ dig the trash bins',
+    thankVi: 'ANH LẤY ĐÂU RA HAY VẬY TRỜI?! Khoan— để em nạp cái đã… VÔ RỒI! Hiệp hai còn nguyên nè anh ơi 😭 Nè em gửi anh 40k, em còn đúng bấy nhiêu à, cầm đi đừng ngại!',
+    thankEn: "WHERE DID YOU EVEN GET THIS?! Hold on— let me top up… IT'S IN! The whole second half, still there 😭 Here, take 40k, that's literally all I've got, just take it!"
+  },
+  sau_gaubong: {
+    owner: 'me_bim_sua', item: 'gau_bong', emoji: '🧸', price: 70, rewardK: 60, rewardTrust: 12,
+    lender: 'sinh_vien',
+    itemVi: 'gấu bông', itemEn: 'teddy bear',
+    titleVi: 'Chuyện của Cô Sáu 🍼', titleEn: "Cô Sáu's problem 🍼",
+    bodyVi: 'Bé Bin <b>mất con gấu bông</b> vẫn ôm ngủ, khóc từ chiều tới giờ. Con mới <b>70k</b> mà tháng này cô hụt tiền.',
+    bodyEn: 'Baby Bin <b>lost the teddy bear</b> he sleeps with and has been crying since the afternoon. A new one is <b>70k</b> and she is short this month.',
+    askVi: 'Nhận kiếm giùm bé Bin con gấu bông?', askEn: 'Find baby Bin a teddy bear?',
+    hintVi: '💰 mua ở xe bánh mì (70k) · 🤝 xin Tí · 🗑️ lục thùng rác',
+    hintEn: '💰 buy at the bánh mì cart (70k) · 🤝 ask Tí · 🗑️ dig the trash bins',
+    thankVi: 'Ủa… đúng con gấu vầy nè! Khoan để cô đưa cho Bin… Nín rồi! Nín thiệt rồi con ơi 😭 Trời ơi cô đội ơn con. Nè cầm 60k đi taxi về, đừng có cãi cô nghen.',
+    thankEn: "Oh… this is exactly the kind he wants! Hold on, let me give it to Bin… He stopped! He actually stopped crying 😭 Bless you, child. Here, take 60k for a ride home, and don't you argue with me."
+  }
+};
+XDH.MISSION_IDS = ['ly_selfie', 'ti_the4g', 'sau_gaubong'];
+XDH.missionOfOwner = function (npcId) {
+  for (var i = 0; i < XDH.MISSION_IDS.length; i++) {
+    var id = XDH.MISSION_IDS[i];
+    if (XDH.MISSIONS[id].owner === npcId) return id;
+  }
+  return null;
+};
+
+// Popup mới của v2.0 (dòng số bay). Giữ chung một bảng với các cú cũ.
+XDH.POP_EVENT.friend_topic = { vi: '💛 Nói trúng chuyện họ mê', en: '💛 Hit a topic they love', cls: 'hit' };
+XDH.POP_EVENT.first_grace  = { vi: '👋 Miễn phạt câu chào đầu',  en: '👋 First-line grace',      cls: 'good' };
+XDH.POP_EVENT.door_forced  = { vi: '🚪 THIỆN CẢM ĐẦY — CỬA MỞ!', en: '🚪 FULL WARMTH — DOOR OPENS!', cls: 'hit' };
+XDH.POP_EVENT.mission_item = { vi: '🎒 Có món đồ rồi!',          en: '🎒 Got the item!',          cls: 'hit' };
+XDH.POP_EVENT.mission_done = { vi: '💖 Trả đồ xong — họ vui xỉu', en: '💖 Delivered — they are thrilled', cls: 'hit' };

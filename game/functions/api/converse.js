@@ -9,6 +9,7 @@
 
 import { PERSONAS, BA_NAM, SYSTEM_TEMPLATE, SCENES, CLUBS, MISSION_BLOCKS, scriptedReply, scriptedOutcome } from './_personas.js';
 import { callBrain, benchState } from './_brain.js';
+import { logTurn, guessLang } from './_ledger.js';
 
 // v0.6 F4 — 10 nhãn cảm xúc (5 nhãn mới: chan · nguong · cam_dong · phan_khich · buc_minh).
 // Client vẽ đủ 10 chân dung bằng code (portraits.js); nhãn lạ rơi về neutral ở shapeReply.
@@ -137,24 +138,56 @@ function voiceAnchor(persona, lang, turn) {
   return `\n[Nhắc giọng (hội thoại đã dài): giữ ĐÚNG thói quen nói lúc đầu — ${persona.tic || ''}. Xưng hô GIỮ NGUYÊN: ${persona.pronoun || ''}. Không được đổi giọng hay đổi xưng hô giữa chừng, cũng không được nói giọng trung tính chung chung.]`;
 }
 
-// v1.0 — khối nhiệm vụ theo nhân vật + giai đoạn (chữ nằm ở _personas.js MISSION_BLOCKS).
-// Ly: luật khai manh mối có chốt chặn · Tí: khối "đồ của tôi" · cả 3 nhà: việc vặt sau khi nhận.
+// v2.0 — khối nhiệm vụ cho CẢ BA NHÀ (đáp án 7). Chữ nằm ở _personas.js MISSION_BLOCKS.
+// Client (missions.js) gửi hai mảnh đã lọc sẵn cho ĐÚNG nhân vật này:
+//   missions.own  = nhiệm vụ nhà này GIỮ (Ly gậy selfie · Tí thẻ 4G · Cô Sáu gấu bông)
+//   missions.lend = nhiệm vụ nhà này là NGƯỜI CHO MƯỢN (Tí cho Ly mượn gậy, Ly cho Tí thẻ…)
+//   missions.choreOpen = đã nhận ít nhất một nhiệm vụ → mở khối việc vặt
+// Đường cũ `body.mission` của v1.0 vẫn chạy nguyên (bài kiểm mission-check + máy khách cũ).
+const MISSION_TOLD = {
+  gen_z: ['đang thiếu một món đồ để quay', 'cây gậy selfie bị gãy'],
+  sinh_vien: ['đang coi trận mà máy cứ quay quay', 'hết dung lượng 4G, wifi trọ bị cắt'],
+  me_bim_sua: ['bé Bin khóc hoài không chịu ngủ', 'bé mất con gấu bông vẫn ôm ngủ']
+};
+export function ownMissionOf(body) {
+  const ms = body.missions;
+  if (ms && ms.own) return ms.own;
+  if (body.mission) return body.mission;   // đường cũ v1.0
+  return null;
+}
 function missionNote(body, mode) {
-  if (mode !== 'ma_soi' || !body.mission || body.mission.id !== 'ly_selfie') return '';
-  const st = String(body.mission.stage || 'chua_biet');
-  const blocks = MISSION_BLOCKS[body.npcId] || {};
-  const clues = Math.max(0, Math.min(2, Number(body.mission.clues) || 0));
-  let out = blocks[st]
-    ? '\n' + blocks[st].replaceAll('{CLUES}', String(clues)).replaceAll('{NEXT}', MISSION_BLOCKS.gen_z_next[clues])
-    : '';
-  // Research 08-13 (curiouser institute): kể cho AI biết ĐÃ hé những gì — được nhắc lại
-  // nhưng phải diễn đạt khác, không nhai nguyên văn.
-  if (body.npcId === 'gen_z' && (st === 'chua_biet' || st === 'da_goi') && clues > 0) {
-    const told = ['đang thiếu một món đồ để quay', 'cây gậy selfie bị gãy'];
-    out += '\n(Chuyện ĐÃ kể cho người lạ: ' + told.slice(0, clues).join(' · ')
-      + ' — được nhắc lại nhưng phải DIỄN ĐẠT KHÁC HẲN, cấm lặp nguyên văn câu cũ.)';
+  if (mode !== 'ma_soi') return '';
+  const ms = body.missions || null;
+  const own = ownMissionOf(body);
+  let out = '';
+  if (own) {
+    const st = String(own.stage || 'chua_biet');
+    const blocks = MISSION_BLOCKS[body.npcId] || {};
+    const clues = Math.max(0, Math.min(2, Number(own.clues) || 0));
+    const nextList = MISSION_BLOCKS[body.npcId + '_next'] || [];
+    if (blocks[st]) {
+      out += '\n' + blocks[st].replaceAll('{CLUES}', String(clues))
+        .replaceAll('{NEXT}', nextList[clues] || '');
+    }
+    // Research 08-13 (curiouser institute): kể cho AI biết ĐÃ hé những gì — được nhắc lại
+    // nhưng phải diễn đạt khác, không nhai nguyên văn.
+    if ((st === 'chua_biet' || st === 'da_goi') && clues > 0) {
+      const told = MISSION_TOLD[body.npcId] || [];
+      if (told.length) {
+        out += '\n(Chuyện ĐÃ kể cho người lạ: ' + told.slice(0, clues).join(' · ')
+          + ' — được nhắc lại nhưng phải DIỄN ĐẠT KHÁC HẲN, cấm lặp nguyên văn câu cũ.)';
+      }
+    }
   }
-  if (st === 'da_nhan' || st === 'co_do') out += '\n' + MISSION_BLOCKS.chore;
+  // khối NGƯỜI CHO MƯỢN
+  if (ms && ms.lend && MISSION_BLOCKS.lend[ms.lend.id]) {
+    out += '\n' + MISSION_BLOCKS.lend[ms.lend.id];
+  } else if (!ms && body.npcId === 'sinh_vien' && own && own.stage === 'da_nhan') {
+    out += '\n' + MISSION_BLOCKS.lend.ly_selfie;   // đường cũ v1.0
+  }
+  // khối VIỆC VẶT
+  const choreOld = own && (own.stage === 'da_nhan' || own.stage === 'co_do');
+  if ((ms && ms.choreOpen) || (!ms && choreOld)) out += '\n' + MISSION_BLOCKS.chore;
   return out;
 }
 
@@ -164,9 +197,19 @@ function json(data, status = 200) {
   });
 }
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(ctx) {
+  const { request, env } = ctx;
   let body;
   try { body = await request.json(); } catch { return json({ ok: false, error: 'bad json' }, 400); }
+
+  // v2.0 SỔ ĐEN — mỗi lối ra của tệp này đều ghi một dòng. Ghi kiểu "gửi rồi đi" (_ledger.js
+  // tự đẩy vào waitUntil) nên KHÔNG một mili-giây nào cộng vào thời gian chờ của người chơi.
+  const note = (extra) => logTurn(ctx, Object.assign({
+    session: body.session, runId: body.runId, night: body.night,
+    mode: body.mode === 'ket_tien' ? 'ket_tien' : 'ma_soi',
+    lang: body.lang === 'en' ? 'en' : 'vi',
+    npc: body.npcId, turn: body.turn, friend: body.friend
+  }, extra));
 
   // Optional shared password (open by default — Lucas prefers open previews)
   if (env.GAME_PASS && body.pass !== env.GAME_PASS) {
@@ -176,7 +219,10 @@ export async function onRequestPost({ request, env }) {
   // v0.3 B7 — bảng tổng kết ngày: AI CHỌN một câu người chơi đã nói (không bịa câu mới)
   // làm "lời nói dối buồn cười nhất" + bình một dòng.
   if (body.summaryAsk) {
+    const tf = Date.now();
     const funny = await tryFunniest(env, body).catch(() => null);
+    note({ kind: 'summary', npcText: funny ? (funny.quote + ' || ' + funny.comment) : '',
+           brain: funny && funny.brain, latencyMs: Date.now() - tf, scripted: funny ? 0 : 1 });
     return json({ ok: true, funny });
   }
 
@@ -184,7 +230,11 @@ export async function onRequestPost({ request, env }) {
   // câu đẩy cốt truyện + việc chấm đạt/chưa đạt vẫn do code phía client cầm.
   // Không gọi được (hết tiền / não hỏng) → trả line rỗng, client dùng câu kịch bản như cũ.
   if (body.tutorAsk) {
+    const tt = Date.now();
     const t = await tryTutor(env, body).catch(() => null);
+    note({ kind: 'tutor', npc: 'ba_nam', playerText: body.playerText, npcText: (t && t.line) || '',
+           brain: t && t.brain, latencyMs: Date.now() - tt, scripted: t ? 0 : 1,
+           gateReason: t ? ('bước ' + (body.step || 1) + ' · đạt=' + t.dat) : 'não chết' });
     return json({ ok: true, line: (t && t.line) || '', dat: t ? t.dat : null, brain: t ? t.brain : null });
   }
 
@@ -196,7 +246,9 @@ export async function onRequestPost({ request, env }) {
 
   // §2 shop item "Gợi ý": the strategist whispers ONE line the player should say next.
   if (body.hintAsk) {
+    const th = Date.now();
     const hint = await tryHint(env, persona, club, body).catch(() => null);
+    note({ kind: 'hint', npcText: hint || '', latencyMs: Date.now() - th, scripted: hint ? 0 : 1 });
     return json({ ok: true, hint: hint || 'Để ý coi họ đang mê chuyện gì, rồi kể một câu chuyện khớp với bộ đồ bạn đang mặc.' });
   }
 
@@ -228,11 +280,13 @@ export async function onRequestPost({ request, env }) {
     const greetMem = Array.isArray(body.nightMemory) ? body.nightMemory : [];
     const greetGossip = Array.isArray(body.gossip) ? body.gossip : [];
     // v1.0 — Ly đổi dáng chờ (plan C2): đã nhận nhiệm vụ mà quay lại chưa có gậy → câu than thở
-    const mSt = body.mission && body.mission.stage;
-    if (mode === 'ma_soi' && body.npcId === 'gen_z' && (mSt === 'da_nhan' || mSt === 'co_do') &&
+    const ownM = ownMissionOf(body);
+    const mSt = ownM && ownM.stage;
+    if (mode === 'ma_soi' && (mSt === 'da_nhan' || mSt === 'co_do') &&
         !body.returning && persona.mission_greets) {
       const mg = (lang === 'en' && persona.mission_greets_en) ? persona.mission_greets_en : persona.mission_greets;
       const g2 = mg[seed % mg.length].replaceAll('{CLUB}', club);
+      note({ kind: 'greet_mission', npcText: g2, scripted: 1 });
       return json({
         ok: true, scripted: true,
         npc: { dialogue: g2, emotion: 'chan', verdict: null, thought: '', convo_state: 'listening', final_test: false, invite_intent: false, contradiction: false, shutdown: false, mission_signal: '' }
@@ -257,6 +311,7 @@ export async function onRequestPost({ request, env }) {
     } else {
       g = pool[seed % pool.length].replaceAll('{CLUB}', club);
     }
+    note({ kind: 'greet', npcText: g, scripted: 1 });
     return json({
       ok: true, scripted: true,
       npc: { dialogue: g, emotion: 'suspicious', verdict: null, thought: '', convo_state: 'doubting', final_test: false, invite_intent: false, contradiction: false, shutdown: false, mission_signal: '' }
@@ -264,13 +319,19 @@ export async function onRequestPost({ request, env }) {
   }
 
   const playerText = String(body.playerText || '').slice(0, 600);
-  if (!playerText.trim() && !body.finalTestAsk && !body.outcomeAsk) return json({ ok: false, error: 'nói gì đi chứ' }, 400);
+  // Ba lối "đạo diễn" (câu hỏi chốt · màn xin · CÂU MỜI VÀO) không có lời người chơi — đó là
+  // chuyện bình thường, đừng chặn. Thiếu inviteAsk ở đây là lượt mời vào bị trả lỗi 400 (bắt được
+  // bằng bài kiểm trình duyệt 21/08: bảng điều khiển hiện đúng một dòng đỏ 400).
+  if (!playerText.trim() && !body.finalTestAsk && !body.outcomeAsk && !body.inviteAsk)
+    return json({ ok: false, error: 'nói gì đi chứ' }, 400);
   const state = body.state || { trust: 30, suspicion: 20, interest: 50, patience: 100 };
 
   if (env.FORCE_SCRIPTED === '1') {
+    note({ kind: 'forced_scripted', playerText, scripted: 1,
+           trust: state.trust, suspicion: state.suspicion, interest: state.interest, patience: state.patience });
     return json(body.outcomeAsk
       ? { ok: true, scripted: true, npc: scriptedOutcome(body.npcId) }
-      : { ok: true, scripted: true, npc: scriptedReply(body.npcId, playerText, state, club) });
+      : { ok: true, scripted: true, npc: scriptedReply(body.npcId, playerText, state, club, lang) });
   }
 
   // Build the shared prompt
@@ -282,7 +343,19 @@ export async function onRequestPost({ request, env }) {
     .replace('{PERSONA_CARD}', persona.card.replaceAll('{CLUB}', club))
     .replace('{OUTFIT}', String(body.outfit || 'không rõ').slice(0, 400));
   if (lang === 'en') {
-    system += '\n\nQUAN TRỌNG — NGÔN NGỮ: Người lạ nói TIẾNG ANH. Viết dialogue và thought bằng TIẾNG ANH tự nhiên, giữ nguyên cá tính nhân vật (được phép chêm vài từ cảm thán tiếng Việt như "trời ơi", "nha" cho có màu).';
+    // v2.0 (đáp án 13) — bản tiếng Anh đo được 13/20 vì não hay TỤT VỀ TIẾNG VIỆT giữa chừng.
+    // Siết ba tầng: nói rõ luật · nêu cái sai thường gặp · bắt tự soát lại trước khi nộp phiếu.
+    system += `
+
+QUAN TRỌNG — NGÔN NGỮ (LUẬT CỨNG, ĐỌC KỸ):
+Người chơi đã CHỌN TIẾNG ANH. Hai ô "dialogue" và "thought" PHẢI viết HOÀN TOÀN BẰNG TIẾNG ANH.
+· CẤM viết cả câu tiếng Việt. CẤM viết nửa Việt nửa Anh.
+· Chỉ được giữ TỐI ĐA MỘT từ cảm thán Việt cho có màu ("trời ơi", "nha", "ơi") — không hơn.
+· Người chơi có thể gõ tiếng Việt vì lỡ tay; kệ họ, BẠN VẪN TRẢ LỜI BẰNG TIẾNG ANH.
+· Lỗi hay gặp nhất: viết được 1-2 lượt tiếng Anh rồi lượt sau tự động tụt về tiếng Việt. ĐỪNG.
+· TRƯỚC KHI NỘP PHIẾU: đọc lại ô dialogue. Nếu thấy chữ có dấu tiếng Việt trong đó thì VIẾT LẠI
+  cả câu bằng tiếng Anh rồi mới nộp.
+Giữ nguyên cá tính, giọng điệu, thói quen nói của nhân vật — chỉ đổi thứ tiếng, không đổi con người.`;
   } else {
     // v0.6.1 G2 — Lucas vấp chính chỗ này: "AI trộn tiếng Việt lẫn tiếng Anh, khó chịu".
     // Chọn VI thì viết TIẾNG VIỆT. Chỉ Ly (Gen Z) được giữ vài tiếng lóng — đó là tính cách của cô.
@@ -332,6 +405,42 @@ Tuyệt đối không trôi về giọng trung tính chung chung. Nếu một c�
     });
   }
 
+  // v2.0 §5 (đáp án 6 — sửa lỗi A): thanh thiện cảm chạm 100% → CODE ĐÃ QUYẾT ĐỊNH mở cửa.
+  // invite_intent của AI KHÔNG còn quyền phủ quyết; AI chỉ còn quyền DIỄN cho khớp.
+  // Đúng khuôn finalTestAsk đã có: nhét một dòng đạo diễn vào tin nhắn, không sửa luật game.
+  if (body.inviteAsk) {
+    messages.push({
+      role: 'user',
+      content: lang === 'en'
+        ? '[Director: the character HAS ALREADY DECIDED to invite this stranger inside — the decision is made, it is not up for debate. Write exactly one warm line that OPENS THE DOOR and invites them in, in character. Set invite_intent=true, verdict="danh_trung", shutdown=false. Do not ask another question, do not stall, do not hedge.]'
+        : '[Đạo diễn: nhân vật ĐÃ QUYẾT ĐỊNH mời người lạ vào nhà — chuyện đã xong, không bàn lại nữa. Viết đúng MỘT câu ấm áp MỞ CỬA MỜI VÀO, đúng giọng nhân vật. Đặt invite_intent=true, verdict="danh_trung", shutdown=false. Không hỏi thêm câu nào, không câu giờ, không nói lấp lửng.]'
+    });
+    const t0 = Date.now();
+    const inv = await askBrain(env, system, messages, NPC_TOOL, { lang }).catch(() => null);
+    const ms = Date.now() - t0;
+    if (inv && inv.input) {
+      const shaped = shapeReply(inv.input, inv.brain, inv.usage, 'reply');
+      shaped.npc.invite_intent = true;     // CODE giữ cửa: dù AI quên bật cờ thì cửa vẫn mở
+      shaped.npc.shutdown = false;
+      shaped.npc.mission_signal = '';
+      note({ kind: 'invite', playerText, npcText: shaped.npc.dialogue, brain: inv.brain,
+             tried: (inv.tried || []).join(' → '), latencyMs: ms,
+             tokIn: inv.usage && inv.usage.in, tokOut: inv.usage && inv.usage.out,
+             verdict: shaped.npc.verdict, emotion: shaped.npc.emotion, inviteIntent: 1,
+             trust: state.trust, suspicion: state.suspicion, interest: state.interest, patience: state.patience });
+      return json(shaped);
+    }
+    // Cả chuỗi não chết → vẫn PHẢI có câu mời. Kịch bản cứng, 0đ, không bao giờ kẹt cửa.
+    const line = inviteFallback(body.npcId, lang);
+    note({ kind: 'invite', playerText, npcText: line, scripted: 1, latencyMs: ms, inviteIntent: 1, err: 'chuỗi não chết' });
+    return json({
+      ok: true, scripted: true,
+      npc: { dialogue: line, emotion: 'cam_dong', verdict: 'danh_trung', thought: '', convo_state: 'trusting',
+             final_test: false, invite_intent: true, contradiction: false, corroboration: false,
+             shutdown: false, player_claim: '', mission_signal: '' }
+    });
+  }
+
   // v0.3 B3 — "màn xin": nhân vật đã muốn giúp, giờ chọn GIÚP KIỂU GÌ.
   if (body.outcomeAsk) {
     messages.push({
@@ -344,9 +453,21 @@ Chọn viec_vat nếu nhân vật muốn người lạ phụ một tay trước.
 game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.suspicion}/100.]`
         + voiceNote(persona, lang, turn, seed) + voiceAnchor(persona, lang, turn)
     });
-    const out = await askBrain(env, system, messages, OUTCOME_TOOL).catch(() => null);
-    if (out) return json(shapeReply(out.input, out.brain, out.usage, 'outcome'));
-    return json({ ok: true, scripted: true, npc: scriptedOutcome(body.npcId) });
+    const t0 = Date.now();
+    const out = await askBrain(env, system, messages, OUTCOME_TOOL, { lang }).catch(() => null);
+    const ms = Date.now() - t0;
+    if (out) {
+      const shaped = shapeReply(out.input, out.brain, out.usage, 'outcome');
+      note({ kind: 'outcome', playerText, npcText: shaped.npc.dialogue, brain: out.brain,
+             tried: (out.tried || []).join(' → '), latencyMs: ms,
+             tokIn: out.usage && out.usage.in, tokOut: out.usage && out.usage.out,
+             emotion: shaped.npc.emotion, gateReason: 'outcome:' + shaped.npc.outcome,
+             trust: state.trust, suspicion: state.suspicion, interest: state.interest, patience: state.patience });
+      return json(shaped);
+    }
+    const so = scriptedOutcome(body.npcId);
+    note({ kind: 'outcome', playerText, npcText: so.dialogue, scripted: 1, latencyMs: ms, err: 'chuỗi não chết' });
+    return json({ ok: true, scripted: true, npc: so });
   }
 
   // Hidden state hint on the last user turn (helps calibrate tone + invite pacing)
@@ -415,7 +536,8 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
   }
 
   // v0.8 B4 — chuỗi não nằm hết trong _brain.js. Ở đây chỉ còn: hỏi một cửa, hỏng thì kịch bản.
-  let res = await askBrain(env, system, messages, NPC_TOOL, { presencePenalty: 1.0 }).catch(() => null);
+  const t0 = Date.now();
+  let res = await askBrain(env, system, messages, NPC_TOOL, { presencePenalty: 1.0, lang }).catch(() => null);
   // v1.0.1 — máy bắt CÂU HỎNG: (a) lặp nguyên văn câu đã nói · (b) câu rỗng kiểu "…" (bệnh Qwen
   // đo được ở check-20 #10). Bắt được thì cho viết lại MỘT lần, giữ nguyên phần chấm điểm.
   const tooBlank = (s) => String(s || '').replace(/[^\p{L}\p{N}]+/gu, '').length < 4;
@@ -427,7 +549,7 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
       { role: 'assistant', content: String(res.input.dialogue).slice(0, 400) || '…' },
       { role: 'user', content: `[Đạo diễn: câu bạn vừa viết ${why}. Điền lại phiếu với verdict/các cờ GIỮ NGUYÊN, nhưng dialogue và thought phải viết KHÁC HẲN — câu đầy đủ, diễn đạt mới, không trùng quá 4 chữ liên tiếp với bất kỳ câu nào bạn đã nói trong cuộc này.]` }
     ]);
-    const retry = await askBrain(env, system, retryMsgs, NPC_TOOL, { presencePenalty: 1.2, temperature: 0.9 }).catch(() => null);
+    const retry = await askBrain(env, system, retryMsgs, NPC_TOOL, { presencePenalty: 1.2, temperature: 0.9, lang }).catch(() => null);
     if (retry && retry.input && retry.input.dialogue &&
         !isRepeatLine(retry.input.dialogue, prevNpc) && !tooBlank(retry.input.dialogue)) {
       res = { ...res, input: { ...res.input, dialogue: retry.input.dialogue, thought: retry.input.thought || res.input.thought } };
@@ -436,11 +558,67 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
       res = null;   // hai lần đều rỗng → rơi về kịch bản, còn hơn hiện "…" cho người chơi
     }
   }
+  // ══ v2.0 (đáp án 13) — CHỐT CHẶN NGÔN NGỮ, CODE CẦM ═════════════════════════
+  // Dặn bằng lời KHÔNG đủ: đo thật 21/08 trên 20 lượt tiếng Anh, Qwen trả lời lẫn tiếng Việt
+  // 35% số lượt DÙ prompt đã siết ba tầng. Nên thêm một lớp mã nguồn: đọc lại câu vừa viết,
+  // sai thứ tiếng thì bắt viết lại ĐÚNG MỘT lần, giữ nguyên phần chấm điểm và mọi cờ.
+  // Cùng khuôn với máy bắt lặp ở trên — cùng một triết lý: luật nằm ở CODE, không nằm ở prompt.
+  let langFixed = false;
+  if (res && res.input && res.input.dialogue) {
+    const got = guessLang(res.input.dialogue);
+    if (got && got !== lang) {
+      const want = lang === 'en' ? 'ENGLISH' : 'TIẾNG VIỆT';
+      const fixMsgs = messages.concat([
+        { role: 'assistant', content: String(res.input.dialogue).slice(0, 400) },
+        { role: 'user', content: lang === 'en'
+          ? '[Director: your last line slipped into Vietnamese. The player chose ENGLISH. Rewrite BOTH "dialogue" and "thought" completely in ENGLISH — same meaning, same character, same voice, zero Vietnamese sentences. Keep every other field exactly as you set it.]'
+          : '[Đạo diễn: câu vừa rồi bị lẫn tiếng Anh. Người chơi chọn TIẾNG VIỆT. Viết lại CẢ ô "dialogue" lẫn ô "thought" hoàn toàn bằng tiếng Việt CÓ ĐẦY ĐỦ DẤU — cùng ý, cùng nhân vật, cùng giọng. Mọi ô khác giữ nguyên.]' }
+      ]);
+      const fix = await askBrain(env, system, fixMsgs, NPC_TOOL, { temperature: 0.6, lang }).catch(() => null);
+      if (fix && fix.input && fix.input.dialogue && guessLang(fix.input.dialogue) === lang) {
+        res = { ...res, input: { ...res.input, dialogue: fix.input.dialogue, thought: fix.input.thought || res.input.thought } };
+        langFixed = true;
+      }
+    }
+  }
+
+  // ══ v2.0 việc 7 — KHOÁ MIỆNG: nhiệm vụ GIẤU thì phải giấu cho tới đúng lượt ═════
+  // Đo thật 21/08 bằng trình duyệt: Cô Sáu tự khai luôn "con GẤU BÔNG của bé Bin" ngay lượt
+  // đầu, dù khối nhiệm vụ đã ghi rõ LUẬT CẤM. Prompt bảo được, prompt cũng quên được.
+  // Nên thêm lớp mã nguồn (giống máy bắt lặp + chốt chặn ngôn ngữ): thấy TÊN MÓN ĐỒ xuất hiện
+  // trước khi manh mối số 2 được khai → bắt viết lại MỘT lần, cấm nhắc tên món đó.
+  let leakFixed = false;
+  if (res && res.input && res.input.dialogue && mode === 'ma_soi') {
+    const own = ownMissionOf(body);
+    const early = own && Number(own.clues || 0) < 2 &&
+      (own.stage === 'chua_biet' || own.stage === 'da_goi' || !own.stage);
+    const words = SECRET_WORDS[body.npcId] || [];
+    if (early && words.length) {
+      const low = String(res.input.dialogue).toLowerCase();
+      const hit = words.find(w => low.includes(w));
+      if (hit) {
+        const leakMsgs = messages.concat([
+          { role: 'assistant', content: String(res.input.dialogue).slice(0, 400) },
+          { role: 'user', content: lang === 'en'
+            ? `[Director: you just revealed too much — the phrase "${hit}" is a SECRET the stranger has not earned yet. Rewrite "dialogue" and "thought" with the same mood but WITHOUT that subject at all: change the topic in character, or complain about something vague instead. Keep every other field as you set it.]`
+            : `[Đạo diễn: bạn vừa hớ — cụm "${hit}" là BÍ MẬT mà người lạ chưa moi ra được. Viết lại ô "dialogue" và "thought", giữ nguyên tâm trạng nhưng TUYỆT ĐỐI không nhắc tới chuyện đó: nói lảng sang chuyện khác đúng chất nhân vật, hoặc than chung chung thôi. Các ô khác giữ nguyên.]` }
+        ]);
+        const nl = await askBrain(env, system, leakMsgs, NPC_TOOL, { temperature: 0.8, lang }).catch(() => null);
+        if (nl && nl.input && nl.input.dialogue &&
+            !words.some(w => String(nl.input.dialogue).toLowerCase().includes(w))) {
+          res = { ...res, input: { ...res.input, dialogue: nl.input.dialogue, thought: nl.input.thought || res.input.thought } };
+          leakFixed = true;
+        }
+      }
+    }
+  }
+
+  const brainMs = Date.now() - t0;
   if (res) {
     const shaped = shapeReply(res.input, res.brain, res.usage, 'reply');
     // v1.0 — tín hiệu nhiệm vụ phải qua cổng server trước khi về client
     const rawSig = shaped.npc.mission_signal;
-    const gate = gateMissionEx(rawSig, { npcId: body.npcId, mode, mission: body.mission }, state);
+    const gate = gateMissionEx(rawSig, { npcId: body.npcId, mode, mission: body.mission, missions: body.missions }, state);
     shaped.npc.mission_signal = gate.sig;
     // v1.0.1 — "ấm dần": AI muốn khai (người chơi đang đào đúng chỗ) mà kẹt MỖI cổng quan tâm
     // → báo client nhích +hứng thú (khuôn invite_nudge 08-09). Số nằm ở config client.
@@ -448,19 +626,55 @@ game tự tính. Trạng thái ngầm: tin=${state.trust}/100, nghi=${state.susp
     // v1.0.1 — HỘP KÍNH (?debug=1): client gửi debug:true thì trả về vì-sao-chặn + có-viết-lại-không
     if (body.debug === true) {
       shaped.debug = {
-        retried,
+        retried, langFixed, leakFixed,
         mission: body.mission ? { stage: body.mission.stage, clues: Number(body.mission.clues) || 0 } : null,
         signal_raw: rawSig, signal_final: gate.sig, gate_reason: gate.why,
         bench: benchState()   // não nào đang "ngồi ghế nghỉ" (giây còn lại) — soi được vì sao rơi não
       };
     }
+    // v2.0 SỔ ĐEN — dòng ĐẦY ĐỦ nhất của cả hệ: não nào · bao lâu · bao nhiêu chữ · 4 chỉ số ·
+    // chấm điểm · cổng nhiệm vụ chặn vì lý do gì. Đây cũng là bộ dữ liệu để sau này tự luyện não.
+    note({
+      kind: body.finalTestAsk ? 'final_test' : 'reply',
+      playerText, npcText: shaped.npc.dialogue,
+      brain: res.brain, tried: (res.tried || []).join(' → '), latencyMs: brainMs,
+      tokIn: res.usage && res.usage.in, tokOut: res.usage && res.usage.out,
+      verdict: shaped.npc.verdict, emotion: shaped.npc.emotion,
+      trust: state.trust, suspicion: state.suspicion, interest: state.interest, patience: state.patience,
+      inviteIntent: shaped.npc.invite_intent, finalTest: shaped.npc.final_test,
+      contradiction: shaped.npc.contradiction, corroboration: shaped.npc.corroboration,
+      shutdown: shaped.npc.shutdown, retried: retried || langFixed || leakFixed,
+      signalRaw: rawSig, signalFinal: gate.sig, gateReason: gate.why
+    });
     return json(shaped);
   }
+  const sr = scriptedReply(body.npcId, playerText, state, club, lang);
+  note({
+    kind: body.finalTestAsk ? 'final_test' : 'reply',
+    playerText, npcText: sr.dialogue, scripted: 1, latencyMs: brainMs,
+    verdict: sr.verdict, trust: state.trust, suspicion: state.suspicion,
+    interest: state.interest, patience: state.patience, err: 'chuỗi não chết → kịch bản'
+  });
   return json({
-    ok: true, scripted: true, npc: scriptedReply(body.npcId, playerText, state, club),
+    ok: true, scripted: true, npc: sr,
     // hộp kính: rơi về kịch bản thì nói rõ não nào đang nghỉ — hết cảnh đoán mò "sao nhạt vậy"
     ...(body.debug === true ? { debug: { scripted_vi: 'chuỗi não chết', bench: benchState() } } : {})
   });
+}
+
+// v2.0 — câu MỜI VÀO kịch bản: dùng khi cả chuỗi não chết đúng lúc thanh thiện cảm chạm 100%.
+// Cửa đã do CODE quyết định mở rồi; không bao giờ được để người chơi đứng ngoài vì AI hỏng.
+function inviteFallback(npcId, lang) {
+  const P = {
+    me_bim_sua: ['Thôi… vô nhà đi con, đứng ngoài đó sương xuống lạnh. Mà nói nhỏ nhỏ thôi nghen, bé Bin mới ngủ.',
+      "Alright… come on in, it's getting cold out there. Keep your voice down though, Bin just fell asleep."],
+    sinh_vien: ['Rồi rồi, anh vô đi anh! Vô coi nốt hiệp hai với em luôn, đứng ngoài chi cho mỏi chân 😄',
+      "Okay okay, come in! Watch the second half with me, no point standing out there 😄"],
+    gen_z: ['Ơ thôi được rồi, vô đi vô đi! Đứng ngoài đó nhìn kỳ lắm — mà vô rồi phải kể tiếp cho em nghe đó nha 😌',
+      "Ugh fine, come in, come in! You look weird standing out there — but you're finishing that story inside 😌"]
+  };
+  const row = P[npcId] || P.gen_z;
+  return lang === 'en' ? row[1] : row[0];
 }
 
 // ── v0.8 B1 — MỘT CỬA DUY NHẤT ───────────────────────────────────────────────
@@ -482,6 +696,8 @@ function schemaNoteFor(tool) {
 async function askBrain(env, system, messages, tool = NPC_TOOL, opts = {}) {
   return callBrain(env, {
     system, messages, tool,
+    // v2.0 đáp án 13: chọn English thì chuỗi não đổi thứ tự (Qwen viết tiếng Anh yếu, xuống cuối).
+    lang: opts.lang,
     schemaNote: schemaNoteFor(tool),
     maxTokens: opts.maxTokens ?? 500,
     // Chấm điểm cần ổn định hơn cần bay bổng (QA 08-08: cùng một câu chuyện lúc hop_ly lúc lo_lieu).
@@ -699,12 +915,19 @@ const MISSION_SIGNALS = ['manh_moi_1', 'manh_moi_2', 'ro_chuyen', 'dong_y_cho_mu
 // là bản sao cứng của XDH.MISSION_CFG.INTEREST_GATE / TI_LEND_TRUST — đổi thì đổi CẢ HAI chỗ.
 export function gateMissionEx(sig, body, state) {
   if (!sig) return { sig: '', why: '' };
-  const m = body.mission;
-  if (!m || body.mode === 'ket_tien') return { sig: '', why: 'không có nhiệm vụ / Kẹt Tiền' };
+  if (body.mode === 'ket_tien') return { sig: '', why: 'Kẹt Tiền không có nhiệm vụ' };
+  const ms = body.missions || null;
+  const m = ownMissionOf(body);
+  const lend = ms && ms.lend ? ms.lend : null;
+  const choreOpen = ms ? !!ms.choreOpen : !!(m && (m.stage === 'da_nhan' || m.stage === 'co_do'));
+  if (!m && !lend && !choreOpen) return { sig: '', why: 'không có nhiệm vụ' };
+
   if (['manh_moi_1', 'manh_moi_2', 'ro_chuyen'].includes(sig)) {
-    if (body.npcId !== 'gen_z') return { sig: '', why: 'manh mối chỉ của Ly' };
+    // v2.0: manh mối là chuyện của CHÍNH nhà đó. Nhà không giữ nhiệm vụ nào thì không được khai.
+    if (!m) return { sig: '', why: 'nhà này không giữ nhiệm vụ nào' };
+    if (!MISSION_OWNER_OK(body.npcId, m)) return { sig: '', why: 'manh mối không phải của nhà này' };
     const interest = Number(state.interest) || 0;
-    if (interest < 60) return { sig: '', why: `quan tâm ${interest} < 60` };   // chưa đủ quan tâm → Ly CẤM khai
+    if (interest < 60) return { sig: '', why: `quan tâm ${interest} < 60` };   // chưa đủ quan tâm → CẤM khai
     // Não yếu hay LẶP LẠI manh mối cũ (đo thật 08-13: Qwen bắn manh_moi_1 sáu lượt liền).
     // CODE cầm nhịp: tín hiệu manh mối nào cũng được nắn về manh mối KẾ TIẾP theo sổ client.
     const clues = Number(m.clues) || 0;
@@ -712,17 +935,38 @@ export function gateMissionEx(sig, body, state) {
     return { sig: next, why: next === sig ? 'qua' : `nắn ${sig} → ${next}` };
   }
   if (sig === 'dong_y_cho_muon') {
-    if (body.npcId !== 'sinh_vien' || m.stage !== 'da_nhan')
-      return { sig: '', why: 'sai nhà hoặc chưa nhận nhiệm vụ / đã có đồ' };
+    // Đường v2.0: client đã lọc — chỉ gửi `lend` cho ĐÚNG nhà đang giữ món đồ người ta cần.
+    if (ms) {
+      if (!lend) return { sig: '', why: 'nhà này không phải người cho mượn (hoặc đã có đồ)' };
+    } else {
+      // Đường cũ v1.0: chỉ Tí, chỉ khi nhiệm vụ Ly đang chạy.
+      if (body.npcId !== 'sinh_vien' || !m || m.stage !== 'da_nhan')
+        return { sig: '', why: 'sai nhà hoặc chưa nhận nhiệm vụ / đã có đồ' };
+    }
     const trust = Number(state.trust) || 0;
     if (trust < 55) return { sig: '', why: `tin ${trust} < 55 — đồng ý mồm` };
     return { sig, why: 'qua' };
   }
   if (sig === 'nhan_viec_vat') {
-    return (m.stage === 'da_nhan' || m.stage === 'co_do')
+    return choreOpen && !(m && m.stage === 'xong' && !ms)
       ? { sig, why: 'qua' } : { sig: '', why: 'việc vặt chưa mở (chưa nhận nhiệm vụ)' };
   }
   return { sig: '', why: 'tín hiệu lạ' };
+}
+// Tên MÓN ĐỒ bí mật của từng nhà — chỉ được nói ra từ manh mối số 2 trở đi.
+// Bản sao cứng của XDH.MISSIONS[...].itemVi/itemEn bên client. Đổi thì đổi CẢ HAI chỗ.
+const SECRET_WORDS = {
+  gen_z: ['gậy selfie', 'gậy chụp', 'selfie stick'],
+  sinh_vien: ['4g', 'thẻ nạp', 'nạp thẻ', 'top-up', 'top up', 'data card'],
+  me_bim_sua: ['gấu bông', 'con gấu', 'teddy', 'stuffed bear']
+};
+
+// Ai giữ nhiệm vụ nào — bản sao cứng của XDH.MISSIONS bên client. Đổi thì đổi CẢ HAI chỗ.
+const MISSION_OWNER = { ly_selfie: 'gen_z', ti_the4g: 'sinh_vien', sau_gaubong: 'me_bim_sua' };
+function MISSION_OWNER_OK(npcId, m) {
+  const id = m && m.id;
+  if (!id) return npcId === 'gen_z';          // đường cũ v1.0 chỉ có nhiệm vụ của Ly
+  return MISSION_OWNER[id] === npcId;
 }
 // Vỏ cũ giữ nguyên hợp đồng cho bài kiểm + chỗ gọi khác.
 export function gateMission(sig, body, state) { return gateMissionEx(sig, body, state).sig; }

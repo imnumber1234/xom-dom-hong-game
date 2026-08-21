@@ -5,3 +5,22 @@ pages_build_output_dir = "public"
 # Workers AI binding — powers /api/stt (server-side Vietnamese speech-to-text).
 [ai]
 binding = "AI"
+
+# v2.0 SỔ ĐEN — mỗi lượt nói chuyện ghi một dòng vào D1 (ghi kiểu "gửi rồi đi").
+# Bảng đèn /dash đọc từ đây. Không có khoá API nào nằm trong tệp này.
+[[d1_databases]]
+binding = "LOG"
+database_name = "xom-dom-hong-log"
+database_id = "5c60c9de-2880-432a-a2a7-9b293bafe778"
+
+# Pages: phần trên là BẢN CHÍNH, khối dưới là BẢN THỬ (preview). Phải ghi lại đủ,
+# vì khối env KHÔNG tự thừa hưởng phần trên.
+[env.preview]
+
+[env.preview.ai]
+binding = "AI"
+
+[[env.preview.d1_databases]]
+binding = "LOG"
+database_name = "xom-dom-hong-log"
+database_id = "5c60c9de-2880-432a-a2a7-9b293bafe778"

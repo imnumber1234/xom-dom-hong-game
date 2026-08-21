@@ -594,3 +594,24 @@ thiểu 10 giây rồi hỏi tới: rồi sao nữa · giờ rốt cuộc muốn
 1. Link chính giờ có luôn **v1.0 hệ nhiệm vụ** (đi kèm không tách được) — ưng thì thôi, không ưng thì lùi lại.
 2. **Máy quay số có nên tắt ở chế độ Kẹt Tiền không?** (ở đó tiền = điều kiện thắng)
 3. Có **commit vào git** vòng này không.
+
+
+### 🔬 2026-08-21 — Session A: nghiên cứu ngành AI-game + ĐO THẬT link chính + 3 ý mới của Lucas
+
+Lucas hỏi 4 việc: (1) ngành game xài AI ra sao / có game AI nào thành công chưa, (2) dựng HỘP KÍNH
+(observability) cho game, (3) động cơ để con sói đi từng nhà (đóng mode Kẹt Tiền, chỉ còn Ma Sói),
+(4) thanh thiện cảm theo TỪ KHOÁ + lối hỏi-sâu ra nhiệm vụ giấu (Hiền/Dữ). Cộng thêm: mở hết, miễn phí hết để playtest.
+
+- Nghiên cứu ngành: research/ai-games-2026.md (có nguồn từng dòng)
+- Kế hoạch nháp + 9 câu hỏi chờ Lucas: plan-v2.0-dong-co-va-hop-kinh.md
+
+**4 lỗi ĐO ĐƯỢC trên link chính (gọi thật /api/converse, debug=1):**
+A. Tin 62 >= ngưỡng 55, nghi thấp, mà cửa VẪN KHÔNG MỞ — convo.js:549 bắt phải có CẢ invite_intent của AI.
+   Có đường tự lành cho chiều ngược lại, không có cho chiều này.
+B. Lượt 1 luôn bị chấm thuong (nhạt) -> hứng thú -4, kể cả câu trúng tim. 6/6 lần thử.
+C. AI BỊA lời người chơi rồi bắt bẻ mâu thuẫn (Ly nói "nãy anh nói quay trend ăn lém" — người chơi chưa từng nói).
+D. Gemini ĐANG CHẾT ở bản thật (bench 597s) -> game chạy 100% bằng Qwen (3.5 điểm giọng vs Gemini 4.3).
+   KHÔNG AI BIẾT vì không lưu gì hết: 0 console.log, không D1/KV/R2.
+
+**Tin tốt:** bảng từ khoá theo nhân vật ĐÃ CÓ SẴN (config.js XDH.REGRET) nhưng chỉ dùng cho câu tiếc nuối
+lúc thua + món máy đọc suy nghĩ. Nối nó vào thanh điểm là xong ý Lucas — không phải làm từ đầu.

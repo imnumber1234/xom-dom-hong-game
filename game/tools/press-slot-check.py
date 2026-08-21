@@ -49,8 +49,10 @@ async def main():
 
         # ---------- A. CHE DO TEST + so lieu cau hinh ----------
         await boot(pg, URL, first=True)
-        add("A1 — ?test=1 vao van co 500k", await ev(pg, "XDH.run.money") == 500,
-            await ev(pg, "XDH.run.money"))
+        # v2.0: cong tac playtest (ban thu) cho tien nhieu hon ?test=1 → so voi MOT cua duy nhat
+        add("A1 — vao van co san tien theo dung cong tac dang bat",
+            await ev(pg, "XDH.run.money === XDH.startMoney() && XDH.run.money > 0"),
+            await ev(pg, "XDH.run.money + '/' + XDH.startMoney()"))
         add("A2 — bang CHE DO TEST hien", await ev(pg, "getComputedStyle(document.getElementById('test-badge')).display") == "block")
         tiers = await ev(pg, "XDH.PRESS.TIERS")
         add("A3 — 3 nac hoi don, ngan dan (18-30 / 12-18 / 10-12 giay)",
@@ -192,12 +194,24 @@ async def main():
             got = await ev(pg, f"XDH.CasinoTest.buyLucky('{kind}')")
             add(f"E1.{kind} — hop qua mo ra loai '{kind}'", got == kind, got)
             await pg.evaluate("document.getElementById('ov-lucky').classList.remove('show')")
+        # v2.0: bat cong tac playtest thi hop qua 0k → phep thu "khong du tien" chuyen sang
+        # link co ?playtest=0 o muc F (chinh la phep thu "tat cong tac la ve nhu cu").
         await ev(pg, "XDH.CasinoTest.setMoney(10)")
         r = await ev(pg, "XDH.CasinoTest.buyLucky('coins')")
-        add("E2 — khong du 30k thi khong mua duoc", r is None)
+        playtest = await ev(pg, "XDH.PLAYTEST")
+        add("E2 — khong du 30k thi khong mua duoc (khi KHONG bat playtest)",
+            (r is None) if not playtest else (r == "coins"),
+            f"playtest={playtest} ket qua={r}")
 
         # ---------- F. LINK CHINH khong dinh ----------
-        await boot(pg, URL_LIVE, first=False)
+        # v2.0: them ?playtest=0 → ep tat cong tac "mo het", phai ve dung nhu ban that
+        await boot(pg, URL_LIVE + "&playtest=0" if "?" in URL_LIVE else URL_LIVE + "?playtest=0", first=False)
+        add("F0 — TAT cong tac playtest thi moi thu ve nhu cu (gia goc + tu do khoa lai)",
+            (await ev(pg, "XDH.PLAYTEST")) is False and
+            (await ev(pg, "XDH.priceOf(XDH.LUCKY.PRICE)")) == 30 and
+            (await ev(pg, "XDH.SHOP.every(i => XDH.priceOf(i) === i.price)")) is True and
+            (await ev(pg, "XDH.lockedPieces().length")) == 3,
+            await ev(pg, "XDH.PLAYTEST + ' | hop qua ' + XDH.priceOf(XDH.LUCKY.PRICE) + 'k | con khoa ' + XDH.lockedPieces().length"))
         add("F1 — link KHONG co ?test=1 van bat dau 0k", (await ev(pg, "XDH.run.money")) == 0,
             await ev(pg, "XDH.run.money"))
         add("F2 — link thuong khong co tay nam kiem thu", (await ev(pg, "!!window.PressTest || !!window.XDH.PressTest")) is False)
