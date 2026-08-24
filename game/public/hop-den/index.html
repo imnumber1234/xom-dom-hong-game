@@ -1,0 +1,1463 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hộp Đen — production</title>
+<style>
+/* ════ DESIGN PLAN ════════════════════════════════════════════════════════
+   Nền     : than ấm nghiêng về thế giới "đóm" của game — #0f0e0c / #191815 / #22211d
+   Mực     : trắng ấm #f2efe6 · phụ #c9c5b6 · mờ #8f8b7d  (neutral CÓ CHỌN, không xám máy)
+   Điểm nhấn CHROME duy nhất: vàng đóm #e8b64c — logo, tab đang mở, focus. Hết.
+   Màu DỮ LIỆU giữ nguyên bộ đã validate (4 não PASS 6 check CVD trên nền tối);
+   scripted = status đỏ; verdict = thang phân cực xanh↔đỏ. Chrome không giẫm lên dữ liệu.
+   Chữ     : sans hệ thống cho khung · MONO (Cascadia) cho MỌI con số — bảng, KPI, trục.
+   Nhịp    : bội số 8px · tối đa 1480px · mỗi tab một header nói rõ nó để làm gì.       */
+:root{
+  --bg0:#0f0e0c; --bg1:#191815; --bg2:#22211d; --bg3:#2b2a24;
+  --ink:#f2efe6; --ink2:#c9c5b6; --mut:#8f8b7d;
+  --line:rgba(242,239,230,.08); --line2:rgba(242,239,230,.16);
+  --dom:#e8b64c;
+
+  --gemini:#3987e5; --qwen:#d95926; --deepseek:#199e70; --haiku:#c98500;
+  --scripted:#d03b3b;
+  --v-danh_trung:#7ab5f0; --v-hop_ly:#3987e5; --v-thuong:#6b6a63;
+  --v-kha_nghi:#b8504f; --v-lo_lieu:#ee7a7a;
+  --good:#0ca30c; --warn:#fab219; --crit:#d03b3b;
+
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Cascadia Code",ui-monospace,Consolas,monospace;
+  --r:12px; --r-s:8px;
+  --sh:0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg0);color:var(--ink);
+  font:15px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+code,pre{font-family:var(--mono)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.94em}
+a{color:var(--v-hop_ly)}
+:focus-visible{outline:2px solid var(--dom);outline-offset:2px;border-radius:4px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ── khung ── */
+.app{display:grid;grid-template-columns:220px minmax(0,1fr);height:100vh;overflow:hidden}
+.rail{background:var(--bg1);border-right:1px solid var(--line);padding:22px 0 18px;
+  display:flex;flex-direction:column;gap:2px}
+.rail .logo{display:flex;align-items:center;gap:11px;margin:0 20px 3px}
+.rail .logo .dot{width:11px;height:11px;border-radius:3px;background:var(--dom);
+  box-shadow:0 0 14px rgba(232,182,76,.55)}
+.rail h1{font-size:16.5px;margin:0;letter-spacing:.2px}
+.rail .sub{font-size:12px;color:var(--mut);margin:0 20px 22px 42px}
+.rail button{all:unset;display:flex;align-items:center;gap:12px;padding:10px 20px;cursor:pointer;
+  color:var(--ink2);font-size:14.5px;border-left:3px solid transparent;transition:background .1s}
+.rail button:hover{background:var(--bg2);color:var(--ink)}
+.rail button[aria-current="true"]{background:var(--bg2);color:var(--ink);
+  border-left-color:var(--dom);font-weight:600}
+.rail .ic{width:18px;text-align:center;opacity:.8;font-size:13px}
+.rail .sp{flex:1}
+.rail .chan{margin:0 20px;font-size:12px;color:var(--mut);line-height:1.7}
+
+.canvas{overflow-y:auto;overflow-x:hidden;padding:28px 36px 88px;scroll-behavior:smooth;min-width:0}
+.trang{max-width:1480px;margin:0 auto;width:100%;min-width:0}
+
+/* Scrollbars */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg0)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px;border:1px solid var(--line2)}
+::-webkit-scrollbar-thumb:hover{background:var(--dom)}
+
+/* ── badge dữ liệu mới (điểm 3 — không giật trang đang xem) ── */
+#moi{position:fixed;top:18px;right:24px;z-index:60;background:var(--bg3);
+  border:1px solid var(--dom);color:var(--dom);border-radius:20px;padding:8px 18px;
+  font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:var(--sh);
+  opacity:0;pointer-events:none;transform:translateY(-8px);transition:all .18s}
+#moi.mo{opacity:1;pointer-events:auto;transform:none}
+#moi:hover{background:var(--dom);color:var(--bg0)}
+
+#toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,12px);z-index:70;
+  background:var(--bg3);border:1px solid var(--line2);border-radius:var(--r-s);
+  padding:9px 18px;font-size:13.5px;opacity:0;pointer-events:none;transition:all .18s;box-shadow:var(--sh)}
+#toast.mo{opacity:1;transform:translate(-50%,0)}
+
+/* ── đầu trang ── */
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  margin-bottom:24px;flex-wrap:wrap}
+.head h2{font-size:22px;margin:0;letter-spacing:.1px;text-wrap:balance}
+.head p{margin:5px 0 0;font-size:13.5px;color:var(--mut);max-width:74ch}
+.head .meta{font-size:12.5px;color:var(--mut);text-align:right;line-height:1.75;flex:none}
+.head .meta b{color:var(--ink2);font-weight:600}
+.head .live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--good);
+  margin-right:6px;vertical-align:1px}
+
+.demo{background:linear-gradient(90deg,#33290f,#2b2310);border:1px solid #6b5310;
+  border-radius:var(--r-s);padding:10px 16px;margin-bottom:20px;font-size:13.5px;color:var(--warn);
+  display:flex;gap:10px;align-items:center}
+
+/* ── KPI ── */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.tile{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 18px 14px;box-shadow:var(--sh)}
+.tile .k{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:1.1px;font-weight:600}
+.tile .v{font-family:var(--mono);font-size:38px;font-weight:600;line-height:1.1;margin-top:7px;
+  font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.tile .u{font-size:15px;color:var(--mut);font-weight:400;margin-left:4px;letter-spacing:0}
+.tile .n{font-size:12.5px;color:var(--mut);margin-top:5px}
+.tile.canh{border-color:rgba(208,59,59,.45)} .tile.canh .v{color:#ff9089}
+.tile.tot .v{color:#63cf6c}
+
+/* ── card ── */
+.card{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);
+  padding:20px 22px;margin-bottom:20px;box-shadow:var(--sh)}
+.card>h3{font-size:15px;margin:0 0 3px;font-weight:650}
+.card>.gt{font-size:13px;color:var(--mut);margin:0 0 16px;max-width:82ch}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:1240px){.grid2,.grid3{grid-template-columns:1fr}}
+.grid2>*,.grid3>*,.card{min-width:0}
+
+.lg{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--ink2);margin-bottom:12px}
+.lg span{display:flex;align-items:center;gap:7px}
+.lg i{width:11px;height:11px;border-radius:3px;display:block}
+
+svg{display:block;width:100%;overflow:visible}
+svg text{fill:var(--mut);font-size:12px;font-family:var(--mono)}
+.tip{position:fixed;pointer-events:none;background:var(--bg3);border:1px solid var(--line2);
+  border-radius:var(--r-s);padding:10px 13px;font-size:13px;z-index:99;opacity:0;transition:opacity .1s;
+  box-shadow:0 12px 34px rgba(0,0,0,.6);max-width:330px;line-height:1.6}
+.tip b{color:var(--ink);font-family:var(--mono)}
+.tip .r{display:flex;justify-content:space-between;gap:18px}
+
+.hbar{display:flex;align-items:center;gap:11px;font-size:13.5px;margin-bottom:6px;
+  padding:3px 7px;margin-left:-7px;border-radius:7px}
+.hbar.click{cursor:pointer}
+.hbar.click:hover{background:var(--bg2)}
+.hbar .t{width:148px;color:var(--ink2);flex:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar .track{flex:1;min-width:48px;height:14px;background:rgba(242,239,230,.06);border-radius:4px;overflow:hidden}
+.hbar .bar{height:100%;display:block;border-radius:4px}
+.hbar .n{color:var(--mut);flex:none;width:64px;text-align:right}
+.hbar .p{color:var(--mut);font-size:12px;flex:none;width:86px}
+
+/* ── facets + tìm kiếm ── */
+.explore{display:grid;grid-template-columns:250px minmax(0,1fr);gap:20px;align-items:start}
+@media(max-width:1080px){.explore{grid-template-columns:1fr}}
+.explore>*{min-width:0}
+.facets{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px;position:sticky;top:0;max-height:calc(100vh - 56px);overflow:auto;box-shadow:var(--sh)}
+.fg{margin-bottom:18px}
+.fg>.t{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:1.1px;
+  margin-bottom:7px;font-weight:600}
+.fv{display:flex;justify-content:space-between;align-items:center;padding:5px 9px;border-radius:7px;
+  cursor:pointer;font-size:13.5px;color:var(--ink2);gap:10px}
+.fv:hover{background:var(--bg2);color:var(--ink)}
+.fv[aria-pressed="true"]{background:var(--bg3);color:var(--ink);font-weight:600;
+  outline:1px solid var(--line2)}
+.fv .c{color:var(--mut);font-size:12.5px;font-family:var(--mono)}
+.fv .sw{width:9px;height:9px;border-radius:2.5px;flex:none}
+.fv .lb{display:flex;align-items:center;gap:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.timkiem{position:relative;margin-bottom:14px}
+.timkiem input{width:100%;background:var(--bg1);border:1px solid var(--line2);border-radius:var(--r-s);
+  color:var(--ink);font:14.5px var(--sans);padding:11px 40px 11px 40px;outline:none}
+.timkiem input:focus{border-color:var(--dom)}
+.timkiem input::placeholder{color:var(--mut)}
+.timkiem .kinh{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:15px}
+.timkiem .xoa{position:absolute;right:10px;top:50%;transform:translateY(-50%);all:unset;position:absolute;
+  cursor:pointer;color:var(--mut);font-size:17px;padding:4px 8px}
+.timkiem .xoa:hover{color:var(--ink)}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;min-height:28px}
+.chip{background:var(--bg3);border:1px solid var(--line2);border-radius:14px;
+  padding:3px 11px;font-size:13px;display:flex;gap:8px;align-items:center}
+.chip button{all:unset;cursor:pointer;color:var(--mut);font-size:15px;line-height:1}
+.chip button:hover{color:var(--crit)}
+.chips .n{font-size:13px;color:var(--mut);font-family:var(--mono)}
+.chips .xoahet{all:unset;cursor:pointer;color:var(--mut);font-size:13px;text-decoration:underline}
+.chips .xoahet:hover{color:var(--ink)}
+
+/* ── bảng ── */
+.tbl{background:var(--bg1);border:1px solid var(--line);border-radius:var(--r);
+  overflow-x:auto;box-shadow:var(--sh);min-width:0;max-width:100%;-webkit-overflow-scrolling:touch}
+.cuon{overflow-x:auto;min-width:0;max-width:100%}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:980px}
+th{text-align:left;color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;
+  letter-spacing:.9px;padding:11px 12px;border-bottom:1px solid var(--line);
+  position:sticky;top:0;background:var(--bg1);cursor:pointer;white-space:nowrap;z-index:2}
+th:hover{color:var(--ink)}
+th.s,td.s{text-align:right}
+td{padding:9px 12px;border-bottom:1px solid rgba(242,239,230,.05);vertical-align:middle;white-space:nowrap}
+td.num,td .num{font-size:13px}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--bg2)}
+tr.row.chon td{background:var(--bg3)}
+td.cau{max-width:260px;min-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink2)}
+mark{background:rgba(232,182,76,.3);color:var(--ink);border-radius:3px;padding:0 1px}
+
+.b{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:11px;
+  font-size:12.5px;font-weight:600;white-space:nowrap;font-family:var(--mono)}
+.v{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12.5px;white-space:nowrap;font-weight:500}
+.f{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11.5px;
+  background:#33290f;color:var(--warn);margin:1px 3px 1px 0;white-space:nowrap}
+.f.fb{background:#3d1e2a;color:#ffb0c0}
+
+/* ── nút ── */
+.nut{all:unset;cursor:pointer;background:var(--bg3);border:1px solid var(--line2);
+  border-radius:var(--r-s);padding:8px 16px;font-size:13.5px;color:var(--ink2);
+  display:inline-flex;align-items:center;gap:8px;transition:all .12s}
+.nut:hover{color:var(--ink);border-color:var(--dom)}
+.nut:disabled,.nut[aria-disabled="true"]{opacity:.5;cursor:wait}
+.nut.chinh{background:rgba(232,182,76,.12);border-color:rgba(232,182,76,.4);color:var(--dom)}
+.nut.chinh:hover{background:rgba(232,182,76,.2)}
+
+/* ── drawer ── */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;
+  transition:opacity .16s;z-index:50}
+.scrim.mo{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(880px,96vw);background:var(--bg1);
+  border-left:1px solid var(--line2);transform:translateX(102%);
+  transition:transform .22s cubic-bezier(.4,0,.2,1);z-index:51;overflow:auto;padding:24px 30px 88px}
+.drawer.mo{transform:none}
+.drawer .dong{position:absolute;top:16px;right:20px;cursor:pointer;color:var(--mut);font-size:24px;
+  background:none;border:0;line-height:1}
+.drawer .dong:hover{color:var(--ink)}
+.drawer .tieu{font-size:19px;font-weight:650}
+.sec{margin:22px 0}
+.sec>.t{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:1.2px;
+  margin-bottom:9px;font-weight:600;display:flex;align-items:center;gap:8px}
+.sec>.t::after{content:"";flex:1;height:1px;background:var(--line)}
+.box{background:var(--bg0);border:1px solid rgba(242,239,230,.07);border-radius:var(--r-s);
+  padding:12px 15px;font-size:14.5px;line-height:1.65}
+.box.nc{border-left:3px solid var(--gemini)} .box.tl{border-left:3px solid var(--v-danh_trung)}
+details>summary{cursor:pointer;font-size:13px;color:var(--mut);padding:6px 0;
+  list-style:none;user-select:none}
+details>summary::before{content:"\25B8  "} details[open]>summary::before{content:"\25BE  "}
+details>summary:hover{color:var(--ink)}
+pre.hd{max-height:320px;overflow:auto;background:var(--bg0);border:1px solid rgba(242,239,230,.07);
+  border-radius:var(--r-s);padding:12px 14px;font-size:12px;line-height:1.6;
+  white-space:pre-wrap;word-break:break-word;color:var(--ink2);margin:6px 0 0}
+.ghi{font-size:13px;background:#2b2310;border-left:3px solid var(--warn);
+  border-radius:0 var(--r-s) var(--r-s) 0;padding:9px 13px;margin-top:8px;color:#e8daae;line-height:1.6}
+.ghi.trong{background:#1c1b17;border-left-color:var(--mut);color:var(--mut)}
+.ghi b{color:var(--ink)}
+.kv{display:flex;gap:8px;flex-wrap:wrap;font-size:13.5px;align-items:center}
+.kv .p{background:var(--bg3);border-radius:11px;padding:2px 10px}
+.doc{font-size:13px;color:var(--ink2);background:var(--bg2);border-radius:7px;
+  padding:9px 13px;margin-top:12px;line-height:1.6}
+.doc b{color:var(--ink)}
+.rong{text-align:center;color:var(--mut);padding:72px 24px;line-height:2.1;font-size:14.5px}
+kbd{background:var(--bg3);border:1px solid var(--line2);border-radius:5px;padding:1px 7px;font-size:13px}
+</style>
+
+<div class="app">
+  <nav class="rail">
+    <div class="logo"><span class="dot"></span><h1>Hộp Đen</h1></div>
+    <div class="sub" id="nguon">đang đọc…</div>
+    <button data-tab="tong-quan" aria-current="true"><span class="ic">◧</span>Tổng quan</button>
+    <button data-tab="kham-pha"><span class="ic">☰</span>Khám phá</button>
+    <button data-tab="phan-bo"><span class="ic">▤</span>Phân bố</button>
+    <button data-tab="van-choi"><span class="ic">▷</span>Ván chơi</button>
+    <button data-tab="chan-doan"><span class="ic">✚</span>Chẩn đoán</button>
+    <div class="sp"></div>
+    <div class="chan" id="chan"></div>
+  </nav>
+  <main class="canvas" id="cv"><div class="trang" id="trang"></div></main>
+</div>
+<button id="moi" onclick="apDungMoi()"></button>
+<div id="toast"></div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer"></aside>
+<div class="tip" id="tip"></div>
+
+<script>
+'use strict';
+// máy dò + máy kết luận — nhúng từ detect.mjs / ketluan.mjs lúc build, gói trong IIFE
+const __may = (() => {
+// detect.mjs — hai việc thuần chữ, không I/O:
+//   1. loc()    : che bí mật TRƯỚC khi ghi xuống đĩa (chép SECRET_PATTERNS của diep_audit + phần Việt)
+//   2. coTuDo() : bộ cờ CƠ HỌC dò ca hỏng, chạy ngay lúc ghi, 0 đồng.
+//      Đây là bước 1 kiểu XNK (detect_candidates.py: 1745 lượt → 142 ứng viên) — lọc rẻ trước,
+//      rồi mới cho LLM đọc lại đúng phần đáng đọc ở classify.mjs.
+
+const BI_MAT = [
+  [/sk-[A-Za-z0-9_-]{16,}/g,                 '«khoá-sk»'],
+  [/AIza[A-Za-z0-9_-]{20,}/g,                '«khoá-google»'],
+  [/gh[pousr]_[A-Za-z0-9]{20,}/g,            '«khoá-github»'],
+  [/AKIA[A-Z0-9]{12,}/g,                     '«khoá-aws»'],
+  [/xox[baprs]-[A-Za-z0-9-]{10,}/g,          '«khoá-slack»'],
+  [/-----BEGIN [A-Z ]*PRIVATE KEY-----/g,    '«khoá-riêng»'],
+  [/"type"\s*:\s*"service_account"/g,        '«service-account»'],
+  [/\b0\d{9,10}\b/g,                         '«điện-thoại»'],
+  [/[\w.+-]+@[\w-]+\.[\w.-]+/g,              '«email»']
+];
+
+function loc(s) {
+  let t = String(s ?? '');
+  for (const [re, the] of BI_MAT) t = t.replace(re, the);
+  return t;
+}
+
+// ── so từ nội dung giữa câu người chơi và lời thoại ─────────────────────────
+const KHONG_TINH = new Set(('dạ da vâng ạ à ừ ờ thì mà là của cho với và hay hoặc nhưng nếu khi lúc này kia đó ' +
+  'đây ấy nào gì sao vậy nhé nha nghen em anh chị cô chú bác tui tôi mình bạn ông bà con cái các những một hai ' +
+  'có không được rồi đang sẽ đã bị làm đi tới lại ra vô lên xuống ở trong ngoài trên dưới rất quá lắm hơi cũng ' +
+  'chỉ còn nữa thôi luôn ai the a an and of to is it you i').split(/\s+/));
+
+const bo_dau = (s) => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+const tu = (s) => bo_dau(String(s).toLowerCase()).split(/[^a-z0-9]+/).filter(w => w.length > 2 && !KHONG_TINH.has(w));
+
+function chungTu(a, b) {
+  const A = new Set(tu(a));
+  return tu(b).some(w => A.has(w));
+}
+
+// câu có CHI TIẾT CỤ THỂ theo đúng nghĩa rubric (_personas.js:450): số nhà, mã đơn, tên quán, tên người
+function coChiTiet(s) {
+  const t = String(s || '');
+  if (/\d/.test(t)) return true;                                  // số nhà / mã đơn / giá
+  const chu = t.split(/\s+/).slice(1);                            // bỏ chữ đầu câu
+  return chu.some(w => /^[A-ZĐÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯ][a-zà-ỹ]{2,}/.test(w));   // tên riêng viết hoa giữa câu
+}
+
+// ── máy dò "AI đang gặp vấn đề gì" (bổ sung 20/08) — chạy per-turn, không tốn tiền ──
+// Từ tiếng Anh hay lọt vào thoại. TRÁNH từ trùng tiếng Việt bỏ dấu ('the'≈'thế' → không dùng).
+const TU_EN = new Set(('you your hello sorry please thank thanks welcome what where when why how yes okay good love friend delivery order shipper wait stop night morning really'.split(' ')));
+// Tiếng lóng Ly ĐƯỢC PHÉP dùng (rubric cho phép, tối đa 2 từ) — không tính là lỗi
+const LONG_CHO_PHEP = new Set('slay vibe drama content trend flex cringe ok oke tiktok camera clip view story feedback'.split(' '));
+const demCau = s => (String(s || '').match(/[.!?…]+/g) || []).length || (String(s || '').trim() ? 1 : 0);
+// trùng >= 4 chữ LIÊN TIẾP giữa hai câu (bỏ dấu, thường hoá) — đúng luật chống lặp của rubric
+function bonChuTrung(a, b) {
+  const w = x => bo_dau(String(x || '').toLowerCase()).split(/[^a-z0-9]+/).filter(Boolean);
+  const A = w(a); if (A.length < 4) return false;
+  const B = new Set(); const bw = w(b);
+  for (let i = 0; i + 3 < bw.length; i++) B.add(bw.slice(i, i + 4).join(' '));
+  for (let i = 0; i + 3 < A.length; i++) if (B.has(A.slice(i, i + 4).join(' '))) return true;
+  return false;
+}
+// ngôi xưng — cố tình BỎ 'con/cháu/bà' vì hay xuất hiện với nghĩa khác (bé con, bà Năm)
+const NGOI_XUNG = ['tui', 'tôi', 'anh', 'chị', 'em', 'cô', 'chú', 'mình', 'tao'];
+const boXung = s => { const t = ' ' + String(s || '').toLowerCase() + ' '; const r = new Set();
+  for (const x of NGOI_XUNG) if (t.indexOf(' ' + x + ' ') >= 0) r.add(x); return r; };
+
+/**
+ * Trả về mảng mã cờ. Mảng rỗng = lượt trông ổn, không cần LLM đọc lại.
+ * Mỗi cờ nói rõ nó nghi giả thuyết nào, để classify.mjs và trình xem gán tầng hỏng.
+ */
+function coTuDo(t) {
+  const c = [];
+  const npc = t.npc_id;
+  const v = t.verdict;
+
+  if (t.brain === 'scripted')  c.push('kich_ban_lac_de');           // H4 — kịch bản không đọc câu người chơi
+  if (t.retried)               c.push('da_viet_lai_vi_lap');        // máy đã bắt lặp một lần
+  if (t.err)                   c.push('chuoi_nao_chet');            // H4
+
+  // H2 — ĐIỂM BỊ NUỐT. Hai kiểu, phải bắt CẢ HAI:
+  //  (a) về hẳn 0 dù verdict tốt
+  //  (b) bị GIẢM so với bảng XDH.VERDICTS (10 → 3 vì kẹp trần / gainMult / cờ đã nổ rồi).
+  // Kiểu (b) mới là kiểu hay gặp, và trước đây lọt lưới vì chỉ kiểm dT === 0.
+  const nuot = (t.delta_notes || []).some(n => /^kep_tran_|_da_no_roi$/.test(n.ma));   // gain_mult là độ khó chủ ý, không tính
+  if (nuot || (t.applied && (v === 'hop_ly' || v === 'danh_trung') && t.applied.dT === 0)) c.push('diem_bi_nuot');
+
+  // H5 — câu dài, có chi tiết cụ thể, mà bị chấm nhạt. Đúng triệu chứng "nói đúng mà không được gì".
+  if (v === 'thuong' && String(t.player_text || '').length > 60 && coChiTiet(t.player_text)) c.push('nhat_ma_co_chi_tiet');
+
+  // H3 — câu người chơi chiếm dưới 5% tin nhắn cuối
+  if (t.blocks && t.blocks.playerRatio > 0 && t.blocks.playerRatio < 0.05) c.push('cau_bi_chon');
+
+  // lạc đề: thoại không dùng lại một từ nội dung nào của câu người chơi VÀ không hỏi ngược
+  if (t.dialogue && t.player_text && !chungTu(t.player_text, t.dialogue) && !/[?？]/.test(t.dialogue)) c.push('nghi_lac_de');
+
+  // model vi phạm LUẬT CỨNG của rubric (_personas.js:424): hai cờ không bao giờ cùng true
+  if (t.flags && t.flags.contradiction && t.flags.corroboration) c.push('vi_pham_luat_cung');
+
+  // AI bật cờ mà code không áp → điểm bị nuốt im lặng (một lần / bộ đồ)
+  if (t.delta_notes && t.delta_notes.some(n => n.ma === 'mau_thuan_da_no_roi' || n.ma === 'chong_lung_da_no_roi'))
+    c.push('co_da_no_roi');
+
+  // ── 5 máy dò lỗi-AI bổ sung 20/08 ────────────────────────────────────────
+  const hist = (t.body_goc && t.body_goc.history) || [];
+  const npcTruoc = hist.filter(h => h && h.role === 'npc').map(h => String(h.text || '')).filter(Boolean);
+
+  // model điền verdict NGOÀI enum → shapeReply lặng lẽ kẹp sang mức khác. Bằng chứng H5 mạnh:
+  // ta lưu cả phiếu THÔ (raw) lẫn bản đã kẹp nên so được.
+  if (t.raw && t.raw.verdict && t.verdict && String(t.raw.verdict) !== String(t.verdict)) c.push('phieu_sai_enum');
+
+  // thoại trùng >=4 chữ liên tiếp với câu NPC trước trong ván — luật chống lặp bị xuyên
+  // (máy bắt của server chỉ so 80% đầu câu, kẽ hở này lọt được)
+  if (t.dialogue && npcTruoc.some(x => bonChuTrung(t.dialogue, x))) c.push('lap_4_chu');
+
+  // rubric bắt "thoại 1–3 câu" — vượt là model đang lải nhải
+  if (t.dialogue && demCau(t.dialogue) > 3) c.push('thoai_qua_dai');
+
+  // người chơi chọn TIẾNG VIỆT mà thoại chêm >=2 từ tiếng Anh ngoài danh sách lóng cho phép
+  const lang = (t.req && t.req.lang) || (t.body_goc && t.body_goc.lang);
+  if (lang === 'vi' && t.dialogue) {
+    const la = bo_dau(String(t.dialogue).toLowerCase()).split(/[^a-z]+/)
+      .filter(w => TU_EN.has(w) && !LONG_CHO_PHEP.has(w));
+    if (la.length >= 2) c.push('chem_tieng_anh');
+  }
+
+  // NGHI trôi xưng hô: từ lượt 3, thoại dùng ngôi chưa từng xuất hiện ở các câu NPC trước
+  // trong cùng ván (đúng bệnh sử: Bà Tư trôi Bắc→Nam, Hằng nhảy em→chị ở lượt 5-6)
+  if ((t.turn_no || 0) >= 3 && t.dialogue && npcTruoc.length >= 2) {
+    const cu = new Set(); npcTruoc.forEach(x => boXung(x).forEach(v => cu.add(v)));
+    if (cu.size && [...boXung(t.dialogue)].some(v => !cu.has(v))) c.push('troi_xung_ho');
+  }
+
+  // H6 — NEO GIỌNG BỊ ĐẨY KHỎI CUỐI. converse.js:294-295 cố ý đặt dòng TIC sát cuối system
+  // ("chỗ cuối được mô hình nhớ tốt nhất"), nhưng _brain.js:136 nối schemaNote vào SAU nó
+  // với qwen/deepseek → thứ cuối cùng hai nhà đó đọc là lược đồ JSON, không phải giọng nhân vật.
+  if (t.neo_giong && t.neo_giong.bi_day) c.push('neo_giong_bi_day');
+
+  return c;
+}
+
+const GIAI_THICH = {
+  kich_ban_lac_de:     ['H4', 'rơi kịch bản — câu trả lời không hề đọc câu người chơi'],
+  da_viet_lai_vi_lap:  ['H1', 'model lặp câu cũ, máy bắt viết lại một lần'],
+  chuoi_nao_chet:      ['H4', 'cả chuỗi não chết'],
+  diem_bi_nuot:        ['H2', 'verdict tốt mà tin +0 — xem delta_notes'],
+  nhat_ma_co_chi_tiet: ['H5', 'câu dài có chi tiết cụ thể mà bị chấm thuong'],
+  cau_bi_chon:         ['H3', 'câu người chơi chiếm <5% tin nhắn cuối'],
+  nghi_lac_de:         ['H3', 'thoại không dính một từ nội dung nào của câu người chơi'],
+  vi_pham_luat_cung:   ['H5', 'contradiction và corroboration cùng true — rubric cấm'],
+  co_da_no_roi:        ['H2', 'AI bật cờ nhưng code đã áp cờ đó rồi ở bộ đồ này'],
+  neo_giong_bi_day:    ['H6', 'dòng TIC bị lược đồ JSON đẩy khỏi cuối system (chỉ qwen/deepseek)'],
+  phieu_sai_enum:      ['H5', 'model trả verdict NGOÀI enum, bị shapeReply lặng lẽ kẹp sang mức khác'],
+  lap_4_chu:           ['H1', 'thoại trùng ≥4 chữ liên tiếp với câu NPC trước — luật chống lặp bị xuyên'],
+  thoai_qua_dai:       ['H5', 'thoại vượt luật "1–3 câu" của rubric — model lải nhải'],
+  chem_tieng_anh:      ['H5', 'chêm tiếng Anh dù người chơi chọn tiếng Việt (ngoài lóng cho phép)'],
+  troi_xung_ho:        ['H6', 'NGHI trôi xưng hô — dùng ngôi chưa từng xuất hiện trong ván']
+};
+
+// ketluan.mjs — biến toàn bộ ca đã ghi thành CÂU TRẢ LỜI BẰNG LỜI.
+//
+// Chủ ý: không đưa ra một bảng số rồi bắt người đọc tự suy diễn. Nhìn vào là thấy ngay
+// "14/23 ca là H5, chỉ 3/23 là điểm bị nuốt → sửa rubric, đừng đụng bảng điểm".
+//
+// Luật tự đặt: THIẾU DỮ LIỆU THÌ NÓI THIẾU, không bịa kết luận. Mỗi câu trả lời đều
+// kèm số ca dựa vào — người đọc phải thấy được kết luận đứng trên bao nhiêu bằng chứng.
+
+const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+const p = (arr, q) => { if (!arr.length) return 0; const s = [...arr].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(s.length * q))]; };
+const co = (t, ma) => (t.flag_auto || []).includes(ma);
+
+function ketLuan(ds) {
+  const noi = ds.filter(t => t.kind === 'reply');                    // lượt NÓI (bỏ chào/gợi ý/hướng dẫn)
+  const cham = noi.filter(t => t.verdict);                           // lượt có chấm điểm
+  const vaN = new Set(ds.map(t => t.run_id)).size;
+  const hong = noi.filter(t => (t.flag_auto || []).length || t.fb);
+
+  const cauHoi = [];
+
+  // ── CÂU 1: "nói đúng mà không tăng điểm" ────────────────────────────────
+  {
+    const ca = cham.filter(t => t.fb === 'dang_le_tang' || co(t, 'diem_bi_nuot') || co(t, 'nhat_ma_co_chi_tiet') || co(t, 'co_da_no_roi'));
+    const h2 = ca.filter(t => (t.delta_notes || []).some(n => /^kep_tran|da_no_roi|gain_mult/.test(n.ma)));
+    const h5 = ca.filter(t => !h2.includes(t));
+    let dap, lam;
+    if (!ca.length) {
+      dap = cham.length < 10
+        ? `Chưa đủ dữ liệu — mới ${cham.length} lượt có chấm điểm. Chơi thêm rồi hỏi lại.`
+        : `Không bắt được ca nào trong ${cham.length} lượt. Nếu bạn VẪN thấy triệu chứng này, bấm 👎 "Đáng lẽ phải tăng điểm" đúng lúc nó xảy ra — hệ chỉ chắc chắn khi có nhãn thật.`;
+      lam = null;
+    } else {
+      const nghieng = h5.length > h2.length ? 'H5' : h2.length > h5.length ? 'H2' : null;
+      dap = `${ca.length} ca. Trong đó **${h2.length} ca ĐIỂM BỊ NUỐT (H2)** — model chấm đúng nhưng số bị kẹp trần / bị gainMult / cờ đã nổ ở bộ đồ này rồi; `
+          + `và **${h5.length} ca MODEL CHẤM NHẠT THẬT (H5)** — delta_notes trống, tức là không có gì nuốt điểm cả, model thật sự cho verdict thấp.`;
+      lam = nghieng === 'H5'
+        ? `Sửa RUBRIC ở _personas.js:432-451 (thêm khuôn verdict cho loại câu đang bị rơi vào "thuong"). ĐỪNG đụng bảng XDH.VERDICTS — bảng không phải thủ phạm ở ${pct(h5.length, ca.length)}% số ca.`
+        : nghieng === 'H2'
+        ? `Sửa phía CODE: xem lại trần 100 ở applyDeltas (convo.js:16-26), gainMult ở config.js:238-242, và luật "một lần / bộ đồ" ở convo.js:442-455. Rubric không phải thủ phạm chính.`
+        : `Hai nguyên nhân đang ngang nhau (${h2.length} vs ${h5.length}) — cần thêm ca trước khi chốt sửa bên nào.`;
+    }
+    cauHoi.push({ hoi: 'Vì sao "nói đúng mà không tăng điểm"?', dap, viec_can_lam: lam,
+      so: { ca: ca.length, H2: h2.length, H5: h5.length }, ds: ca.map(t => t.turn_id) });
+  }
+
+  // ── CÂU 2: "AI trả lời lạc đề" ──────────────────────────────────────────
+  {
+    const ca = noi.filter(t => t.fb === 'lac_de' || co(t, 'nghi_lac_de') || co(t, 'kich_ban_lac_de') || co(t, 'cau_bi_chon'));
+    const h4 = ca.filter(t => t.scripted || t.brain === 'scripted' || co(t, 'chuoi_nao_chet'));
+    const h3 = ca.filter(t => !h4.includes(t) && t.blocks && t.blocks.playerRatio < 0.08);
+    const conLai = ca.filter(t => !h4.includes(t) && !h3.includes(t));
+    let dap, lam;
+    if (!ca.length) {
+      dap = noi.length < 10 ? `Chưa đủ dữ liệu — mới ${noi.length} lượt nói.`
+                            : `Không bắt được ca nào trong ${noi.length} lượt nói.`;
+      lam = null;
+    } else {
+      dap = `${ca.length} ca. **${h4.length} ca là RƠI KỊCH BẢN (H4)** — câu trả lời có sẵn, nó không hề đọc câu người chơi, nên lạc đề theo nghĩa đen chứ không phải model kém. `
+          + `**${h3.length} ca là CÂU NGƯỜI CHƠI BỊ CHÔN (H3)** — câu người chơi chiếm dưới 8% tin nhắn cuối, phần còn lại là chỉ thị đạo diễn. `
+          + `${conLai.length} ca chưa quy được về đâu.`;
+      lam = h4.length >= h3.length && h4.length
+        ? `Ưu tiên chuỗi não: xem cột "ai đang chạy như nào" bên dưới để biết não nào hay chết. Rơi kịch bản ${pct(h4.length, ca.length)}% số ca lạc đề — chữa chỗ này rẻ hơn chỉnh prompt nhiều.`
+        : h3.length
+        ? `Cắt bớt khối đạo diễn ở converse.js:352-415. Chạy \`node replay.mjs --tat-ca --bien-the gon\` trước để đo xem cắt có thật sự đỡ không, đừng cắt mò.`
+        : `Chưa quy được nguyên nhân — chạy \`node classify.mjs\` cho LLM đọc lại ${ca.length} ca này.`;
+    }
+    cauHoi.push({ hoi: 'Vì sao AI trả lời lạc đề, không liên quan cuộc hội thoại?', dap, viec_can_lam: lam,
+      so: { ca: ca.length, H4: h4.length, H3: h3.length, chua_ro: conLai.length }, ds: ca.map(t => t.turn_id) });
+  }
+
+  // ── CÂU 3: chấm điểm có ổn định không (H1) ──────────────────────────────
+  {
+    const coReplay = cham.filter(t => t.replay && t.replay.goc && t.replay.goc.length > 1);
+    let dap, lam, so = {};
+    if (!coReplay.length) {
+      dap = `**Chưa đo.** Đây là câu quan trọng nhất mà dữ liệu chơi thường KHÔNG trả lời được: phải chấm lại đúng lượt đó nhiều lần mới biết verdict ổn định hay hên xui. `
+          + `Hiện verdict và lời thoại sinh CHUNG một lần gọi ở temperature 0.7 (converse.js:418) — một tham số vốn để thoại đỡ nhàm đang điều khiển điểm số.`;
+      lam = `Chạy \`node replay.mjs --tat-ca\` — nó chấm lại TOÀN BỘ ${cham.length} lượt đã ghi, mỗi lượt 5 lần bản gốc + 3 lần temp 0.`;
+    } else {
+      const tan = coReplay.filter(t => new Set(t.replay.goc.map(r => r.verdict)).size > 1);
+      const t0onDinh = coReplay.filter(t => t.replay.temp0 && new Set(t.replay.temp0.map(r => r.verdict)).size === 1);
+      so = { da_do: coReplay.length, tan: tan.length, temp0_on_dinh: t0onDinh.length };
+      dap = `Đo trên ${coReplay.length} lượt: **${tan.length} lượt (${pct(tan.length, coReplay.length)}%) chấm lại ra verdict KHÁC nhau** dù input y hệt. `
+          + (t0onDinh.length ? `Ở temperature 0 thì ${t0onDinh.length}/${coReplay.length} lượt hết tản — xác nhận thủ phạm là nhiệt độ.` : '');
+      lam = pct(tan.length, coReplay.length) >= 25
+        ? `TÁCH CHẤM KHỎI VIẾT: gọi verdict riêng ở temperature 0, gọi lời thoại riêng ở 0.9. Chạy \`node replay.mjs --tat-ca --bien-the tach-cham\` để đo trước khi sửa.`
+        : `Chấm điểm khá ổn định (${pct(tan.length, coReplay.length)}% tản) — H1 không phải thủ phạm chính, dồn sức sang H3/H5.`;
+    }
+    cauHoi.push({ hoi: 'Chấm điểm có ổn định không, hay cùng một câu chơi lại ra điểm khác?', dap, viec_can_lam: lam, so, ds: [] });
+  }
+
+  // ── CÂU 4: câu người chơi có bị chôn không (H3, đo trực tiếp) ───────────
+  {
+    const cb = cham.filter(t => t.blocks && t.blocks.tong);
+    let dap = null, lam = null, so = {};
+    if (cb.length) {
+      const tyLe = cb.map(t => t.blocks.playerRatio);
+      const tb = tyLe.reduce((a, b) => a + b, 0) / tyLe.length;
+      const tongKhoi = {};
+      for (const t of cb) for (const [k, v] of Object.entries(t.blocks.khoi || {})) tongKhoi[k] = (tongKhoi[k] || 0) + v;
+      const to = Object.entries(tongKhoi).sort((a, b) => b[1] - a[1]).slice(0, 4);
+      so = { luot: cb.length, ty_le_tb: +(tb * 100).toFixed(1), duoi_5pc: cb.filter(t => t.blocks.playerRatio < 0.05).length,
+             khoi_to_nhat: to.map(([k, v]) => ({ khoi: k, B: Math.round(v / cb.length) })) };
+      dap = `Trung bình câu người chơi chỉ chiếm **${(tb * 100).toFixed(1)}%** tin nhắn cuối; `
+          + `${so.duoi_5pc}/${cb.length} lượt dưới 5%. Khối chỉ thị to nhất: `
+          + to.map(([k, v]) => `${k} ~${Math.round(v / cb.length)} B`).join(' · ') + '.';
+      lam = tb < 0.05
+        ? `Câu người chơi đang bị chôn thật. Khối "${to[0][0]}" là to nhất — thử cắt nó trước bằng \`node replay.mjs --tat-ca --bien-the gon\`.`
+        : `Tỉ lệ này chưa đến mức báo động; H3 chưa phải thủ phạm rõ ràng.`;
+    } else dap = 'Chưa có lượt nào ghi được kích thước khối.';
+    cauHoi.push({ hoi: 'Câu người chơi có bị chôn giữa đống chỉ thị không?', dap, viec_can_lam: lam, so, ds: [] });
+  }
+
+  // ── CÂU 5: neo giọng có bị đẩy khỏi cuối system không (H6) ─────────────
+  {
+    const cb = noi.filter(t => t.neo_giong && t.neo_giong.co);
+    const day = cb.filter(t => t.neo_giong.bi_day);
+    const theoNao = {};
+    for (const t of cb) {
+      const k = t.brain || '?';
+      theoNao[k] = theoNao[k] || { n: 0, day: 0 };
+      theoNao[k].n++; if (t.neo_giong.bi_day) theoNao[k].day++;
+    }
+    let dap = null, lam = null;
+    if (cb.length) {
+      dap = day.length
+        ? `**${day.length}/${cb.length} lượt bị đẩy.** converse.js:294-295 cố ý đặt dòng TIC (thói quen nói + xưng hô khoá cứng) SÁT CUỐI phần system vì "chỗ cuối được mô hình nhớ tốt nhất". `
+          + `Nhưng _brain.js:136 nối ghi chú lược đồ JSON vào SAU nó với qwen/deepseek — nên thứ cuối cùng hai nhà đó đọc là lược đồ, không phải giọng nhân vật. `
+          + `Theo não: ` + Object.entries(theoNao).map(([k, v]) => `${k} ${v.day}/${v.n}`).join(' · ') + '.'
+        : `Không lượt nào bị đẩy — dòng TIC vẫn nằm cuối system ở cả ${cb.length} lượt.`;
+      lam = day.length
+        ? `Ở _brain.js:136 đổi thứ tự: đưa schemaNote lên TRƯỚC req.system, hoặc nhét nó vào tin nhắn user đầu tiên. Sửa một dòng. Đo lại bằng \`node kt-tic.mjs\`.`
+        : null;
+    } else dap = 'Chưa có lượt nào ghi được vị trí neo giọng (cần chơi lại sau khi cập nhật).';
+    cauHoi.push({ hoi: 'Dòng neo giọng có còn nằm sát cuối system như thiết kế không?', dap, viec_can_lam: lam,
+      so: { do: cb.length, bi_day: day.length, theo_nao: theoNao }, ds: day.map(t => t.turn_id) });
+  }
+
+  // ── AI ĐANG CHẠY NHƯ NÀO — theo từng não, từng nhân vật ─────────────────
+  const theoNao = {};
+  for (const t of noi) {
+    const k = t.brain || 'khong-ro';
+    const o = theoNao[k] || (theoNao[k] = { nao: k, luot: 0, ms: [], viet_lai: 0, co_hong: 0, verdict: {}, tok_in: 0, tok_out: 0 });
+    o.luot++;
+    if (t.ms) o.ms.push(t.ms);
+    if (t.retried) o.viet_lai++;
+    if ((t.flag_auto || []).length) o.co_hong++;
+    if (t.verdict) o.verdict[t.verdict] = (o.verdict[t.verdict] || 0) + 1;
+    if (t.tok) { o.tok_in += t.tok.in || 0; o.tok_out += t.tok.out || 0; }
+  }
+  const nao = Object.values(theoNao).sort((a, b) => b.luot - a.luot).map(o => ({
+    nao: o.nao, luot: o.luot, p50: p(o.ms, 0.5), p95: p(o.ms, 0.95),
+    viet_lai_pc: pct(o.viet_lai, o.luot), hong_pc: pct(o.co_hong, o.luot),
+    verdict: o.verdict, tok_in: o.tok_in, tok_out: o.tok_out
+  }));
+
+  const theoNha = {};
+  for (const t of cham) {
+    const o = theoNha[t.npc_id] || (theoNha[t.npc_id] = { nha: t.npc_id, luot: 0, hong: 0, verdict: {} });
+    o.luot++; if ((t.flag_auto || []).length) o.hong++;
+    o.verdict[t.verdict] = (o.verdict[t.verdict] || 0) + 1;
+  }
+  const nha = Object.values(theoNha).sort((a, b) => b.luot - a.luot)
+    .map(o => ({ ...o, hong_pc: pct(o.hong, o.luot) }));
+
+  // đếm cờ, kèm giải thích + giả thuyết
+  const demCo = {};
+  for (const t of noi) for (const c of (t.flag_auto || [])) demCo[c] = (demCo[c] || 0) + 1;
+  const co_hong = Object.entries(demCo).sort((a, b) => b[1] - a[1])
+    .map(([ma, n]) => ({ ma, n, gt: (GIAI_THICH[ma] || ['?', ma])[0], y: (GIAI_THICH[ma] || ['?', ma])[1] }));
+
+  // tầng hỏng do LLM gán (classify.mjs) — bản game của biểu đồ 67/13/12/9 bên XNK
+  const demTang = {};
+  for (const t of noi) if (t.tang_hong) demTang[t.tang_hong] = (demTang[t.tang_hong] || 0) + 1;
+
+  return {
+    du_lieu: { luot_tong: ds.length, luot_noi: noi.length, luot_cham: cham.length, van: vaN,
+               ca_hong: hong.length, co_nhan_fb: noi.filter(t => t.fb).length,
+               da_cham_lai: cham.filter(t => t.replay).length, da_phan_tang: Object.values(demTang).reduce((a, b) => a + b, 0) },
+    cau_hoi: cauHoi, ai_dang_chay: { nao, nha }, co_hong, tang_hong: demTang
+  };
+}
+
+// bản in cho terminal — dùng ở `node ketluan.mjs`
+function inRa(k) {
+  const d = k.du_lieu;
+  const L = [];
+  L.push('\n' + '═'.repeat(74));
+  L.push('  HỘP ĐEN — CÂU TRẢ LỜI');
+  L.push('  ' + `${d.luot_noi} lượt nói · ${d.van} ván · ${d.ca_hong} ca hỏng · ${d.co_nhan_fb} nhãn 👎`
+    + ` · ${d.da_cham_lai} lượt đã chấm lại`);
+  L.push('═'.repeat(74));
+  for (const c of k.cau_hoi) {
+    L.push('\n▸ ' + c.hoi);
+    L.push('  ' + String(c.dap).replace(/\*\*/g, '').replace(/(.{1,88})(\s|$)/g, '$1\n  ').trimEnd());
+    if (c.viec_can_lam) L.push('  → VIỆC CẦN LÀM: ' + c.viec_can_lam.replace(/(.{1,74})(\s|$)/g, '$1\n                  ').trim());
+  }
+  L.push('\n' + '─'.repeat(74));
+  L.push('  AI ĐANG CHẠY NHƯ NÀO');
+  L.push('  ' + 'não'.padEnd(11) + 'lượt'.padStart(5) + 'p50'.padStart(7) + 'p95'.padStart(7)
+    + 'viết lại'.padStart(10) + 'có cờ hỏng'.padStart(12) + '  verdict hay gặp');
+  for (const n of k.ai_dang_chay.nao) {
+    const v = Object.entries(n.verdict).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([a, b]) => `${a} ${b}`).join(', ');
+    L.push('  ' + n.nao.padEnd(11) + String(n.luot).padStart(5) + (n.p50 + 'ms').padStart(7)
+      + (n.p95 + 'ms').padStart(7) + (n.viet_lai_pc + '%').padStart(10) + (n.hong_pc + '%').padStart(12) + '  ' + v);
+  }
+  if (k.ai_dang_chay.nha.length) {
+    L.push('');
+    L.push('  ' + 'nhà'.padEnd(13) + 'lượt'.padStart(5) + 'có cờ hỏng'.padStart(12) + '  verdict hay gặp');
+    for (const n of k.ai_dang_chay.nha) {
+      const v = Object.entries(n.verdict).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([a, b]) => `${a} ${b}`).join(', ');
+      L.push('  ' + n.nha.padEnd(13) + String(n.luot).padStart(5) + (n.hong_pc + '%').padStart(12) + '  ' + v);
+    }
+  }
+  if (k.co_hong.length) {
+    L.push('\n  CỜ ĐÃ DÒ ĐƯỢC');
+    for (const c of k.co_hong) L.push('  ' + (c.gt + ' ' + c.ma).padEnd(34) + String(c.n).padStart(4) + '  ' + c.y);
+  }
+  L.push('');
+  return L.join('\n');
+}
+
+
+return { coTuDo, ketLuan };
+})();
+const coTuDo = __may.coTuDo, ketLuan = __may.ketLuan;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num = n => (n == null ? '—' : Number(n).toLocaleString('vi-VN'));
+const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+const cs = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+const NAO = ['gemini','qwen','deepseek','haiku','scripted'];
+const VERDICT = ['danh_trung','hop_ly','thuong','kha_nghi','lo_lieu'];
+const V_TEN = {danh_trung:'đánh trúng',hop_ly:'hợp lý',thuong:'nhạt',kha_nghi:'nghe sai sai',lo_lieu:'lộ rồi'};
+const TEN_KHOI = {trang_thai:'trạng thái ngầm',so_tai_tieng:'sổ tai tiếng',dem_truoc:'trí nhớ đêm trước',
+  nhiem_vu:'nhiệm vụ',nhai_giong:'nhại giọng',nhac_giong:'nhắc giọng',chong_lap:'chống lặp',
+  dao_dien:'đạo diễn',giuc_gio:'giục giờ',boi_canh_xom:'bối cảnh xóm',khac:'khác'};
+const TEN_CO = {kich_ban_lac_de:'rơi kịch bản',da_viet_lai_vi_lap:'viết lại vì lặp',chuoi_nao_chet:'chuỗi não chết',
+  diem_bi_nuot:'điểm bị nuốt',nhat_ma_co_chi_tiet:'chấm nhạt dù có chi tiết',cau_bi_chon:'câu bị chôn',
+  nghi_lac_de:'nghi lạc đề',vi_pham_luat_cung:'vi phạm luật cứng',co_da_no_roi:'cờ đã nổ rồi',
+  neo_giong_bi_day:'neo giọng bị đẩy',
+  phieu_sai_enum:'phiếu sai enum',lap_4_chu:'lặp 4 chữ liên tiếp',thoai_qua_dai:'thoại quá dài',
+  chem_tieng_anh:'chêm tiếng Anh',troi_xung_ho:'nghi trôi xưng hô'};
+const NHAN_FB = {lac_de:'lạc đề',dang_le_tang:'đáng lẽ phải tăng',lap_lai:'lặp lại câu cũ'};
+// 4 chỉ số ngầm của hàng xóm (0–100, config.js game) — hiện ở đâu cũng phải giải thích được
+const GLOSS = {
+  'Tin tưởng': 'Tin tưởng (trust) — hàng xóm tin người chơi đến đâu. Vượt ngưỡng cửa (Ly 55 · Tí 75 · mẹ bỉm 85) là họ mời vào nhà: THẮNG.',
+  'Nghi ngờ':  'Nghi ngờ (suspicion) — mức nghi ngờ. Leo sát trần là bị đuổi thẳng: THUA.',
+  'Hứng thú':  'Hứng thú (interest) — hứng thú nghe chuyện. Tụt thấp là hàng xóm chán, mặt đờ ra; Ly cần Hứng thú ≥ 60 mới khai manh mối.',
+  'Kiên nhẫn': 'Kiên nhẫn (patience) — nói nhạt bị trừ dần; về 0 là họ bỏ cuộc, đóng cửa.'
+};
+const mauNao = n => cs('--' + (NAO.indexOf(n) >= 0 ? n : 'mut'));
+const mauV = v => cs('--v-' + v) || cs('--mut');
+
+const S = {luot:[], kl:null, tab:'tong-quan', loc:{}, tim:'', locIds:null, chon:null, cuaSo:20, kho:null, soLuotFetch:0,
+           sap:{c:'ts',d:-1}, demo:false, nguon:'', cho:null, daVe:false, daMoLink:false};
+
+/* ═══ nạp dữ liệu — điểm 3: kéo ngầm, KHÔNG vẽ đè lên thứ người dùng đang xem ═══ */
+const J = s => { try { return typeof s === 'string' ? JSON.parse(s) : s; } catch(e) { return null; } };
+function chuanHoa(r){
+  const b = J(r.blocks) || {khoi:{},thu_tu:[],tong:0,playerRatio:0,cau_nguoi_choi:''};
+  return Object.assign({}, r, {blocks:b, neo_giong:J(r.neo_giong), flags:J(r.flags)||{},
+    calls:J(r.calls)||[], raw:J(r.raw_json)||r.raw, body_goc:J(r.body_goc), state_out:J(r.state_out),
+    delta_notes:J(r.delta_notes)||r.delta_notes||[], retried:!!r.retried, scripted:!!r.scripted,
+    tok:r.tok||((r.tok_in!=null)?{in:r.tok_in,out:r.tok_out}:null),
+    applied:r.applied||((r.dT!=null)?{dT:r.dT,dS:r.dS,dI:r.dI,dP:r.dP}:null),
+    flag_auto:r.flag_auto||[]});
+}
+async function taiDuLieu(){
+  try { const r = await fetch('/__hopden/api/du-lieu?van='+S.cuaSo);
+    if(r.ok){ const d = await r.json(); S.nguon='máy mình · JSONL'; return d; } } catch(e){}
+  let mk = sessionStorage.getItem('hopden_mk') || '';
+  if(!mk){ mk = prompt('Mật khẩu Hộp Đen:')||''; sessionStorage.setItem('hopden_mk',mk); }
+  const r = await fetch('/api/traces?gioi_han=2000',{headers:{'x-hopden-pass':mk}});
+  if(r.status===403){ sessionStorage.removeItem('hopden_mk'); throw new Error('sai mật khẩu — tải lại trang'); }
+  const x = await r.json(); if(!x.ok) throw new Error(x.error);
+  S.nguon='production · D1';
+  return {luot:x.luot};
+}
+function apDung(d){
+  let ds = (d.luot||[]).map(chuanHoa).sort((a,b)=>(a.ts||0)-(b.ts||0));
+  S.soLuotFetch = ds.length;
+  let kho = d.kho;
+  if(!kho){   // production (D1): server chưa cắt — cắt tại client, CÙNG một luật với local
+    const vanIds=[...new Set(ds.map(t=>t.run_id))];
+    kho={luot:ds.length,van:vanIds.length,cua_so:S.cuaSo};
+    if(S.cuaSo>0&&vanIds.length>S.cuaSo){
+      const moi={}; ds.forEach(t=>moi[t.run_id]=Math.max(moi[t.run_id]||0,t.ts||0));
+      const giu=new Set(vanIds.sort((a,b)=>moi[b]-moi[a]).slice(0,S.cuaSo));
+      ds=ds.filter(t=>giu.has(t.run_id));
+    }
+  }
+  // prod: D1 chưa có cờ hỏng / chẩn đoán → tính tại trình duyệt, CÙNG code với local
+  ds.forEach(t => { if (!(t.flag_auto && t.flag_auto.length)) t.flag_auto = coTuDo(t); });
+  S.luot = ds; S.kho = kho;
+  S.kl = d.ket_luan || (typeof ketLuan === 'function' ? ketLuan(ds) : null);
+  S.demo = S.luot.some(t=>t.demo);
+  $('#nguon').textContent = S.nguon;
+  const vanDangDo = new Set(S.luot.map(t=>t.run_id)).size;
+  const coCat = S.kho && S.kho.cua_so>0 && S.kho.van>vanDangDo;
+  $('#chan').innerHTML =
+    (S.kho && S.kho.cua_so>0
+      ? 'phân tích <span class="num">'+vanDangDo+'</span> ván gần nhất'
+      : 'phân tích toàn bộ')
+    + '<br>kho giữ đủ <span class="num">'+(S.kho?S.kho.van:vanDangDo)+'</span> ván / <span class="num">'
+    + (S.kho?S.kho.luot:S.luot.length)+'</span> lượt'
+    + '<br><a href="#" onclick="doiCuaSo();return false">'
+    + (S.cuaSo>0?'→ xem toàn bộ kho':'→ về 20 ván gần nhất')+'</a>';
+  ve(); S.daVe = true;
+  // điểm 5 — deep link ?turn=… mở thẳng drawer
+  if(!S.daMoLink){ S.daMoLink = true;
+    const id = new URLSearchParams(location.search).get('turn');
+    if(id && S.luot.some(t=>t.turn_id===id)){ S.tab='kham-pha'; ve(); moDrawer(id); } }
+}
+window.apDungMoi=function(){ if(S.cho){ apDung(S.cho); S.cho=null; } $('#moi').classList.remove('mo'); };
+window.doiCuaSo=function(){ S.cuaSo = S.cuaSo>0 ? 0 : 20; S.daVe=false; S.cho=null; nap();
+  toast(S.cuaSo>0?'Về cửa sổ 20 ván gần nhất':'Đang xem TOÀN BỘ kho'); };
+async function nap(){
+  try{
+    const d = await taiDuLieu();
+    if(!S.daVe) return apDung(d);
+    const moi = (d.luot||[]).length - (S.soLuotFetch||0);
+    if(moi > 0){ S.cho = d; $('#moi').textContent = '● ' + moi + ' lượt mới — bấm để cập nhật';
+      $('#moi').classList.add('mo'); }
+    else { S.cho = d; }               // cùng số lượng: giữ sẵn, KHÔNG vẽ đè — áp ở lần tương tác sau
+  }catch(e){ $('#nguon').textContent = String(e.message||e).slice(0,60); }
+}
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('mo');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('mo'),2200); }
+
+/* ═══ lọc + tìm toàn văn (điểm 1) ═══ */
+const TRUONG = {
+  brain:{t:'Não', g:t=>t.brain||'không rõ', mau:mauNao},
+  npc_id:{t:'Nhà', g:t=>t.npc_id||'?'},
+  van:{t:'Ván chơi', g:t=>t.run_id||'?', ten:v=>String(v).slice(0,16)},
+  verdict:{t:'Verdict', g:t=>t.verdict||'(không chấm)', mau:mauV, ten:v=>V_TEN[v]||v},
+  kind:{t:'Loại lượt', g:t=>t.kind||'?'},
+  co:{t:'Cờ hỏng', g:t=>t.flag_auto, nhieu:true, ten:c=>TEN_CO[c]||c},
+  fb:{t:'Nhãn 👎', g:t=>t.fb?[t.fb]:[], nhieu:true, ten:c=>NHAN_FB[c]||c},
+  tang:{t:'Tầng hỏng (LLM đọc lại)', g:t=>t.tang_hong?[t.tang_hong]:[], nhieu:true},
+  npc_mode:{t:'Chế độ', g:t=>(t.req&&t.req.mode)||(t.body_goc&&t.body_goc.mode)||'ma_soi'}
+};
+const khopTim = t => { const q=S.tim.trim().toLowerCase(); if(!q) return true;
+  return [t.player_text,t.dialogue,t.thought,t.turn_id,t.last_user].some(x=>String(x||'').toLowerCase().indexOf(q)>=0); };
+const hop = t => (!S.locIds || S.locIds.has(t.turn_id)) && khopTim(t) && Object.keys(S.loc).every(k=>{
+  const v = S.loc[k]; if(!v||!v.length) return true;
+  const f = TRUONG[k]; const g = f.g(t);
+  return f.nhieu ? (g||[]).some(x=>v.indexOf(x)>=0) : v.indexOf(g)>=0;
+});
+const loc = () => S.luot.filter(hop);
+function bat(k,v){
+  const a = S.loc[k] = S.loc[k]||[];
+  const i = a.indexOf(v); if(i>=0) a.splice(i,1); else a.push(v);
+  if(!a.length) delete S.loc[k];
+  ve();
+}
+window.locNhay=function(k,v){ S.loc={}; S.loc[k]=[v]; S.tim=''; S.locIds=null; S.tab='kham-pha'; ve(); $('#cv').scrollTo(0,0); };
+window.xemCa=function(i){ const c=S.kl&&S.kl.cau_hoi[i]; if(!c||!c.ds||!c.ds.length) return;
+  S.loc={}; S.tim=''; S.locIds=new Set(c.ds); S.tab='kham-pha'; ve(); $('#cv').scrollTo(0,0); };
+// xuất CSV đúng theo bộ lọc đang bật — có BOM để Excel đọc tiếng Việt không vỡ
+window.taiCSV=function(){
+  const rows=loc();
+  const e=v=>{ v=(v==null?'':String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const dau=['thoi_gian','van','luot','nha','nao','verdict','ms','tok_vao','tok_ra',
+    'tin_tuong','nghi_ngo','hung_thu','kien_nhan','pct_cau_nguoi_choi','viet_lai','kich_ban','nhan_fb','co_hong','tang_hong',
+    'cau_nguoi_choi','ai_tra_loi','suy_nghi_tham'];
+  const dong=t=>[new Date(t.ts).toISOString(),t.run_id,t.turn_no,t.npc_id,t.brain,t.verdict,t.ms,
+    t.tok&&t.tok.in,t.tok&&t.tok.out,
+    t.applied&&t.applied.dT,t.applied&&t.applied.dS,t.applied&&t.applied.dI,t.applied&&t.applied.dP,
+    t.blocks?(t.blocks.playerRatio*100).toFixed(1):'',t.retried?1:0,t.scripted?1:0,t.fb||'',
+    (t.flag_auto||[]).join('|'),t.tang_hong||'',
+    t.player_text,t.dialogue,t.thought].map(e).join(',');
+  const csv='\uFEFF'+dau.join(',')+'\n'+rows.map(dong).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='hopden-'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
+  toast('Đã xuất '+rows.length+' dòng CSV theo bộ lọc hiện tại');
+};
+window.goTim=function(el){ S.tim=el.value; const p=el.selectionStart; ve();
+  const n=$('#o-tim'); if(n){ n.focus(); try{n.setSelectionRange(p,p);}catch(e){} } };
+const danhDau=(s)=>{ const q=S.tim.trim(); if(!q) return esc(s);
+  const i=String(s||'').toLowerCase().indexOf(q.toLowerCase()); if(i<0) return esc(s);
+  return esc(s.slice(0,i))+'<mark>'+esc(s.slice(i,i+q.length))+'</mark>'+esc(s.slice(i+q.length)); };
+
+/* ═══ tooltip ═══ */
+const W=680, tip=$('#tip');
+function hienTip(e,html){ tip.innerHTML=html; tip.style.opacity=1;
+  const r=tip.getBoundingClientRect();
+  tip.style.left=Math.min(e.clientX+14, innerWidth-r.width-12)+'px';
+  tip.style.top=Math.max(8, e.clientY-r.height-12)+'px'; }
+function anTip(){ tip.style.opacity=0; }
+document.addEventListener('scroll',anTip,true);
+
+/* ═══ biểu đồ SVG tay ═══ */
+function chongThoiGian(ds, khoa, mauFn, tenFn, cao=168){
+  if(!ds.length) return '<div class="rong" style="padding:36px">chưa có dữ liệu</div>';
+  const t0=ds[0].ts, t1=ds[ds.length-1].ts, span=Math.max(1,t1-t0);
+  const N=Math.min(28,Math.max(6,Math.round(ds.length/3)));
+  const bw=span/N, thung=[];
+  for(let i=0;i<N;i++) thung.push({t0:t0+i*bw,m:{},n:0});
+  for(const t of ds){ const i=Math.min(N-1,Math.floor((t.ts-t0)/bw)); const k=khoa(t);
+    thung[i].m[k]=(thung[i].m[k]||0)+1; thung[i].n++; }
+  const max=Math.max(1,...thung.map(b=>b.n));
+  const keys=[...new Set(ds.map(khoa))];
+  const PL=34, PB=20, cw=(W-PL)/N;
+  let g='';
+  for(let i=0;i<=3;i++){ const y=cao-(i/3)*cao;
+    g+=`<line x1="${PL}" y1="${y}" x2="${W}" y2="${y}" stroke="rgba(242,239,230,.07)"/>`
+      +`<text x="${PL-6}" y="${y+4}" text-anchor="end">${Math.round(max*i/3)}</text>`; }
+  thung.forEach((b,i)=>{
+    let y=cao;
+    keys.forEach(k=>{ const n=b.m[k]||0; if(!n) return;
+      const h=Math.max(1.5,(n/max)*cao-2); y-=h+2;
+      g+=`<rect x="${PL+i*cw+1.5}" y="${y}" width="${cw-3}" height="${h}" rx="3" fill="${mauFn(k)}"/>`; });
+    g+=`<rect x="${PL+i*cw}" y="0" width="${cw}" height="${cao}" fill="transparent"
+         data-tip="${esc(JSON.stringify({t:b.t0,m:b.m,n:b.n}))}"/>`;
+  });
+  const gio=t=>new Date(t).toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
+  g+=`<text x="${PL}" y="${cao+PB-4}">${gio(t0)}</text>`
+   + `<text x="${W}" y="${cao+PB-4}" text-anchor="end">${gio(t1)}</text>`;
+  return `<svg viewBox="0 0 ${W} ${cao+PB}" onmousemove="tipCot(event,'${tenFn}')" onmouseleave="anTip()">${g}</svg>`;
+}
+window.tipCot=function(e,tenFn){
+  const el=e.target.closest('[data-tip]'); if(!el) return anTip();
+  const d=JSON.parse(el.dataset.tip);
+  const gio=new Date(d.t).toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
+  const F=window[tenFn]||(x=>x);
+  const rows=Object.keys(d.m).sort((a,b)=>d.m[b]-d.m[a])
+    .map(k=>`<div class="r"><span>${F(k)}</span><b class="num">${d.m[k]}</b></div>`).join('');
+  hienTip(e,`<b>${gio}</b> · ${d.n} lượt<div style="margin-top:5px">${rows}</div>`);
+};
+window.tenNao=k=>`<span style="color:${mauNao(k)}">■</span> ${k}`;
+window.tenV=k=>`<span style="color:${mauV(k)}">■</span> ${V_TEN[k]||k}`;
+
+function duongLatency(ds, cao=168){
+  if(ds.length<2) return '<div class="rong" style="padding:36px">cần ít nhất 2 lượt</div>';
+  const t0=ds[0].ts,t1=ds[ds.length-1].ts,span=Math.max(1,t1-t0);
+  const N=Math.min(24,Math.max(4,Math.round(ds.length/4))), bw=span/N;
+  const th=[]; for(let i=0;i<N;i++) th.push([]);
+  for(const t of ds) if(t.ms) th[Math.min(N-1,Math.floor((t.ts-t0)/bw))].push(t.ms);
+  const q=(a,p)=>{ if(!a.length) return null; const s=[...a].sort((x,y)=>x-y);
+    return s[Math.min(s.length-1,Math.floor(s.length*p))]; };
+  const pts=th.map((a,i)=>({x:i,p50:q(a,.5),p95:q(a,.95),n:a.length})).filter(p=>p.p50!=null);
+  if(pts.length<2) return '<div class="rong" style="padding:36px">chưa đủ dữ liệu</div>';
+  const max=Math.max(...pts.map(p=>p.p95))*1.1, PL=46;
+  const X=i=>PL+(i/(N-1))*(W-PL), Y=v=>cao-(v/max)*cao;
+  let g='';
+  for(let i=0;i<=3;i++){ const y=cao-(i/3)*cao;
+    g+=`<line x1="${PL}" y1="${y}" x2="${W}" y2="${y}" stroke="rgba(242,239,230,.07)"/>`
+      +`<text x="${PL-6}" y="${y+4}" text-anchor="end">${(max*i/3/1000).toFixed(1)}s</text>`; }
+  g+=`<path d="M${pts.map(p=>X(p.x)+','+Y(p.p95)).join('L')}L${pts.slice().reverse().map(p=>X(p.x)+','+Y(p.p50)).join('L')}Z"
+       fill="${cs('--gemini')}" opacity=".15"/>`;
+  g+=`<path d="M${pts.map(p=>X(p.x)+','+Y(p.p50)).join('L')}" fill="none" stroke="${cs('--gemini')}" stroke-width="2.5"/>`;
+  const cuoi=pts[pts.length-1];
+  g+=`<circle cx="${X(cuoi.x)}" cy="${Y(cuoi.p50)}" r="4" fill="${cs('--gemini')}"/>`;
+  pts.forEach(p=>{ g+=`<circle cx="${X(p.x)}" cy="${Y(p.p50)}" r="9" fill="transparent"
+    data-tip="${esc(JSON.stringify(p))}"/>`; });
+  g+=`<text x="${W}" y="${Y(cuoi.p50)-9}" text-anchor="end" fill="${cs('--gemini')}" font-weight="600">p50</text>`;
+  g+=`<text x="${W}" y="${Y(cuoi.p95)-9}" text-anchor="end" opacity=".7">p95</text>`;
+  return `<svg viewBox="0 0 ${W} ${cao+8}" onmousemove="tipMs(event)" onmouseleave="anTip()">${g}</svg>`;
+}
+window.tipMs=function(e){ const el=e.target.closest('[data-tip]'); if(!el) return anTip();
+  const p=JSON.parse(el.dataset.tip);
+  hienTip(e,`<div class="r"><span>p50</span><b class="num">${num(p.p50)}ms</b></div>
+    <div class="r"><span>p95</span><b class="num">${num(p.p95)}ms</b></div>
+    <div class="r"><span>lượt</span><b class="num">${p.n}</b></div>`); };
+
+function thanhNgang(rows,{mau,max,don='',click}={}){
+  const M=max||Math.max(1,...rows.map(r=>r.v));
+  return rows.map(r=>`<div class="hbar ${click?'click':''}" ${click?`onclick="${click(r)}"`:''}
+    title="${esc(r.k)}">
+    <span class="t">${r.h||esc(r.k)}</span>
+    <span class="track"><span class="bar" style="background:${(mau&&mau(r.k))||cs('--gemini')};width:${Math.max(1.5,r.v/M*100)}%"></span></span>
+    <span class="n num">${r.l!=null?r.l:num(r.v)+don}</span>
+    ${r.p!=null?`<span class="p num">${r.p}</span>`:''}
+  </div>`).join('');
+}
+
+function hist(vals,{buoc,don='',mau,nhan}={}){
+  if(!vals.length) return '<div class="rong" style="padding:28px">chưa có dữ liệu</div>';
+  const mx=Math.max(...vals), b=buoc||Math.max(1,Math.ceil(mx/12)), N=Math.ceil((mx+1)/b);
+  const c=new Array(N).fill(0); vals.forEach(v=>c[Math.min(N-1,Math.floor(v/b))]++);
+  const M=Math.max(...c), cao=120, PL=42, cw=(W-PL)/N;
+  let g='';
+  for(let i=0;i<=2;i++){ const y=cao-(i/2)*cao;
+    g+=`<line x1="${PL}" y1="${y}" x2="${W}" y2="${y}" stroke="rgba(242,239,230,.07)"/>`
+      +`<text x="${PL-6}" y="${y+4}" text-anchor="end">${Math.round(M*i/2)}</text>`; }
+  g+=`<text x="${PL-6}" y="-4" text-anchor="end" opacity=".75">${nhan||'lượt'}</text>`;
+  c.forEach((n,i)=>{ const h=n?Math.max(1.5,(n/M)*cao):0;
+    g+=`<rect x="${PL+i*cw+1.5}" y="${cao-h}" width="${cw-3}" height="${h}" rx="3" fill="${mau||cs('--gemini')}"/>`
+     + `<rect x="${PL+i*cw}" y="0" width="${cw}" height="${cao}" fill="transparent"
+         data-tip="${esc(JSON.stringify({a:i*b,b:(i+1)*b,n}))}"/>`; });
+  g+=`<text x="${PL}" y="${cao+16}">0</text><text x="${W}" y="${cao+16}" text-anchor="end">${num(mx)}${don}</text>`;
+  return `<svg viewBox="0 -16 ${W} ${cao+38}" onmousemove="tipHist(event,'${don}','${nhan||''}')" onmouseleave="anTip()">${g}</svg>`;
+}
+window.tipHist=function(e,don,nhan){ const el=e.target.closest('[data-tip]'); if(!el) return anTip();
+  const d=JSON.parse(el.dataset.tip);
+  hienTip(e,`<b>${num(d.a)}–${num(d.b)}${don}</b><div class="r"><span>${nhan||'lượt'}</span><b class="num">${d.n}</b></div>`); };
+
+// dòng "đọc nhanh" — MỌI biểu đồ đều phải tự nói được nó đang nói gì, bằng lời
+const doc=s=>`<div class="doc">↳ ${s}</div>`;
+const trungVi=a=>{ if(!a.length) return 0; const x=[...a].sort((m,n)=>m-n); return x[Math.floor(x.length/2)]; };
+
+/* ═══ đầu trang ═══ */
+function head(t, mota){
+  const vanN = new Set(S.luot.map(t=>t.run_id)).size;
+  const pham = S.kho && S.kho.cua_so>0 && S.kho.van>vanN
+    ? `<span class="num">${vanN}</span> ván gần nhất · <span class="num">${S.luot.length}</span> lượt (kho: ${S.kho.van} ván)`
+    : `toàn bộ <span class="num">${S.luot.length}</span> lượt / <span class="num">${vanN}</span> ván`;
+  return `<div class="head"><div><h2>${t}</h2><p>${mota}</p></div>
+    <div class="meta"><span class="live"></span><b>${S.nguon}</b> · ${pham}<br>
+    cập nhật ${new Date().toLocaleTimeString('vi-VN')}</div></div>`;
+}
+
+/* ═══ TAB: tổng quan ═══ */
+function veTongQuan(){
+  const d=loc(), noi=d.filter(t=>t.kind==='reply');
+  const ms=noi.map(t=>t.ms).filter(Boolean).sort((a,b)=>a-b);
+  const q=p=>ms.length?ms[Math.min(ms.length-1,Math.floor(ms.length*p))]:0;
+  const kb=noi.filter(t=>t.brain==='scripted'||t.scripted).length;
+  const vl=noi.filter(t=>t.retried).length;
+  const hong=noi.filter(t=>(t.flag_auto||[]).length).length;
+  const tok=noi.reduce((a,t)=>a+((t.tok&&t.tok.out)||0),0);
+  const van=new Set(d.map(t=>t.run_id)).size;
+  const gio=noi.length&&noi[noi.length-1].ts>noi[0].ts?(noi[noi.length-1].ts-noi[0].ts)/36e5:0;
+
+  const tile=(k,v,u,n,cls='')=>`<div class="tile ${cls}"><div class="k">${k}</div>
+    <div class="v">${v}<span class="u">${u||''}</span></div>${n?`<div class="n">${n}</div>`:''}</div>`;
+
+  const coRows=(()=>{ const m={}; noi.forEach(t=>(t.flag_auto||[]).forEach(c=>m[c]=(m[c]||0)+1));
+    return Object.keys(m).map(k=>({k,v:m[k],h:esc(TEN_CO[k]||k),p:pct(m[k],noi.length)+'% số lượt'}))
+      .sort((a,b)=>b.v-a.v); })();
+
+  const mNao={}; noi.forEach(t=>{ const k=t.brain||'?'; mNao[k]=(mNao[k]||0)+1; });
+  const topNao=Object.keys(mNao).map(k=>[k,mNao[k]]).sort((a,b)=>b[1]-a[1])[0];
+  const cham=noi.filter(t=>t.verdict).length;
+  const vTot=noi.filter(t=>t.verdict==='danh_trung'||t.verdict==='hop_ly').length;
+  const vNhat=noi.filter(t=>t.verdict==='thuong').length;
+  const vXau=noi.filter(t=>t.verdict==='kha_nghi'||t.verdict==='lo_lieu').length;
+
+  return head('Sức khoẻ vòng đối thoại',
+      'Từ câu người chơi gõ tới lời hàng xóm trả lời — não nào chạy, chậm ở đâu, hỏng kiểu gì.')
+  + `<div class="tiles">
+    ${tile('lượt nói',num(noi.length),'',van+' ván'+(gio?' · '+(noi.length/gio).toFixed(1)+' lượt/giờ':''))}
+    ${tile('độ trễ p50',num(q(.5)),'ms','một nửa số lượt nhanh hơn mức này')}
+    ${tile('rơi kịch bản',pct(kb,noi.length),'%',kb+' lượt máy trả câu soạn sẵn', kb?'canh':'tot')}
+    ${tile('bắt viết lại',pct(vl,noi.length),'%',vl+' lượt model lặp câu cũ', vl>noi.length*.15?'canh':'')}
+    ${tile('ca có cờ hỏng',num(hong),'',pct(hong,noi.length)+'% số lượt bị bộ dò đánh dấu', hong?'canh':'tot')}
+    ${tile('token ra',num(tok),'',gio?num(Math.round(tok/gio))+'/giờ — tỉ lệ thuận tiền API':'')}
+  </div>
+
+  <div class="grid2">
+    <div class="card"><h3>Não nào đang trả lời, theo thời gian</h3>
+      <p class="gt">Mỗi cột = một khoảng thời gian · chiều cao = số lượt · màu = não trả lời lượt đó.</p>
+      <div class="lg">${NAO.map(n=>`<span><i style="background:${mauNao(n)}"></i>${n}${n==='scripted'?' ⚠':''}</span>`).join('')}</div>
+      ${chongThoiGian(noi,t=>t.brain||'không rõ',mauNao,'tenNao')}
+      ${topNao?doc(`<b>${esc(topNao[0])}</b> đang gánh <b>${pct(topNao[1],noi.length)}%</b> số lượt.`
+        +(kb?` <b style="color:#ff9089">${kb} lượt rơi kịch bản</b> (đỏ) — những lượt đó máy trả câu soạn sẵn, KHÔNG đọc câu người chơi, nên người chơi thấy lạc đề là đúng.`
+             :' Không lượt nào rơi kịch bản.')):''}
+    </div>
+
+    <div class="card"><h3>Trả lời nhanh hay chậm</h3>
+      <p class="gt">Đường đậm = tốc độ điển hình (p50) · mép trên dải mờ = nhóm chậm nhất (p95). Trục dọc: giây.</p>
+      ${duongLatency(noi)}
+      ${ms.length?doc(`Điển hình một lượt mất <b>${num(q(.5))} ms</b>; 5% chậm nhất vượt <b>${num(q(.95))} ms</b>. Quá ~5 giây là người chơi thấy khựng — dải mờ phình lên là dấu hiệu não bị rơi tầng.`):''}
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><h3>AI chấm câu người chơi ra sao, theo thời gian</h3>
+      <p class="gt">Xanh = câu được chấm TỐT (được cộng điểm) · xám = NHẠT (không được gì) · đỏ = BỊ NGHI (mất điểm).</p>
+      <div class="lg">${VERDICT.map(v=>`<span><i style="background:${mauV(v)}"></i>${V_TEN[v]}</span>`).join('')}</div>
+      ${chongThoiGian(noi.filter(t=>t.verdict),t=>t.verdict,mauV,'tenV')}
+      ${cham?doc(`<b>${pct(vTot,cham)}%</b> câu được chấm tốt · <b>${pct(vNhat,cham)}%</b> nhạt · <b>${pct(vXau,cham)}%</b> bị nghi. Xám nhiều nghĩa là người chơi nói mà không được gì — đúng triệu chứng "nói hay mà không tăng điểm" đang truy.`):''}
+    </div>
+
+    <div class="card"><h3>Cờ hỏng đang bắt được</h3>
+      <p class="gt">Bộ dò tự động đánh dấu lượt có dấu hiệu hỏng — một lượt có thể dính nhiều cờ. Bấm một dòng để xem đúng các lượt đó.</p>
+      ${coRows.length?thanhNgang(coRows,{mau:()=>cs('--warn'),click:r=>`locNhay('co','${r.k}')`})
+        +doc(`Hay gặp nhất: <b>${esc(TEN_CO[coRows[0].k]||coRows[0].k)}</b> — ${coRows[0].v} lượt (${pct(coRows[0].v,noi.length)}%). Bấm dòng đó để soi từng ca.`)
+        :'<div class="rong" style="padding:28px">chưa bắt được cờ nào — tốt</div>'}</div>
+  </div>`;
+}
+
+/* ═══ TAB: khám phá ═══ */
+function veKhamPha(){
+  const d=loc();
+  const facet=k=>{
+    const f=TRUONG[k], m={};
+    S.luot.forEach(t=>{ const g=f.g(t); (f.nhieu?(g||[]):[g]).forEach(v=>{ if(v!=null&&v!=='') m[v]=(m[v]||0)+1; }); });
+    const rows=Object.keys(m).sort((a,b)=>m[b]-m[a]);
+    if(!rows.length) return '';
+    return `<div class="fg"><div class="t">${f.t}</div>${rows.map(v=>{
+      const on=(S.loc[k]||[]).indexOf(v)>=0;
+      const sw=f.mau?`<span class="sw" style="background:${f.mau(v)}"></span>`:'';
+      return `<div class="fv" aria-pressed="${on}" onclick="bat('${k}','${esc(v)}')">
+        <span class="lb">${sw}${esc(f.ten?f.ten(v):v)}</span><span class="c">${m[v]}</span></div>`;
+    }).join('')}</div>`;
+  };
+  const chips=(S.locIds?`<span class="chip">đúng các ca từ tab Chẩn đoán (${S.locIds.size})
+      <button onclick="S.locIds=null;ve()">×</button></span>`:'')
+    +Object.keys(S.loc).flatMap(k=>S.loc[k].map(v=>
+    `<span class="chip">${TRUONG[k].t}: ${esc(TRUONG[k].ten?TRUONG[k].ten(v):v)}
+      <button onclick="bat('${k}','${esc(v)}')">×</button></span>`)).join('');
+
+  const C=[['ts','giờ'],['npc_id','nhà'],['turn_no','lượt'],['brain','não'],['verdict','verdict'],
+    ['ms','ms'],['tok','tok'],['dT','tin tưởng ±'],['ratio','% câu'],
+    ['player_text','câu người chơi'],['dialogue','AI trả lời'],['flag_auto','cờ']];
+  const gt=(t,c)=>c==='tok'?((t.tok&&t.tok.out)||0):c==='dT'?(t.applied?t.applied.dT:null):
+    c==='ratio'?(t.blocks?t.blocks.playerRatio:null):
+    c==='flag_auto'?(t.flag_auto||[]).length:t[c];
+  const sx=[...d].sort((a,b)=>{ const x=gt(a,S.sap.c),y=gt(b,S.sap.c);
+    if(x==null)return 1; if(y==null)return -1;
+    return (typeof x==='number'?x-y:String(x).localeCompare(String(y)))*S.sap.d; });
+
+  return head('Khám phá từng lượt',
+      'Gõ tìm toàn văn, lọc chồng nhiều điều kiện, sắp xếp bằng tiêu đề cột. Bấm một dòng để mở trọn vòng đối thoại.')
+  + `<div class="explore">
+    <div class="facets">${Object.keys(TRUONG).map(facet).join('')}</div>
+    <div>
+      <div class="timkiem">
+        <span class="kinh">⌕</span>
+        <input id="o-tim" type="search" value="${esc(S.tim)}" oninput="goTim(this)"
+          placeholder="tìm trong: câu người chơi · AI trả lời · suy nghĩ thầm · hộp đen (prompt) — ví dụ: gậy selfie, mã đơn…">
+        ${S.tim?`<button class="xoa" onclick="S.tim='';ve()" title="xoá tìm kiếm">×</button>`:''}
+      </div>
+      <div class="chips">${chips}
+        <span class="n">${d.length} / ${S.luot.length} lượt</span>
+        ${(chips||S.tim)?`<button class="xoahet" onclick="S.loc={};S.tim='';S.locIds=null;ve()">xoá hết bộ lọc</button>`:''}
+        <button class="xoahet" onclick="taiCSV()" title="xuất đúng các dòng đang khớp bộ lọc — mở được bằng Excel / pandas">⬇ tải CSV bộ lọc hiện tại</button></div>
+      <div class="tbl"><table><thead><tr>
+        ${C.map(c=>`<th class="${['ms','tok','dT','turn_no','ratio'].indexOf(c[0])>=0?'s':''}"
+          title="${c[0]==='dT'?'điểm TIN TƯỞNG (trust) game cộng/trừ cho lượt này, sau khi kẹp 0–100 — Tin tưởng là mức hàng xóm tin người chơi, vượt ngưỡng cửa là thắng':''}"
+          onclick="S.sap.d=(S.sap.c==='${c[0]}')?-S.sap.d:-1;S.sap.c='${c[0]}';ve()">
+          ${c[1]}${S.sap.c===c[0]?(S.sap.d<0?' ↓':' ↑'):''}</th>`).join('')}
+      </tr></thead><tbody>
+        ${sx.slice(0,400).map(t=>`<tr class="row ${S.chon===t.turn_id?'chon':''}" onclick="moDrawer('${t.turn_id}')">
+          <td class="num" style="color:var(--mut)">${new Date(t.ts).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</td>
+          <td>${esc(t.npc_id||'?')}</td>
+          <td class="s num">${t.turn_no||''}</td>
+          <td><span class="b" style="background:${mauNao(t.brain)}22;color:${mauNao(t.brain)}">
+            ${t.brain==='scripted'?'⚠ ':''}${esc(t.brain||'?')}</span></td>
+          <td>${t.verdict?`<span class="v" style="background:${mauV(t.verdict)}26;color:${mauV(t.verdict)}">${V_TEN[t.verdict]}</span>`:'<span style="color:var(--mut)">—</span>'}</td>
+          <td class="s num">${t.ms||''}</td>
+          <td class="s num" style="color:var(--mut)">${(t.tok&&t.tok.out)||''}</td>
+          <td class="s num" style="color:${t.applied?(t.applied.dT>0?'#63cf6c':t.applied.dT<0?'#ff9089':'var(--mut)'):'var(--mut)'}">
+            ${t.applied?(t.applied.dT>0?'+':'')+t.applied.dT:'—'}</td>
+          <td class="s num" title="câu người chơi chiếm bao nhiêu % tin nhắn cuối — dưới 5% là bị chôn (H3)"
+            style="color:${t.blocks&&t.blocks.playerRatio<0.05?'var(--warn)':'var(--mut)'}">${t.blocks?(t.blocks.playerRatio*100).toFixed(1)+'%':'—'}</td>
+          <td class="cau">${danhDau(t.player_text||'')}</td>
+          <td class="cau" style="color:var(--mut)">${danhDau(t.dialogue||'')}</td>
+          <td>${t.fb?`<span class="f fb">👎 ${NHAN_FB[t.fb]||t.fb}</span>`:''}
+            ${(t.flag_auto||[]).slice(0,2).map(c=>`<span class="f">${esc(TEN_CO[c]||c)}</span>`).join('')}
+            ${(t.flag_auto||[]).length>2?`<span class="f">+${t.flag_auto.length-2}</span>`:''}</td>
+        </tr>`).join('')}
+      </tbody></table></div>
+      ${sx.length>400?`<div style="padding:12px;color:var(--mut);font-size:13px">hiện 400/${sx.length} dòng đầu — siết bộ lọc để xem hết</div>`:''}
+      ${!sx.length?'<div class="rong">Không lượt nào khớp bộ lọc / từ khoá.</div>':''}
+    </div></div>`;
+}
+
+/* ═══ TAB: phân bố ═══ */
+function vePhanBo(){
+  const d=loc().filter(t=>t.kind==='reply');
+  const nhom=(f,mau,ten)=>{ const m={}; d.forEach(t=>{const k=f(t); if(k!=null)m[k]=(m[k]||0)+1;});
+    return thanhNgang(Object.keys(m).map(k=>({k,v:m[k],h:esc(ten?ten(k):k),p:pct(m[k],d.length)+'%'}))
+      .sort((a,b)=>b.v-a.v),{mau}); };
+
+  const msAll=d.map(t=>t.ms).filter(Boolean);
+  const sizeAll=d.map(t=>t.blocks&&t.blocks.tong).filter(Boolean);
+  const tyle=d.map(t=>t.blocks&&t.blocks.playerRatio).filter(v=>v!=null);
+  const tbTyle=tyle.length?tyle.reduce((a,b)=>a+b,0)/tyle.length:0;
+  const duoi10=tyle.filter(v=>v<0.1).length;
+
+  const naos=[...new Set(d.map(t=>t.brain||'?'))];
+  const cheo=()=>{
+    if(!naos.length) return '<div class="rong" style="padding:28px">chưa có dữ liệu</div>';
+    return `<div class="cuon"><table style="font-size:13.5px"><thead><tr><th>verdict</th>
+      ${naos.map(n=>`<th class="s"><span class="b" style="background:${mauNao(n)}22;color:${mauNao(n)}">${esc(n)}</span></th>`).join('')}</tr></thead><tbody>
+      ${VERDICT.map(v=>`<tr><td><span class="v" style="background:${mauV(v)}26;color:${mauV(v)}">${V_TEN[v]}</span></td>
+        ${naos.map(n=>{ const tong=d.filter(t=>(t.brain||'?')===n).length;
+          const c=d.filter(t=>(t.brain||'?')===n&&t.verdict===v).length;
+          const p=pct(c,tong);
+          return `<td class="s num" title="${c}/${tong} lượt của ${n} bị chấm ${V_TEN[v]}">
+            <span style="display:inline-block;min-width:46px;padding:3px 8px;border-radius:6px;text-align:right;
+              background:${mauV(v)}${p>40?'40':p>20?'26':p>0?'14':'00'};color:${p?'var(--ink)':'var(--mut)'}">${p}%</span></td>`;
+        }).join('')}</tr>`).join('')}</tbody></table></div>`;
+  };
+  // tự tìm ô lệch nhất giữa hai não thật (bỏ scripted — verdict của nó là câu soạn sẵn)
+  let viDu='';
+  { const that=naos.filter(n=>n!=='scripted'); let best=null;
+    for(const v of VERDICT){
+      const ps=that.map(n=>{ const tong=d.filter(t=>(t.brain||'?')===n).length;
+        return {n,tong,p:pct(d.filter(t=>(t.brain||'?')===n&&t.verdict===v).length,tong)}; })
+        .filter(x=>x.tong>=3);
+      if(ps.length<2) continue;
+      ps.sort((a,b)=>b.p-a.p);
+      const chenh=ps[0].p-ps[ps.length-1].p;
+      if(!best||chenh>best.chenh) best={v,cao:ps[0],thap:ps[ps.length-1],chenh};
+    }
+    if(best&&best.chenh>=15) viDu=doc(`Ví dụ cách đọc: <b>${best.cao.p}%</b> lượt do <b>${esc(best.cao.n)}</b> trả lời bị chấm "${V_TEN[best.v]}", còn <b>${esc(best.thap.n)}</b> chỉ <b>${best.thap.p}%</b> — cùng một rubric mà hai não chấm lệch nhau ${best.chenh} điểm %, dấu hiệu rubric chưa đủ chặt (H5).`);
+  }
+
+  const khoiTong=(()=>{ const m={},cnt=d.length||1; let cau=0;
+    d.forEach(t=>{ const b=t.blocks||{}; cau+=(b.cau_nguoi_choi||'').length;
+      Object.keys(b.khoi||{}).forEach(k=>m[k]=(m[k]||0)+b.khoi[k]); });
+    const rows=[{k:'CÂU NGƯỜI CHƠI',v:Math.round(cau/cnt),h:'<b style="color:var(--gemini)">CÂU NGƯỜI CHƠI</b>'}]
+      .concat(Object.keys(m).map(k=>({k,v:Math.round(m[k]/cnt),h:esc(TEN_KHOI[k]||k)})).sort((a,b)=>b.v-a.v));
+    return rows; })();
+  const khoiTo=khoiTong.slice(1).sort((a,b)=>b.v-a.v)[0];
+
+  return head('Phân bố',
+      'Hình dạng dữ liệu — độ trễ, kích thước prompt, và hai lát cắt chéo quan trọng nhất.')
+  + `<div class="grid2">
+    <div class="card"><h3>Một lượt mất bao lâu</h3>
+      <p class="gt">Trục ngang: thời gian trả lời (ms) · trục dọc: số lượt rơi vào khoảng đó.</p>
+      ${hist(msAll,{don:'ms'})}
+      ${msAll.length?doc(`Điển hình <b>${num(trungVi(msAll))} ms</b>. Cột lẻ loi phía xa bên phải = các lượt bị kẹt (thường do rơi tầng não).`):''}
+    </div>
+    <div class="card"><h3>Mỗi lượt AI phải đọc bao nhiêu chữ</h3>
+      <p class="gt">Trục ngang: kích thước tin nhắn cuối gửi cho AI (byte) · trục dọc: số lượt.</p>
+      ${hist(sizeAll,{don:' B',mau:cs('--haiku')})}
+      ${sizeAll.length?doc(`Điển hình <b>${num(trungVi(sizeAll))} B</b> mỗi lượt. Càng về cuối ván càng phình vì game chồng thêm khối chỉ thị.`):''}
+    </div>
+  </div>
+
+  <div class="card"><h3>Câu người chơi chiếm bao nhiêu phần những gì AI đọc</h3>
+    <p class="gt">Trục ngang: % của tin nhắn cuối là CÂU NGƯỜI CHƠI (phần còn lại là chỉ thị game tự chèn) · trục dọc: số lượt.
+      Cột dồn hết về bên trái = câu người chơi đang bị chôn — bằng chứng cho giả thuyết H3.</p>
+    ${hist(tyle.map(v=>Math.round(v*100)),{buoc:2,don:'%',mau:cs('--deepseek')})}
+    ${tyle.length?doc(`Trung bình câu người chơi chỉ chiếm <b>${(tbTyle*100).toFixed(1)}%</b> những gì AI đọc mỗi lượt; <b>${duoi10}/${tyle.length}</b> lượt dưới 10%. AI dễ trả lời CHỈ THỊ thay vì trả lời NGƯỜI CHƠI — đó là gốc của cảm giác "lạc đề".`):''}
+  </div>
+
+  <div class="grid3">
+    <div class="card"><h3>Não</h3><p class="gt">Lượt chia theo não trả lời.</p>${nhom(t=>t.brain||'không rõ',mauNao)}</div>
+    <div class="card"><h3>Verdict</h3><p class="gt">Lượt chia theo mức AI chấm.</p>${nhom(t=>t.verdict,mauV,k=>V_TEN[k]||k)}</div>
+    <div class="card"><h3>Nhà</h3><p class="gt">Lượt chia theo hàng xóm được gõ cửa.</p>${nhom(t=>t.npc_id)}</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><h3>Cùng một rubric, mỗi não chấm một kiểu?</h3>
+      <p class="gt">Mỗi ô = % lượt của não đó (cột) bị chấm mức đó (hàng); mỗi cột cộng lại 100%.
+        Cột scripted là câu soạn sẵn — đừng so với não thật.</p>
+      ${cheo()}
+      ${viDu}
+    </div>
+    <div class="card"><h3>Khối chỉ thị nào chiếm chỗ nhiều nhất</h3>
+      <p class="gt">Trung bình byte mỗi lượt. Dòng xanh đầu tiên là câu người chơi — để so ngay với từng khối.</p>
+      ${thanhNgang(khoiTong,{mau:k=>k==='CÂU NGƯỜI CHƠI'?cs('--gemini'):cs('--mut'),don:' B'})}
+      ${khoiTo?doc(`Khối "<b>${esc(TEN_KHOI[khoiTo.k]||khoiTo.k)}</b>" trung bình <b>${num(khoiTo.v)} B</b> — gấp <b>${khoiTong[0].v?Math.round(khoiTo.v/khoiTong[0].v):'?'} lần</b> câu người chơi (${num(khoiTong[0].v)} B). Muốn biết cắt nó có đỡ lạc đề không: nút "Chạy lại" trong từng lượt.`):''}
+    </div>
+  </div>`;
+}
+
+/* ═══ TAB: ván chơi ═══ */
+function veVanChoi(){
+  const d=loc(); const van={};
+  d.forEach(t=>{ (van[t.run_id]=van[t.run_id]||[]).push(t); });
+  const ds=Object.keys(van).sort((a,b)=>van[b][0].ts-van[a][0].ts);
+  const noiDung = !ds.length ? '<div class="rong">Chưa có ván nào.</div>'
+  : ds.slice(0,20).map(id=>{
+    const ts=van[id].filter(t=>t.kind==='reply').sort((a,b)=>a.ts-b.ts);
+    if(!ts.length) return '';
+    const SER=[['trust','Tin tưởng','--gemini'],['suspicion','Nghi ngờ','--qwen'],
+               ['interest','Hứng thú','--deepseek'],['patience','Kiên nhẫn','--haiku']];
+    const co=ts.filter(t=>t.state_out);
+    const cao=104, PL=32, PR=112, X=i=>PL+(co.length<2?0:(i/(co.length-1))*(W-PL-PR));
+    let g='';
+    for(let i=0;i<=2;i++){ const y=cao-(i/2)*cao;
+      g+=`<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="rgba(242,239,230,.07)"/>`
+        +`<text x="${PL-5}" y="${y+4}" text-anchor="end">${i*50}</text>`; }
+    if(co.length>1){
+      SER.forEach(([k,ten,mv])=>{
+        g+=`<path d="M${co.map((t,i)=>X(i)+','+(cao-(t.state_out[k]/100)*cao)).join('L')}"
+             fill="none" stroke="${cs(mv)}" stroke-width="2.5"/>`; });
+      // nhãn cuối đường — CHỐNG ĐÈ NHAU: xếp theo y rồi banh ra tối thiểu 16px
+      const last=co[co.length-1].state_out;
+      const nhan=SER.map(([k,ten,mv])=>({ten,c:cs(mv),v:last[k],y:cao-(last[k]/100)*cao+4}))
+        .sort((a,b)=>a.y-b.y);
+      for(let i=1;i<nhan.length;i++) if(nhan[i].y-nhan[i-1].y<16) nhan[i].y=nhan[i-1].y+16;
+      nhan.forEach(l=>{ g+=`<text x="${W-PR+8}" y="${l.y}" fill="${l.c}" font-weight="600">${l.ten} ${l.v}</text>`; });
+    }
+    // dải verdict dưới trục: mỗi chấm một lượt, kèm SỐ LƯỢT để đối chiếu được
+    ts.forEach((t,i)=>{ if(!t.verdict) return; const x=X(Math.min(i,Math.max(0,co.length-1)));
+      g+=`<circle cx="${x}" cy="${cao+13}" r="4.5" fill="${mauV(t.verdict)}">
+        <title>lượt ${t.turn_no}: ${V_TEN[t.verdict]}</title></circle>`
+       +`<text x="${x}" y="${cao+31}" text-anchor="middle" font-size="10">${t.turn_no}</text>`; });
+    const nao=[...new Set(ts.map(t=>t.brain))];
+    const dau=co.length?co[0].state_out:null, cuoi=co.length?co[co.length-1].state_out:null;
+    return `<div class="card">
+      <h3>${esc(ts[0].npc_id||'?')} · ${ts.length} lượt · ${new Date(ts[0].ts).toLocaleString('vi-VN')}</h3>
+      <p class="gt">ván <code>${esc(id.slice(0,14))}</code> · não:
+        ${nao.map(n=>`<span class="b" style="background:${mauNao(n)}22;color:${mauNao(n)}">${esc(n)}</span>`).join(' ')}
+        ${ts.some(t=>t.fb)?' · <span style="color:#ffb0c0">có 👎</span>':''}</p>
+      <div class="lg">${SER.map(([k,ten,mv])=>`<span title="${esc(GLOSS[ten]||'')}" style="cursor:help"><i style="background:${cs(mv)}"></i>${ten}</span>`).join('')}
+        <span style="color:var(--mut)">· hàng chấm dưới trục = AI chấm từng lượt, số dưới chấm = lượt thứ mấy</span></div>
+      ${co.length>1?`<svg viewBox="0 0 ${W} ${cao+38}">${g}</svg>`
+        :'<div style="color:var(--mut);font-size:13px;padding:8px 0">chưa có quỹ đạo chỉ số — cần script tiêm gửi điểm đã áp về</div>'}
+      ${dau&&cuoi?doc(`Cả ván: Tin tưởng <b>${dau.trust}→${cuoi.trust}</b> · Nghi ngờ <b>${dau.suspicion}→${cuoi.suspicion}</b>. `
+        +(cuoi.trust>=dau.trust+20?'Người chơi này đang thắng thế.':cuoi.suspicion>=dau.suspicion+20?'Ván này đang toang — nghi ngờ leo nhanh.':'Ván giằng co.')):''}
+      <div style="margin-top:12px">${ts.map(t=>`<div style="display:flex;gap:12px;padding:6px 9px;border-radius:7px;cursor:pointer;font-size:13.5px;align-items:center"
+        onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background=''"
+        onclick="moDrawer('${t.turn_id}')">
+        <span class="num" style="color:var(--mut);width:24px;flex:none">${t.turn_no||''}</span>
+        ${t.verdict?`<span class="v" style="background:${mauV(t.verdict)}26;color:${mauV(t.verdict)};flex:none;width:98px;text-align:center">${V_TEN[t.verdict]}</span>`:'<span style="width:98px;flex:none"></span>'}
+        <span style="color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${esc(t.player_text||'')}</span>
+        <span style="color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${esc(t.dialogue||'')}</span>
+      </div>`).join('')}</div></div>`;
+  }).join('');
+  return head('Ván chơi',
+    'Mỗi ván một thẻ — bốn đường là bốn chỉ số ngầm của hàng xóm qua từng lượt, hàng chấm dưới trục là AI chấm mỗi câu. Bấm một lượt để mở chi tiết.')
+    + doc('<b>Bốn chỉ số ngầm là gì?</b> Mỗi hàng xóm có 4 con số 0–100 mà người chơi không nhìn thấy: '
+      + '<b style="color:var(--gemini)">Tin tưởng</b> (trust) = hàng xóm tin người chơi đến đâu — vượt ngưỡng là mời vào nhà, THẮNG · '
+      + '<b style="color:var(--qwen)">Nghi ngờ</b> (suspicion) = mức nghi ngờ — leo sát trần là bị đuổi, THUA · '
+      + '<b style="color:var(--deepseek)">Hứng thú</b> (interest) = hứng thú nghe chuyện — thấp là hàng xóm chán · '
+      + '<b style="color:var(--haiku)">Kiên nhẫn</b> (patience) = kiên nhẫn — về 0 là họ đóng cửa. '
+      + 'Mỗi câu người chơi nói, AI chấm một verdict rồi CODE game tra bảng cộng trừ 4 số này — AI không tự cộng điểm.')
+    + noiDung;
+}
+
+/* ═══ TAB: chẩn đoán ═══ */
+function veChanDoan(){
+  const than = !S.kl
+    ? `<div class="rong">Phần chẩn đoán cần <kbd>ketluan.mjs</kbd> chạy phía máy chủ.<br>
+       Bản production đọc thẳng từ D1 nên chưa có — dùng tab Khám phá để tự soi.</div>`
+    : doc(`<b>Ai đang trả lời các câu này?</b> Không phải AI — một đoạn code đếm tên <code>ketluan.mjs</code>
+        chạy trên máy này, đếm trên <b>${new Set(S.luot.map(t=>t.run_id)).size} ván gần nhất (${S.luot.length} lượt)</b> — trong cửa sổ này thì đếm TẤT CẢ, không lấy mẫu; kho vẫn giữ đủ ${S.kho?S.kho.van:'?'} ván / ${S.kho?S.kho.luot:'?'} lượt, đổi cửa sổ ở góc trái dưới. Luật đếm viết sẵn (mở file ra là xem và sửa được từng ngưỡng),
+        nên cùng dữ liệu luôn cho cùng câu trả lời, và thiếu dữ liệu thì nó nói "chưa đủ" chứ không bịa.
+        Ba nguồn dữ liệu nó đếm: cờ do bộ dò cơ học bắt · nhãn 👎 do người chơi bấm · kết quả chấm lại /
+        "tầng hỏng" — hai thứ sau CÓ model tham gia, nhưng chỉ với vai người được hỏi, không phải người kết luận.`)
+      + S.kl.cau_hoi.map((c,i)=>{
+        const bang = c.so ? Object.keys(c.so).filter(k=>typeof c.so[k]!=='object')
+          .map(k=>`<span class="p num">${esc(k)}: ${esc(c.so[k])}</span>`).join('') : '';
+        return `<div class="card">
+      <h3 style="font-size:16.5px;color:var(--v-danh_trung)">${esc(c.hoi)}</h3>
+      <p style="margin:8px 0;color:var(--ink2);max-width:96ch;font-size:14.5px;line-height:1.7">${
+        esc(c.dap||'chưa có dữ liệu').replace(/\*\*(.+?)\*\*/g,'<b style="color:var(--ink)">$1</b>')}</p>
+      ${(bang||c.ds&&c.ds.length)?`<div class="kv" style="margin-top:8px;font-size:12.5px;color:var(--mut)">
+        <span>bằng chứng đếm được:</span> ${bang||'—'}
+        ${c.ds&&c.ds.length?`<button class="nut" style="padding:3px 12px;font-size:12.5px"
+          onclick="xemCa(${i})">soi tận mắt ${c.ds.length} ca này →</button>`:''}</div>`:''}
+      ${c.viec_can_lam?`<div style="margin-top:10px;padding:11px 15px;background:#152015;
+        border-left:3px solid var(--good);border-radius:0 var(--r-s) var(--r-s) 0;font-size:14px;color:#bfdcc3;max-width:96ch;line-height:1.65">
+        <b style="color:#63cf6c">Việc cần làm:</b> ${esc(c.viec_can_lam)}</div>`:''}
+    </div>`; }).join('');
+  return head('Chẩn đoán',
+    'Máy ĐẾM toàn bộ ca đã ghi rồi trả lời bằng lời theo luật viết sẵn — mỗi câu kèm bằng chứng và nút soi tận mắt từng ca.') + than;
+}
+
+/* ═══ drawer ═══ */
+function veKQChamLai(obj){
+  return Object.keys(obj).map(bt=>{ const vs=(obj[bt]||[]).map(r=>r.verdict||'(lỗi)');
+    const k={}; vs.forEach(v=>k[v]=1); const n=Object.keys(k).length;
+    return `<div style="font-size:13.5px;margin-bottom:5px"><span class="num" style="display:inline-block;width:96px;color:var(--mut)">${esc(bt)}</span>
+      ${vs.map(v=>`<span class="v" style="background:${mauV(v)}26;color:${mauV(v)}">${V_TEN[v]||v}</span>`).join(' ')}
+      ${n>1?`<span style="color:var(--warn)"> ← tản ${n} kiểu</span>`:'<span style="color:var(--mut)"> ← ổn định</span>'}</div>`;
+  }).join('');
+}
+// điểm 2 — chạy lại NGAY từ drawer
+window.chayLai=async function(id){
+  const nut=$('#nut-chaylai'), kq=$('#kq-chaylai');
+  if(!nut) return;
+  nut.setAttribute('aria-disabled','true'); nut.textContent='đang chạy… (tối đa 5 lần gọi model)';
+  try{
+    const r=await fetch('/__hopden/api/replay',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({turn_id:id, bien_the:{goc:3,temp0:2}})});
+    const d=await r.json();
+    if(!d.ok) throw new Error(d.error||'lỗi');
+    const t=S.luot.filter(x=>x.turn_id===id)[0];
+    if(t) t.replay=Object.assign({},t.replay||{},d.ket_qua);
+    kq.innerHTML=veKQChamLai(d.ket_qua)
+      + (!d.co_khoa?'<div class="ghi">⚠ Máy này <b>không có khoá API</b> — mọi kết quả trên là <b>kịch bản</b>, chỉ chứng minh đường ống chạy, KHÔNG có ý nghĩa chấm lại. Thêm khoá vào <code>.dev.vars</code> rồi chạy lại.</div>':'');
+    nut.textContent='▶ Chạy lại lần nữa'; nut.removeAttribute('aria-disabled');
+    toast('Đã chạy lại '+(d.so_lan||0)+' lần và ghi vào kho');
+  }catch(e){
+    kq.innerHTML='<div class="ghi">lỗi: '+esc(e.message)+'</div>';
+    nut.textContent='▶ Thử lại'; nut.removeAttribute('aria-disabled');
+  }
+};
+// điểm 4 — copy case markdown kèm deep link
+window.copyCa=async function(id){
+  const t=S.luot.filter(x=>x.turn_id===id)[0]; if(!t) return;
+  const a=t.applied, b=t.blocks||{};
+  const md=['🚨 Ca lượt '+(t.turn_no||'?')+' — '+(t.npc_id||'?')+' ('+(t.brain||'?')+(t.retried?', đã bắt viết lại':'')+')',
+    '- Người chơi: "'+(t.player_text||'')+'"',
+    '- AI trả lời: "'+(t.dialogue||'')+'"',
+    '- Verdict: '+(t.verdict||'—')+(a?' · Tin tưởng '+(a.dT>0?'+':'')+a.dT+' · Nghi ngờ '+(a.dS>0?'+':'')+a.dS:''),
+    (t.delta_notes||[]).length?'- Vì sao điểm bị nuốt: '+t.delta_notes.map(n=>n.ma+(n.muon!=null?' (muốn '+n.muon+', được '+n.duoc+')':'')).join(' · '):null,
+    (t.flag_auto||[]).length?'- Cờ: '+t.flag_auto.map(c=>TEN_CO[c]||c).join(' · '):null,
+    t.fb?'- 👎 người chơi: '+(NHAN_FB[t.fb]||t.fb):null,
+    '- playerRatio '+((b.playerRatio||0)*100).toFixed(1)+'% · '+(t.ms||0)+'ms'+(t.tok?' · '+t.tok.in+'/'+t.tok.out+' tok':''),
+    '- Xem: '+location.origin+location.pathname+'?turn='+encodeURIComponent(id)
+  ].filter(Boolean).join('\n');
+  try{ await navigator.clipboard.writeText(md); toast('Đã copy ca — dán thẳng vào Zalo được'); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=md; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); ta.remove(); toast('Đã copy ca'); }
+};
+
+window.moDrawer=function(id){
+  const t=S.luot.filter(x=>x.turn_id===id)[0]; if(!t) return;
+  S.chon=id;
+  history.replaceState(null,'','?turn='+encodeURIComponent(id));   // điểm 5 — URL chia sẻ được
+  const b=t.blocks||{khoi:{},thu_tu:[],tong:0,playerRatio:0,cau_nguoi_choi:''};
+  const cnc=(b.cau_nguoi_choi||'').length;
+
+  const calls=t.calls||[]; const tong=Math.max(1,calls.reduce((a,c)=>a+(c.ms||0),0));
+  const thac=calls.length?calls.map(c=>{
+    const w=Math.max(2,(c.ms||0)/tong*100);
+    return `<div style="display:flex;align-items:center;gap:11px;font-size:13.5px;margin-bottom:5px">
+      <span style="width:92px;flex:none"><span class="b" style="background:${mauNao(c.nao)}22;color:${mauNao(c.nao)}">${esc(c.nao)}</span></span>
+      <span style="flex:1;background:var(--bg0);border-radius:4px;height:16px;position:relative">
+        <span style="position:absolute;left:0;top:0;bottom:0;width:${w}%;border-radius:4px;
+          background:${c.ok?mauNao(c.nao):cs('--crit')};opacity:${c.ok?1:.6}"></span></span>
+      <span class="num" style="width:66px;text-align:right;color:var(--mut);flex:none">${num(c.ms||0)}ms</span>
+      <span style="width:132px;flex:none;color:${c.ok?'var(--mut)':'#ff9089'};font-size:12.5px;
+        overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.ok?'✓ ok':esc(c.loi||'lỗi')}</span>
+    </div>`; }).join('')
+    :(t.brain && t.brain !== 'scripted')
+      ? `<div style="display:flex;align-items:center;gap:11px;font-size:13.5px;margin-bottom:5px">
+          <span style="width:92px;flex:none"><span class="b" style="background:${mauNao(t.brain)}22;color:${mauNao(t.brain)}">${esc(t.brain)}</span></span>
+          <span style="flex:1;background:var(--bg0);border-radius:4px;height:16px;position:relative">
+            <span style="position:absolute;left:0;top:0;bottom:0;width:100%;border-radius:4px;background:${mauNao(t.brain)};opacity:1"></span>
+          </span>
+          <span class="num" style="width:66px;text-align:right;color:var(--mut);flex:none">${num(t.ms||0)}ms</span>
+          <span style="width:132px;flex:none;color:var(--good);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">✓ ${esc(t.nguon==='prod'?'production':'ok')}</span>
+        </div>`
+      : '<div style="color:#ff9089;font-size:13.5px">⚠ không gọi model — rơi kịch bản (cả chuỗi não bị lỗi/nghỉ)</div>';
+
+  const mx=Math.max(1,cnc,...Object.keys(b.khoi||{}).map(k=>b.khoi[k]));
+  const khoi=[{k:'CÂU NGƯỜI CHƠI',v:cnc,xanh:true}]
+    .concat((b.thu_tu||[]).map(k=>({k:TEN_KHOI[k]||k,v:b.khoi[k]})));
+
+  const gc=(t.delta_notes||[]).map(n=>{
+    if(n.ma==='kep_tran_tin') return `<b>KẸP TRẦN</b> — muốn cộng ${n.muon} tin, chỉ được ${n.duoc} (đã sát trần ${n.tran}). Đây là <b>H2</b>: model chấm đúng, code nuốt điểm.`;
+    if(n.ma==='gain_mult') return `gainMult ${n.mult} của nhà <b>${esc(n.nha)}</b> — bảng ghi ${n.bang}, sau khi nhân còn ${n.sau_nhan}.`;
+    if(n.ma==='mau_thuan_da_no_roi') return `<b>CỜ ĐÃ NỔ RỒI</b> — AI bật contradiction nhưng bộ đồ này đã nổ cờ đó rồi, code không áp lại. Điểm mất im lặng.`;
+    if(n.ma==='chong_lung_da_no_roi') return `<b>CỜ ĐÃ NỔ RỒI</b> — AI bật corroboration nhưng bộ đồ này đã nổ rồi.`;
+    if(n.ma==='hai_co_cung_bat') return `<b>VI PHẠM LUẬT CỨNG</b> — bật cả contradiction lẫn corroboration; rubric cấm.`;
+    if(n.ma==='roi_kich_ban') return `<b>RƠI KỊCH BẢN</b> — câu có sẵn, không đọc câu người chơi.`;
+    if(/^kep_tran_/.test(n.ma)) return `kẹp trần ${n.ma.replace('kep_tran_','')} — muốn ${n.muon}, được ${n.duoc}.`;
+    return esc(n.ma); }).join('</div><div class="ghi">');
+
+  const a=t.applied;
+  const dn=(k,v)=>`<span class="p num" title="${esc(GLOSS[k]||'')}" style="cursor:help;color:${v>0?'#63cf6c':v<0?'#ff9089':'var(--mut)'}">${k} ${v==null?'—':(v>0?'+':'')+v}</span>`;
+  const ng=t.neo_giong;
+
+  $('#drawer').innerHTML=`<button class="dong" onclick="dongDrawer()" title="Esc">×</button>
+    <div class="tieu">${esc(t.npc_id||'?')} · lượt ${t.turn_no||'?'}</div>
+    <div class="kv" style="margin-top:10px;color:var(--mut);font-size:13px">
+      <span class="b" style="background:${mauNao(t.brain)}22;color:${mauNao(t.brain)}">${t.brain==='scripted'?'⚠ ':''}${esc(t.brain||'?')}</span>
+      <span class="p num">${num(t.ms||0)}ms</span>
+      ${t.tok?`<span class="p num">${num(t.tok.in)} vào / ${num(t.tok.out)} ra tok</span>`:''}
+      ${t.retried?'<span class="p" style="color:var(--warn)">đã bắt viết lại vì lặp</span>':''}
+      ${t.fb?`<span class="p" style="color:#ffb0c0">👎 ${NHAN_FB[t.fb]||t.fb}</span>`:''}
+      <span class="p num">${new Date(t.ts).toLocaleString('vi-VN')}</span></div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="nut" onclick="copyCa('${esc(t.turn_id)}')">📋 Copy ca (dán Zalo)</button>
+      <button class="nut" onclick="navigator.clipboard.writeText(location.origin+location.pathname+'?turn=${esc(encodeURIComponent(t.turn_id))}').then(()=>toast('Đã copy link'))">🔗 Copy link</button>
+    </div>
+
+    <div class="sec"><div class="t">Câu người chơi</div>
+      <div class="box nc">${esc(t.player_text||'(không lời)')}</div></div>
+
+    <div class="sec"><div class="t">Chuỗi gọi model</div>${thac}</div>
+
+    <div class="sec"><div class="t">Hộp đen — thứ model thật sự nhìn thấy · ${num(b.tong)} B</div>
+      ${khoi.map(x=>`<div style="display:flex;align-items:center;gap:11px;font-size:13px;margin-bottom:4px">
+        <span style="width:158px;flex:none;color:${x.xanh?'var(--gemini)':'var(--ink2)'};
+          font-weight:${x.xanh?650:400}">${esc(x.k)}</span>
+        <span style="height:12px;border-radius:3px;background:${x.xanh?cs('--gemini'):cs('--mut')};
+          width:${Math.max(3,x.v/mx*300)}px;flex:none"></span>
+        <span class="num" style="color:var(--mut)">${num(x.v)} B</span>
+        ${x.xanh?`<span class="num" style="color:var(--gemini);font-weight:600">${(b.playerRatio*100).toFixed(1)}%</span>`:''}
+      </div>`).join('')}
+      <details><summary>tin nhắn cuối, nguyên văn</summary><pre class="hd">${esc(t.last_user||'')}</pre></details>
+      <details><summary>system, nguyên văn — ${num((t.system||'').length)} B${
+        ng&&ng.bi_day?` · <span style="color:#ff9089">⚠ neo giọng bị đẩy khỏi cuối, còn ${ng.con_lai} B sau nó (H6)</span>`
+        :ng&&ng.co?' · <span style="color:#63cf6c">✓ neo giọng vẫn ở cuối</span>':''}</summary>
+        <pre class="hd">${esc(t.system||'')}</pre></details></div>
+
+    <div class="sec"><div class="t">Model nghĩ gì</div>
+      <div class="kv" style="margin-bottom:9px">
+        ${t.verdict?`<span class="v" style="background:${mauV(t.verdict)}26;color:${mauV(t.verdict)};font-size:14px">${V_TEN[t.verdict]}</span>`:''}
+        ${t.convo_state?`<span class="p">${esc(t.convo_state)}</span>`:''}
+        ${t.emotion?`<span class="p">${esc(t.emotion)}</span>`:''}
+        ${Object.keys(t.flags||{}).filter(k=>t.flags[k]).map(k=>`<span class="p" style="color:var(--warn)">${esc(k)}</span>`).join('')}</div>
+      ${t.thought?`<div class="box">💭 ${esc(t.thought)}</div>`:''}
+      ${(t.signal_raw||t.gate_reason)?`<div class="ghi">tín hiệu nhiệm vụ <b>${esc(t.signal_raw||'∅')}</b> → <b>${esc(t.signal_final||'∅')}</b>${
+        t.gate_reason&&t.gate_reason!=='qua'?` — chặn vì: ${esc(t.gate_reason)}`:''}</div>`:''}</div>
+
+    <div class="sec"><div class="t">Hàng xóm trả lời</div>
+      <div class="box tl">${esc(t.dialogue||'(không có)')}</div></div>
+
+    <div class="sec"><div class="t">Game áp bao nhiêu điểm</div>
+      <div style="font-size:12.5px;color:var(--mut);margin-bottom:8px">Tin tưởng vượt ngưỡng là THẮNG · Nghi ngờ sát trần là THUA · Kiên nhẫn về 0 là bị đóng cửa — rê chuột lên từng số để xem giải thích đầy đủ</div>
+      <div class="kv">${dn('Tin tưởng',a&&a.dT)}${dn('Nghi ngờ',a&&a.dS)}${dn('Hứng thú',a&&a.dI)}${dn('Kiên nhẫn',a&&a.dP)}
+        ${t.state_out?`<span class="num" style="color:var(--mut);font-size:13px">→ sau lượt này: Tin tưởng ${t.state_out.trust} · Nghi ngờ ${t.state_out.suspicion} · Hứng thú ${t.state_out.interest} · Kiên nhẫn ${t.state_out.patience}</span>`:''}</div>
+      ${!a?'<div class="ghi trong">Chưa có số — người chơi đóng tab trước khi lượt sau kịp gửi về, hoặc lượt này không chấm điểm.</div>'
+        :gc?`<div class="ghi">${gc}</div>`
+        :'<div class="ghi trong">Không có gì nuốt điểm — đây là số model thật sự cho. Thấy câu này đáng điểm hơn thì đó là <b>H5</b> (rubric chưa phủ), <b>không phải H2</b>.</div>'}</div>
+
+    <div class="sec"><div class="t">Chấm lại</div>
+      <div id="kq-chaylai">${t.replay?veKQChamLai(t.replay):'<div style="color:var(--mut);font-size:13px">chưa chấm lại lượt này lần nào</div>'}</div>
+      <div style="margin-top:10px"><button id="nut-chaylai" class="nut chinh" onclick="chayLai('${esc(t.turn_id)}')">▶ Chạy lại lượt này (gốc ×3 · temp0 ×2)</button></div>
+    </div>
+    ${t.tang_ly_do?`<div class="sec"><div class="t">LLM đọc lại — tầng ${esc(t.tang_hong)}</div>
+      <div class="box">${esc(t.tang_ly_do)}</div></div>`:''}`;
+
+  $('#drawer').classList.add('mo'); $('#scrim').classList.add('mo');
+};
+window.dongDrawer=function(){ $('#drawer').classList.remove('mo'); $('#scrim').classList.remove('mo');
+  S.chon=null; history.replaceState(null,'',location.pathname); };
+$('#scrim').onclick=dongDrawer;
+addEventListener('keydown',e=>{ if(e.key==='Escape') dongDrawer(); });
+
+/* ═══ vẽ ═══ */
+function ve(){
+  document.querySelectorAll('.rail button').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===S.tab));
+  const banner=S.demo?`<div class="demo"><span style="font-size:17px">⚠</span><span>
+    <b>DỮ LIỆU MẪU</b> — sinh bằng <code>node demo.mjs</code> để xem giao diện, không phải số của game thật.
+    Xoá bằng <code>rm -rf data/</code> rồi chơi thật ở <a href="/">localhost:8790</a>.</span></div>`:'';
+  $('#trang').innerHTML = banner + ({
+    'tong-quan':veTongQuan,'kham-pha':veKhamPha,'phan-bo':vePhanBo,
+    'van-choi':veVanChoi,'chan-doan':veChanDoan}[S.tab])();
+}
+document.querySelectorAll('.rail button').forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;ve();$('#cv').scrollTo(0,0);});
+window.bat=bat; window.S=S; window.ve=ve;
+nap(); setInterval(nap,20000);
+</script>
