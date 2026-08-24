@@ -1,6 +1,7 @@
 name = "xom-dom-hong-hopden"
 compatibility_date = "2026-08-01"
 compatibility_flags = ["nodejs_als"]
+
 pages_build_output_dir = "public"
 
 # Workers AI binding — powers /api/stt (server-side Vietnamese speech-to-text).
@@ -27,6 +28,7 @@ database_name = "xom-dom-hong-log"
 database_id = "5c60c9de-2880-432a-a2a7-9b293bafe778"
 
 # nodejs_als: cần cho AsyncLocalStorage trong _hopden.js
+
 
 
 
