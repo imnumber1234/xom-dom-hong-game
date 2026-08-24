@@ -1,4 +1,4 @@
-name = "xom-dom-hong"
+name = "xom-dom-hong-hopden"
 compatibility_date = "2026-08-01"
 pages_build_output_dir = "public"
 
@@ -24,3 +24,11 @@ binding = "AI"
 binding = "LOG"
 database_name = "xom-dom-hong-log"
 database_id = "5c60c9de-2880-432a-a2a7-9b293bafe778"
+
+# nodejs_als: cần cho AsyncLocalStorage trong _hopden.js
+compatibility_flags = ["nodejs_als"]
+
+[[d1_databases]]
+binding = "HOPDEN"
+database_name = "xom-dom-hong-hopden-db"
+database_id = "DÁN_ID_VÀO_ĐÂY"
