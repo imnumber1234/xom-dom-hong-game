@@ -32,3 +32,11 @@ compatibility_flags = ["nodejs_als"]
 binding = "HOPDEN"
 database_name = "xom-dom-hong-hopden-db"
 database_id = "DÁN_ID_VÀO_ĐÂY"
+
+# nodejs_als: cần cho AsyncLocalStorage trong _hopden.js
+compatibility_flags = ["nodejs_als"]
+
+[[d1_databases]]
+binding = "HOPDEN"
+database_name = "xom-dom-hong-hopden-db"
+database_id = "DÁN_ID_VÀO_ĐÂY"

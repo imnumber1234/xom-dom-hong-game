@@ -1358,7 +1358,15 @@ window.moDrawer=function(id){
           <span class="num" style="width:66px;text-align:right;color:var(--mut);flex:none">${num(t.ms||0)}ms</span>
           <span style="width:132px;flex:none;color:var(--good);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">✓ ${esc(t.nguon==='prod'?'production':'ok')}</span>
         </div>`
-      : '<div style="color:#ff9089;font-size:13.5px">⚠ không gọi model — rơi kịch bản (cả chuỗi não bị lỗi/nghỉ)</div>';
+      : `<div style="color:#ff9089;font-size:13.5px;font-weight:500;margin-bottom:6px">⚠ Không gọi model — rơi kịch bản (cả chuỗi não bị lỗi/phạt nghỉ)</div>
+         ${t.bench && Object.keys(t.bench).length ? `
+           <div style="background:var(--bg0);border:1px solid var(--bdr);border-radius:var(--r-s);padding:8px 12px;font-size:12.5px;margin-top:6px">
+             <div style="color:var(--mut);margin-bottom:5px">⏳ <b>Lý do:</b> Các model trước đó bị lỗi (Rate limit / Timeout / Lỗi API) nên đang bị phạt nghỉ (cooldown 10 phút):</div>
+             <div style="display:flex;flex-wrap:wrap;gap:6px">
+               ${Object.entries(t.bench).map(([k,v])=>`<span class="p" style="color:#ff9089;background:#351b1b;border:1px solid #5a2626"><b>${esc(k)}</b>: còn ${v}s</span>`).join('')}
+             </div>
+           </div>` : ''}
+         ${t.err ? `<div style="color:#ff9089;font-size:12.5px;margin-top:6px;background:#351b1b;padding:6px 10px;border-radius:4px">🔴 <b>Lỗi API:</b> ${esc(t.err)}</div>` : ''}`;
 
   const mx=Math.max(1,cnc,...Object.keys(b.khoi||{}).map(k=>b.khoi[k]));
   const khoi=[{k:'CÂU NGƯỜI CHƠI',v:cnc,xanh:true}]
