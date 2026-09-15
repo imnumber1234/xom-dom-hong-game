@@ -1,0 +1,284 @@
+{
+ "project": "Xóm Đóm Hòng (folder: Xom Nay Kho Lam)",
+ "v09_loop_trua_2026_08_12": {
+  "pixellab": "token MỚI 81debcd9… SỐNG, đã thay vào MCP config (.claude.json); sprites 4 hướng wolf+human tại game/public/assets/art/sprites/",
+  "nhan_vat": "art 4 hướng + nhún bước + lớp đồ kiểu Nova (makeGearTextures/updateArtFacing trong game.js); Kẹt Tiền = NGƯỜI; fallback 16px nếu ảnh hỏng",
+  "nhac": "nen-xom.mp3 (Bonetrousle) + ruot-cong-an.mp3 (Yakety Sax) trong assets/audio; js/music.js; nút btn-mute; BẢN QUYỀN — thay khi thành sản phẩm",
+  "video_prompts": "prompts-video-ai.md — Lucas tự sinh video truyện mở + cảnh đồn",
+  "cho_gat": "toàn bộ đang ở cham-dat, link chính chưa đụng",
+  "bai_hoc": "textures.remove khi sprite đang dùng = 'reading sys' crash; scene.restart phải null cả gearSpr/useArt"
+ },
+ "v09_live_2026_08_12": {
+  "live": "màn mở đầu sống + truyện 4 khung + nhà chạm đất + tủ đồ Q5=B (khoá 3 món giấy tờ) + sói mặc đồ + attract mode — Lucas gật Q7 'live'",
+  "answers_7cau": "Q1=B · Q2 hài · Q3 Lucas đưa nhạc (nhac-can-tim.md) · Q4 PixelLab acc mới CHỜ KEY · Q5=B · Q6=C chờ Q4 · Q7 live",
+  "chase_minigame": "BUILD XONG trên cham-dat CHỜ GẬT: thua nhà → xe ò í e + rượt 20s tốc độ ngang (XDH.CHASE), thoát = xe rời, tóm = màn về đồn; Kẹt Tiền miễn",
+  "test_hook": "window.XDH_GAME cho Playwright đọc scene"
+ },
+ "v09_session_a_2026_08_12": {
+  "preview_cham_dat_url": "https://cham-dat.xom-dom-hong.pages.dev",
+  "fixed": "nhà chạm đất (chân trời 240 + origin đáy) · tủ đồ ALL_OPEN · sói vẽ nón + đồ cầm tay trên bản đồ",
+  "experiment_mo_dau": "mức B CHẠY THẬT trên cham-dat: màn hình sống + thẻ chế độ có hình + truyện 4 khung VI/EN (?story=1 xem lại) + ẩn mật khẩu (?pass=1); kiểm 6/6; còn B3 attract + nhạc cho Terminal B",
+  "plan": "plan-v0.9-mo-dau.md — màn mở đầu 3 mức A/B/C, chờ Lucas 7 câu mục 4",
+  "rollback": "config.js ALL_OPEN=false · game.js HORIZON/GROUND_Y"
+ },
+ "phase": "🚀 ĐÃ LÊN LINK CHÍNH 21/08 — v2.0+v2.1+v2.2+v2.3 đang chạy ở xom-dom-hong.pages.dev; git đã gộp vào main",
+ "updated": "2026-08-21",
+ "confidence": 0.95,
+ "preview_url": "https://xom-dom-hong.pages.dev",
+ "blocked_on": "Cloudflare Access cho bảng đèn (chìa máy không mở được Zero Trust) + 3 việc tiền/xoá ở pending.md mục 21/08",
+ "brain_chain": "v2.0 xếp lại theo đo thật 21/08: gemini → deepseek → qwen → haiku. Gemini bị Google CHẶN THEO VỊ TRÍ máy chủ (HKG) nên thực tế DeepSeek gánh chính; Haiku hết tiền từ 10/08. Riêng bản tiếng Anh dùng thứ tự EN_ORDER = gemini → deepseek → haiku → qwen (Qwen viết tiếng Anh yếu).",
+ "secrets_set": [
+  "ANTHROPIC_API_KEY",
+  "DEEPSEEK_API_KEY",
+  "GEMINI_API_KEY",
+  "QWEN_API_KEY",
+  "QWEN_BASE_URL"
+ ],
+ "modes": {
+  "ma_soi": "LIVE link chính",
+  "ket_tien": "LIVE link chính từ 2026-08-09"
+ },
+ "lucas_answers_v03": {
+  "Q-B0": "A — Kẹt Tiền là mode thứ 2, dùng chung engine, KHÔNG thay ma sói",
+  "Q-B1": "đổi khung ăn xin -> sinh viên/khách lỡ đường kẹt tiền (mặc định)",
+  "Q-B2": "giữ 3 NPC hiện có (mặc định)",
+  "Q-B3": "giới hạn mềm 3 ngày/phiên (mặc định)",
+  "Q-B4": "3 câu mở gợi ý, tắt sau 2 nhà đầu ngày 1 (mặc định)"
+ },
+ "pass_number_v03": "Lucas chơi hết 1 ngày không cần trợ giúp + >=5/10 bạn muốn chơi tiếp ngày 2 + >=3 người tự chụp bảng tổng kết gửi lại",
+ "plans": [
+  "plan.md (v0.1)",
+  "plan-v0.2.md",
+  "plan-v0.3-beggar.md",
+  "plan-v0.4-gossip.md",
+  "plan-v0.5-ly.md (CHƯA chạy)",
+  "plan-v0.6-feel.md (XONG)",
+  "plan-v0.6.1-sansang.md (XONG 8/9)"
+ ],
+ "research": [
+  "research/suckup-design.md",
+  "research/suckup-copy-map.md",
+  "research/voice-pipeline.md",
+  "research/engine-choice.md"
+ ],
+ "preview_ket_tien_url": "https://ket-tien.xom-dom-hong.pages.dev",
+ "v03_done": {
+  "B1": "chọn chế độ ở màn hình đầu + dựng lại bản đồ ban ngày",
+  "B2": "cửa mở -> màn xin, không giết",
+  "B3": "AI chọn loại kết quả, code cầm bảng tiền",
+  "B4": "món ăn ngẫu nhiên 15-60k + ví tiền + quán ăn ở xe bánh mì",
+  "B5": "trí nhớ xuyên nhà: +6 nghi mỗi nhà đã gõ",
+  "B6": "giờ trong ngày vào prompt (10h -> 18h30)",
+  "B7": "bảng tổng kết + lời nói dối buồn cười nhất + tải ảnh PNG",
+  "B8": "ngày 4+ cộng 5 nghi mỗi ngày + nhắc nghỉ sau ngày 3"
+ },
+ "v03_tuning_knobs": "config.js: XDH.MEALS, XDH.GIVE, XDH.CHORE, XDH.KT (THRESHOLD_DROP=15)",
+ "files_new": [
+  "game/public/js/mode-ket-tien.js"
+ ],
+ "live_url": "https://xom-dom-hong.pages.dev",
+ "v06_done": {
+  "F1": "popup số bay, code cầm số, không thanh đo thường trực, ?nonum=1 để tắt",
+  "F2": "23 meme duyệt tay trong game/public/memes/, CODE chọn theo mood, trần 1 meme/3 luot",
+  "F3": "khoá tủ đồ + loot mở đồ thật + cờ corroboration code thưởng + 3 món giấy tờ",
+  "F4": "10 cảm xúc vẽ bằng code, CODE đè mặt chán khi nói nhạt liên tiếp",
+  "F5": "bong bóng rò rỉ ý định trước 1 lượt + dòng tiếc nuối lấy từ thẻ nhân vật",
+  "phu": "việc vặt riêng từng nhà (XDH.CHORE_LINES)"
+ },
+ "v06_tuning_knobs": "config.js: XDH.POP, XDH.MEME_CFG, XDH.WARDROBE_LOCK, XDH.DIFFICULTY[...].corro, XDH.FEEL",
+ "files_new_v06": [
+  "game/public/js/memes.js",
+  "game/public/memes/ (23 ảnh)"
+ ],
+ "preview_cam_giac_url": "https://cam-giac.xom-dom-hong.pages.dev",
+ "preview_v061_url": "https://san-sang.xom-dom-hong.pages.dev",
+ "v061_done": {
+  "G1": "dò trình duyệt nhúng Zalo/FB/IG/TikTok + dải băng + nút chép link + hướng dẫn mic bị chặn ở lại trong khung",
+  "G2": "cổng chọn ngôn ngữ bước đầu tiên + nút đổi ngôn ngữ trong hội thoại cả 2 mode + siết lời dặn AI (VI cấm chêm EN, Ly được 2 tiếng lóng)",
+  "G3": "màn đầu 40 chữ -> 21 chữ, 3 gạch đầu dòng mỗi mode, VN/EN; chỗ xuất hiện đã đúng (nhà thật 120px < Bà Năm 165px), không đổi",
+  "tutorial": "NPC tự dẫn dắt (lựa chọn #2): lời chào có lời MỜI NÓI ở cuộc đầu tiên của người chưa từng chơi; tắt bằng ?tut=0; 0 giao diện mới"
+ },
+ "tutorial_4buoc": {
+  "phuong_an": "A — tận dụng nhà Bà Năm, 4 bước đánh số, bỏ qua được, có ở cả 2 chế độ",
+  "tu_bat": "ngay khi bấm BẮT ĐẦU nếu chưa học (localStorage xdh_tut_done)",
+  "tat_ep_buoc": "?tut=0",
+  "ket": "ma sói = nút CẮN · Kẹt Tiền = nói cảm ơn rồi nhận 30k (mode này không có CẮN)",
+  "kiem": "27/27 + chạy lại v0.6.1 25/25 + NPC dẫn dắt 14/14"
+ },
+ "preview_giong_that_url": "https://giong-that.xom-dom-hong.pages.dev",
+ "v07_done": {
+  "T1": "voice[] + voice_en[] + tic/tic_en + pronoun/pronoun_en cho 3 nhân vật, chép nguyên văn voice-sheet-lucas.md (36/36 câu + 3 tic khớp)",
+  "T2": "2 câu mẫu xoay vòng theo hash (seed + lượt, không random) đặt cuối tin nhắn động; dòng tic đặt sát cuối system (vẫn nằm trong bộ nhớ đệm → 0đ thêm)",
+  "T3": "nhắc giọng từ lượt 4: nhắc lại tic + xưng hô, có cả bản EN",
+  "T4": "game/tools/voice-score.mjs + check-20.mjs + print-prompt.mjs + console-check.py + load-api.mjs",
+  "T5": "13/20 trên preview — 6 mục trượt do lượt cuối rơi về não kịch bản (não hỏng), 1 mục trượt do bản EN trả lời tiếng Việt"
+ },
+ "v07_pass_numbers": {
+  "dau_hieu_luot_6": "tiếng Việt 6/6 ván đạt (5-10 dấu hiệu) · tiếng Anh 0/6 vì rơi về não kịch bản",
+  "troi_xung_ho": "0/3 trôi — ĐẠT (trước 1/3)",
+  "giam_khao_mu": "9/9 — ĐẠT (giám khảo là DeepSeek vì khoá Anthropic hết tiền)",
+  "chi_phi_them": "0đ — ĐẠT, câu mẫu nằm ở phần động nên khối system vẫn được nhớ đệm"
+ },
+ "preview_nao_xoay_vong_url": "https://nao-xoay-vong.xom-dom-hong.pages.dev",
+ "v08_done": {
+  "B1": "một cửa duy nhất functions/api/_brain.js — converse.js còn 0 chỗ gọi thẳng nhà cung cấp",
+  "B2": "bộ nối Gemini: thinkingBudget 0 + functionDeclarations (lược đồ đổi sang kiểu OpenAPI chữ HOA) + chặn lọc mức BLOCK_ONLY_HIGH",
+  "B3": "Qwen Plus gọi thẳng dashscope-intl (cổng Cloudflare không hỗ trợ Qwen)",
+  "B4": "quân sư 💡 + câu-hài-nhất + nhà hướng dẫn Bà Năm đều đi chung chuỗi; DeepSeek chuyển sang đi qua cổng Cloudflare",
+  "B5": "game/tools/brain-killtest.mjs — chạy cả ván trong Node, 6/6 ĐẠT",
+  "B6": "15/20 (v0.7 là 13/20) — 5 mục trượt đều là chất giọng Qwen, không mục nào là lỗi đường dây"
+ },
+ "v08_pass_numbers": {
+  "rut_1_khoa": "4/4 ĐẠT",
+  "chi_con_1_khoa": "4/4 ĐẠT",
+  "quan_su_va_cau_hai": "ĐẠT — sống khi không có Anthropic",
+  "do_tre_them": "392ms ĐẠT (chốt ≤ 1 giây), chỉ ở lượt đầu mỗi 10 phút",
+  "tieng_viet_co_dau": "100% ĐẠT",
+  "bai_kiem_20": "15/20 CHƯA ĐẠT → không đẩy lên link chính"
+ },
+ "files_new_v08": [
+  "game/functions/api/_brain.js",
+  "game/tools/brain-killtest.mjs"
+ ],
+ "brain_order": "LUCAS CHỐT 2026-08-10: Claude ĐỨNG ĐẦU → haiku,gemini,qwen,deepseek. Đặt bằng biến BRAIN_ORDER trên preview — đổi lại chỉ mất 1 dòng, KHÔNG cần sửa code.",
+ "v08_huong_dan": {
+  "cham_theo_y": "AI chấm bước hướng dẫn theo Ý (không theo từ khoá); gọi không được thì rơi về từ khoá, vẫn chạy 0đ; ép tắt bằng ?tutai=0",
+  "do_that": "thí nghiệm 27 câu người thật hay gõ: từ khoá 23/27 (chặn đúng 11/13) vs AI 26/27 (chặn đúng 13/13)",
+  "kiem": "ma sói 9/9 · Kẹt Tiền 9/9 · gõ một chữ \"shipper\" qua được cả có AI lẫn không AI · 0 lỗi console",
+  "may_do": "game/tools/gate-experiment.py + tutorial-check.py"
+ },
+ "v07_live_recheck": "15/20 trên link chính (trước 13/20 lúc não hỏng) — tiếng Việt sạch, 5 mục trượt đều ở bản tiếng Anh",
+ "v11_v12_2026_08_16": {
+  "hoi_don": "Đồng hồ im lặng 3 nấc (18-30 / 12-18 / 10-12 giây), mỗi lần thúc -4 kiên nhẫn, im hết 3 nấc + 10 giây nữa = cửa đóng (sổ ghi 'silence', KHÔNG có công an). Câu thúc do CODE cầm (XDH.PRESS_LINES) = 0 đồng.",
+  "tui_do": "Nút 🎒 trong cuộc + trên HUD → bảng ô vuông có chữ giải thích → bấm một ô hiện hộp 'Dùng ngay / Huỷ'. Bấm Huỷ không mất đồ.",
+  "mon_moi": "✨ Nâng tầm đẹp trai 70k (+10 tin ngay, mỗi câu chấm tốt +4 tin tới hết cuộc) · 🧠 Máy đọc suy nghĩ 90k (lượt nào cũng lộ suy nghĩ + chỗ họ thèm nghe, lấy từ bảng XDH.REGRET)",
+  "may_quay_so": "🎰 Thùng rác quay số cạnh xe bánh mì: cược 50k hoặc TẤT TAY, thắng ăn x2 (40%), 3 hình giống nhau (6%) ăn x2 + tặng 1 món đồ nghề. CODE bốc kết quả TRƯỚC rồi mới vẽ ô → tỉ lệ luôn đúng.",
+  "hop_qua": "🎁 Hộp quà may mắn 30k bán ở xe bánh mì, mở ngay: tiền / đồ nghề / đồ mặc / rác.",
+  "che_do_test": "?test=1 → vào ván có 500k + băng 'CHẾ ĐỘ TEST'. Link chính vẫn 0k.",
+  "kiem_may": "40/40 đạt ở cả 3 nơi (máy nhà · preview hoi-doi · LINK CHÍNH), 0 lỗi console. Công cụ: game/tools/press-slot-check.py",
+  "e2e_that": "Chạy thật với não AI trên preview: chào → trả lời → ngồi im 4 giây → Ly tự thúc 'Ủa rồi sao?' (-4 kiên nhẫn) → nói lại thì về nấc 1. 0 lỗi.",
+  "files_new": [
+   "game/public/js/casino.js",
+   "game/tools/press-slot-check.py",
+   "plan-v1.1-hoi-doi.md",
+   "plan-v1.2-do-nghe-casino.md"
+  ],
+  "canh_bao": "Đẩy link chính lần này KÉO THEO v1.0 hệ nhiệm vụ (gậy selfie của Ly) — trước đó v1.0 mới chỉ ở preview chờ Lucas gật."
+ },
+ "v20_session_a_2026_08_21": {
+  "plan": "plan-v2.0-dong-co-va-hop-kinh.md (11 việc, có số đo ĐẠT)",
+  "research": "research/ai-games-2026.md",
+  "do_that": "Đo THẬT trên link chính: tin 62>=ngưỡng 55 mà cửa vẫn đóng (convo.js:549 cần CẢ invite_intent); lượt 1 luôn bị chấm thuong 6/6; AI bịa lời người chơi rồi bắt bẻ; Gemini ĐANG BỊ CHO NGHỈ ở bản thật -> chạy 100% Qwen",
+  "khong_luu_gi": "converse.js 0 console.log, không D1/KV/R2 -> playtest xong mất sạch",
+  "co_san": "config.js XDH.REGRET đã có bảng từ khoá theo từng nhân vật, chỉ dùng cho câu tiếc nuối + món đọc suy nghĩ, CHƯA nối vào điểm",
+  "lucas_chot": "1 để sau · 2 CHẾT · 3 Halloween chỉ là cớ · 4 CÓ (2 lớp) · 5 HIỆN thanh · 6 CÓ ép mở + AI nói mời · 7 cả 3 nhà · 8 A (sổ đen + bảng đèn) · 9 làm · 10 để sau · 11 tắt máy quay số ở Kẹt Tiền · 12 commit · 13 chọn ngôn ngữ + bài kiểm tuân lệnh",
+  "artifact": "https://claude.ai/code/artifact/b05d58c0-5fd3-4d8a-aadd-7780c794f927"
+ },
+ "preview_hop_kinh_url": "https://hop-kinh.xom-dom-hong.pages.dev",
+ "dashboard_url": "https://hop-kinh.xom-dom-hong.pages.dev/dash (khoá bằng bí mật DASH_KEY của môi trường preview; chìa gửi Lucas trong chat, KHÔNG để vào kho)",
+ "git_branch_v20": "v2.0-hop-kinh (đã đẩy lên imnumber1234/xom-dom-hong-game, CHƯA gộp vào main)",
+ "v20_done": {
+  "1": "Sổ đen D1 xom-dom-hong-log (bảng turns + events), ghi kiểu gửi-rồi-đi bằng waitUntil",
+  "2": "9 cột mốc phía máy chơi qua /api/event bằng sendBeacon (public/js/track.js)",
+  "3": "Bảng đèn /dash sau cửa khoá (_dashauth.js) + /api/stats",
+  "4": "Thanh thiện cảm 2 lớp (code chấm từ khoá XDH.REGRET + AI chấm cảm giác, lấy cao hơn), HIỆN ra màn hình",
+  "5": "Chạm 100% là CODE mở cửa; bỏ quyền phủ quyết invite_intent; đường inviteAsk bắt AI nói câu mời + câu mời kịch bản dự phòng",
+  "6": "Sửa lượt 1 luôn bị chấm nhạt: nâng mức chấm khi trúng chủ đề + miễn phạt câu chào đầu",
+  "7": "Ba nhiệm vụ giấu: ly_selfie (Ly, mượn Tí) · ti_the4g (Tí, xin Ly) · sau_gaubong (Cô Sáu, xin Tí) + KHOÁ MIỆNG chống lộ bí mật sớm",
+  "8": "Công tắc XDH.PLAYTEST: bản thử tự bật, link chính LUÔN tắt, mọi giá qua XDH.priceOf",
+  "9": "Máy quay số tắt ở Kẹt Tiền (2 lớp: không mọc ngoài xóm + chặn ở cửa mở)",
+  "10": "Chuỗi não riêng cho tiếng Anh + chốt chặn ngôn ngữ do CODE cầm + não kịch bản có bản tiếng Anh",
+  "11": "Commit thành 1 mốc sạch trên nhánh v2.0-hop-kinh"
+ },
+ "v20_pass_numbers": {
+  "1_so_den_ghi_du": "ĐẠT — 202 lượt / 31 phiên trong 24h, xem lại được nguyên cuộc",
+  "2_dung_nao": "ĐẠT — sổ đen khớp ?debug=1 (qwen, cùng verdict, 2933ms, 3158/129 chữ)",
+  "3_thanh_100_mo_cua": "ĐẠT — lượt 1: 64%, lượt 2: 100% → cửa mở + Ly nói câu mời",
+  "4_luot_dau": "ĐẠT — 12 câu trúng tim × 3 nhà, 0 câu người chơi nhận \"nhạt\" (trước 12/12 nhạt)",
+  "5_ba_nha_ra_nhiem_vu": "ĐẠT — 3/3 nhà bật popup + quầy bán đúng món",
+  "6_playtest_0d": "ĐẠT — 6/6 món 0k, hộp quà 0k, tủ đồ mở hết, tắt công tắc là về giá gốc",
+  "7_ngon_ngu": "ĐẠT — English 20/20 (100%), trước khi sửa 13/20 (65%)"
+ },
+ "v20_test_suites": "v2-check 30/30 · mission-check 25/25 · v2-browser 28/28 · press-slot 41/41 · v2-live (18+40 lượt gọi thật)",
+ "v20_bugs_found_by_ledger": {
+  "gemini_enum_rong": "ĐÃ SỬA — Gemini từ chối chuỗi rỗng trong enum, HTTP 400 ở MỌI lượt kể từ 13/08 (hôm thêm mission_signal của v1.0). Não giỏi nhất chết 8 ngày không ai biết.",
+  "gemini_chan_vi_tri": "CHƯA SỬA ĐƯỢC — Google chặn theo vị trí máy chủ Cloudflare ở châu Á. Ngoài tầm mã nguồn, xem pending.md.",
+  "haiku_het_tien": "CHƯA SỬA — khoá Anthropic hết tiền từ 10/08, nạp tiền là tự sống lại.",
+  "co_sau_lo_bi_mat": "ĐÃ SỬA — AI tự khai chuyện gấu bông ngay lượt đầu dù prompt cấm; nay CODE bắt viết lại.",
+  "moi_vao_loi_400": "ĐÃ SỬA — lượt mời vào không có lời người chơi nên bị cổng kiểm tra chặn nhầm.",
+  "cong_diem_hai_lan": "ĐÃ SỬA — một câu trúng chủ đề được cộng điểm hai lần → mở toang cửa nhà dễ ngay câu đầu."
+ },
+ "v20_tuning_knobs": "config.js: XDH.FRIEND (thanh thiện cảm) · XDH.FIRST_TURN (lượt đầu) · XDH.MISSIONS (3 nhiệm vụ) · XDH.PLAYTEST_FORCE + XDH.PLAYTEST_MONEY (công tắc mở-hết)",
+ "files_new_v20": [
+  "game/functions/api/_ledger.js",
+  "game/functions/api/_dashauth.js",
+  "game/functions/api/event.js",
+  "game/functions/api/stats.js",
+  "game/functions/dash.js",
+  "game/public/js/track.js",
+  "game/sql/schema.sql",
+  "game/tools/v2-check.mjs",
+  "game/tools/v2-live.mjs",
+  "game/tools/v2-browser.py",
+  "game/tools/brain-probe.mjs"
+ ],
+ "secrets_set_preview": [
+  "ANTHROPIC_API_KEY",
+  "DEEPSEEK_API_KEY",
+  "GEMINI_API_KEY",
+  "QWEN_API_KEY",
+  "QWEN_BASE_URL",
+  "DASH_KEY"
+ ],
+ "d1_databases": {
+  "xom-dom-hong-log": "5c60c9de-2880-432a-a2a7-9b293bafe778 (binding LOG, dùng chung cho cả bản chính lẫn bản thử)"
+ },
+ "v20_lucas_answers_2026_08_21": {
+  "Q1_access": "CÓ, xin hướng dẫn từng bước — nhưng vướng: Pages chỉ khoá được TOÀN BỘ bản thử (đụng link playtest cho bạn bè). 3 đường (a) giữ mật khẩu (khuyên) (b) khoá cả bản thử (c) gắn tên miền riêng.",
+  "Q2_gemini": "A — kệ nó, DeepSeek gánh chính. KHÔNG phải làm gì thêm.",
+  "Q3_anthropic": "Để sau — không nạp tiền bây giờ.",
+  "Q4_xoa_so_den": "Chưa hiểu, đang giải thích lại. CHƯA xoá gì."
+ },
+ "v21_done": {
+  "cong_an_vn": "Áo xanh rêu + mũ kê pi vành đỏ sao vàng + quân hàm đỏ. Một bảng màu XDH.COP dùng chung cho 3 chỗ.",
+  "anh_man_ve_don": "assets/art/scene/station.png (PixelLab 240x148). Chữ CÔNG AN do CODE viết đè — máy sinh ảnh không viết được tiếng Việt.",
+  "he_qua_loi_noi": "AI chấm cảm giác, CODE quyết hậu quả. Rủi ro = nền x độ nặng / sức chịu đựng x nghi ngờ. Lần 1 cảnh cáo, LẦN 2 GỌI CÔNG AN (Lucas chốt, mọi nhà), xin lỗi lùi một nấc.",
+  "chan_dung_ba_nam": "3 sắc mặt thật ở assets/art/face/ba_nam_*.png. Chưa có bộ miệng nhép (cần gói trả phí PixelLab).",
+  "tat_den": "Nhà bị ĂN thì tối hẳn + đèn neon tắt + nhãn 🌑 TẮT ĐÈN. Khác với \"xong\" của Kẹt Tiền."
+ },
+ "v21_test_suites": "v2-check 38/38 · mission-check 25/25 · v2-browser 28/28 · press-slot 41/41",
+ "pixellab": "trial làm mới 21/08: 40 lượt, đã dùng 4, còn 36. Khoá KHÔNG nằm trong kho.",
+ "v22_o_soi": {
+  "la_gi": "Cột soi dán bên phải màn hình lúc đang chơi (public/js/soi.js). Khác hẳn bảng đèn /dash: ô soi xem NGAY một cuộc, bảng đèn xem SAU và gộp nhiều người.",
+  "bat_tat": "Nút 🔬 trên thanh trên cùng. Bản thử bật sẵn, LINK CHÍNH mặc định TẮT. ?soi=1 / ?soi=0 ép.",
+  "luat": "CHỈ ĐỌC không sửa game · không tự tính lại số nào (lấy từ convo.js) · tắt là game về y như cũ.",
+  "bay_da_dinh": "Nhích ô soi mà sót màn phủ nào thì màn đó chui xuống dưới, bấm không được. Nút Bỏ qua của truyện mở đầu đã dính đúng lỗi này."
+ },
+ "v22_test_suites": "v2-check 43/43 · mission-check 25/25 · v2-browser 28/28 · press-slot 41/41 = 137/137",
+ "v23_nghe_loi": {
+  "trieu_chung": "Nhân vật lải nhải chuyện riêng, trả lời chậm một lượt, bám chết vào câu đầu tiên.",
+  "loi_1": "Thiếu hẳn luật \"đáp lại câu vừa nói trước\". Thêm khối đạo diễn trích nguyên văn, đặt CUỐI CÙNG.",
+  "loi_2": "MÁY CHỦ chỉ gắn phần dặn dò khi tin nhắn cuối là lời NGƯỜI CHƠI. Chỗ gọi nào quên đẩy câu vào lịch sử thì toàn bộ dặn dò bị bỏ qua VÀ câu người chơi không được gửi. Đã thêm lưới an toàn.",
+  "do_duoc": "1/12 → 11/12 (bộ đo) · 4/4 (trình duyệt thật)",
+  "dinh_chinh": "Số \"AI tự chấm nhạt 12/12\" báo lúc chiều là ĐO NHẦM ĐƯỜNG. Đúng là 3/12.",
+  "luat_moi": "Mọi bộ đo phải đi ĐÚNG đường máy khách thật đi."
+ },
+ "v23_test_suites": "v2-check 49/49 · mission-check 25/25 · v2-browser 28/28 · press-slot 41/41 · listen-check 11/12",
+ "live_deployed_2026_08_21": {
+  "url": "https://xom-dom-hong.pages.dev",
+  "git": "v2.0-hop-kinh đã gộp vào main (19b28b8 → c33ab68), đã đẩy lên GitHub",
+  "kiem_tren_link_chinh": "9/9 mục hành vi bản-thật + 41/41 bộ kiểm cũ + 0 lỗi console",
+  "playtest": "TẮT trên link chính (tiền 0k, giá gốc, tủ đồ khoá 3 món)",
+  "o_soi": "TẮT trên link chính — người chơi thường không thấy",
+  "bang_den": "xom-dom-hong.pages.dev/dash?key=… — cùng chìa với bản thử; không chìa thì 401",
+  "so_den": "ĐANG GHI lượt thật từ link chính; bảng turns/events tách theo cột deploy",
+  "con_treo": "Bảng đèn gộp chung số bản thử + bản chính. Chờ Lucas chọn: xoá sổ / thêm bộ lọc / kệ."
+ },
+ "v24_so_den_tu_don": {
+  "da_xoa": "Xoá trắng 21/08: 159 lượt + 179 cột mốc (Lucas chốt A)",
+  "giu_bao_lau": "30 ngày mặc định; đổi bằng biến LEDGER_KEEP_DAYS của Cloudflare (1-365), không cần đẩy bản",
+  "cach_lam": "Gắn vào lượt ghi vì Cloudflare Pages KHÔNG có đồng hồ hẹn giờ. Chặn tối đa 1 lần/giờ, chạy nền waitUntil, hỏng thì nuốt.",
+  "da_thu": "Nhét 2 dòng 60 ngày tuổi vào sổ → chơi 1 lượt trên link chính → dòng cũ biến mất",
+  "bang_den": "Hiện thêm ô Sổ tự xoá sau N ngày + Dòng cũ nhất bao lâu"
+ }
+}
